@@ -1,20 +1,33 @@
 cmake_minimum_required(VERSION 3.6)
 project(gecko)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# include(tests/catch.cmake)
+# set(CMAKE_C_COMPILER /usr/local/bin/gcc-8)
+# set(CMAKE_CXX_COMPILER /usr/local/bin/g++-8)
+
+message(STATUS "-------------------------------------")
+message(STATUS "  Project: ${PROJECT_NAME}")
+message(STATUS "-------------------------------------")
+
+# set path for FindXXX.cmake
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
+list(APPEND ALL_LIBS "")
 
 find_package(Protobuf REQUIRED)
 if ( Protobuf_FOUND )
     include_directories(${Protobuf_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    message( STATUS "Protobuf version : ${Protobuf_VERSION}" )
-    message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
-    message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
-    message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
-    message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
+    message( STATUS ">> Protobuf Found: ${Protobuf_VERSION}" )
+    # message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
+    # message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
+    # message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
+    # message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
+
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${Protobuf_LIBRARIES})
 
     set(
         MSG_PROTOS
@@ -25,86 +38,170 @@ if ( Protobuf_FOUND )
     )
     protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${MSG_PROTOS})
 else()
-    message( WARNING "Protobuf package not found -> specify search path via PROTOBUF_ROOT variable")
+    # message(WARNING "*******************************")
+    message(WARNING "*** Could not find Protobuf ***")
+    # message(WARNING "*******************************")
 endif()
 
 
 # Get msgpack -----------------------------------------------------
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
+# include_directories(/usr/local/opt/libunwind-headers/include)
+# find_package(MsgPack)
+
+# include(FindMsgPack.cmake)
+find_package(MsgPack REQUIRED)
+
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+# "/usr/local/lib/cmake")
+# set(CMAKE_MODULE_PATH "/usr/local/lib/cmake")
+# find_package(msgpack) # msgpack_found not set!!!!
+if(MSGPACK_FOUND)
+    include_directories(${MSGPACK_INCLUDE_DIR})
+    message(STATUS ">> MsgPack Found: ${MSGPACK_VERSION}")
+
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${MSGPACK_LIBRARIES})
+
+else()
+    message(WARNING "\n<<--- Could not find MsgPack --->>\n")
+endif()
+
+# message(STATUS "+++ ${MSGPACK_LIBRARY}")
+# message(STATUS ">> MsgPack Found: ${MSGPACK_VERSION}")
 
 # Add local directories -------------------------------------------
 include_directories(src)
 
-# ZeroMQ ----------------------------------------------------------
+# ZeroMQ CPP ------------------------------------------------------
 # https://github.com/zeromq/cppzmq
 include_directories(zmq)
 
 # Load in pkg-config support --------------------------------------
-find_package(PkgConfig)
+# find_package(PkgConfig)
+
+# Threads ---------------------------------------------------------
 find_package(Threads REQUIRED)
+if(Threads_FOUND)
+    message(STATUS ">> Threads found: ${CMAKE_THREAD_VERSION}")
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+else()
+    message(WARNING "*** Could not find Threads ***")
+endif()
 
 # ZeroMQ ----------------------------------------------------------
-pkg_check_modules(ZMQ REQUIRED libzmq)
-# add_compile_definitions(ZMQ_BUILD_DRAFT_API)
-# add_compile_definitions(ZMQ_CPP11)
-include_directories(${ZMQ_INCLUDE_DIRS})
+find_package(ZMQ REQUIRED)
+if(ZMQ_FOUND)
+    message(STATUS ">> ZeroMQ found: ${ZMQ_VERSION}")
+    # add_compile_definitions(ZMQ_BUILD_DRAFT_API)
+    # add_compile_definitions(ZMQ_CPP11)
+    include_directories(${ZMQ_INCLUDE_DIRS})
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${ZMQ_LIBRARIES})
+else()
+    message(WARNING "*** Could not find ZeroMQ ***")
+endif()
 
 # Messages --------------------------------------------------------
-message(STATUS "Project: ${PROJECT_NAME}")
-message(STATUS "include: ${ZMQ_INCLUDE_DIRS}")
-message(STATUS "zmq lib: ${ZMQ_LIBRARIES}")
-message(STATUS "thread lib: ${CMAKE_THREAD_LIBS_INIT}")
+# message(STATUS "Project: ${PROJECT_NAME}")
+# message(STATUS "include: ${ZMQ_INCLUDE_DIRS}")
+# message(STATUS "zmq lib: ${ZMQ_LIBRARIES}")
+# message(STATUS "thread lib: ${CMAKE_THREAD_LIBS_INIT}")
 
 # Build library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
 
-set(ALL_LIBS ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# set(ALL_LIBS ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
+
+list(APPEND ALL_LIBS ${ALL_LIBS} ${PROJECT_NAME})
 
 # Tests --------------------------------------------------------------
-add_executable(core-test tests/core-test.cpp)
-target_link_libraries(core-test ${PROJECT_NAME})
+list(APPEND tests
+    tests/core-test.cpp
+    tests/zmq-test.cpp
+    tests/time-test.cpp
+    tests/ip-test.cpp
+    tests/proc-test.cpp
+    tests/node-test.cpp
+    tests/gecko-test.cpp
+    # tests/zmq-message-test.cpp
+    tests/simple-zmq-test.cpp
+    # tests/zmq-req-test.cpp
+)
 
-add_executable(zmq-test tests/zmq-test.cpp)
-target_link_libraries(zmq-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+message(STATUS "Tests ----------------------")
+foreach(src ${tests})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+    add_executable(${name} ${src})
+    target_link_libraries(${name} ${ALL_LIBS})
+endforeach()
+
+# add_executable(core-test tests/core-test.cpp)
+# target_link_libraries(core-test ${ALL_LIBS})
+#
+# add_executable(zmq-test tests/zmq-test.cpp)
+# target_link_libraries(zmq-test ${ALL_LIBS})
 
 
 # add_executable(all-test tests/all-test.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 # target_link_libraries(all-test ${PROJECT_NAME} ${Protobuf_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
 
+list(APPEND msgpktests
+    tests/msgpack-test.cpp
+    tests/msgpack-2-test.cpp
+    # tests/msgpack-3-test.cpp
+)
+
+set(MSGPACK_ALL
+    ${PROJECT_NAME}
+    ${MSGPACK_LIBRARY}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${ZMQ_LIBRARIES}
+)
+
+message(STATUS "MsgPack Tests ----------------------")
+foreach(src ${msgpktests})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+    add_executable(${name} ${src})
+    target_link_libraries(${name} ${MSGPACK_ALL})
+endforeach()
+
 # add_executable(msgpack-test tests/msgpack-test.cpp)
+# add_executable(msgpack-2-test tests/msgpack-2-test.cpp)
+# target_link_libraries(msgpack-2-test ${MSGPACK_LIBRARY})
 
-add_executable(time-test tests/time-test.cpp)
-target_link_libraries(time-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(time-test tests/time-test.cpp)
+# target_link_libraries(time-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
-add_executable(ip-test tests/ip-test.cpp)
-target_link_libraries(ip-test ${PROJECT_NAME})
+# add_executable(ip-test tests/ip-test.cpp)
+# target_link_libraries(ip-test ${PROJECT_NAME})
 
-add_executable(proc-test tests/proc-test.cpp)
-target_link_libraries(proc-test ${PROJECT_NAME})
+# add_executable(proc-test tests/proc-test.cpp)
+# target_link_libraries(proc-test ${PROJECT_NAME})
 
-add_executable(protobuf-test tests/protobuf-test.cpp ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(protobuf-test ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(protobuf-test tests/protobuf-test.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+# target_link_libraries(protobuf-test ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
-add_executable(node-test tests/node-test.cpp)
-target_link_libraries(node-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(node-test tests/node-test.cpp)
+# target_link_libraries(node-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
-add_executable(gecko-test tests/gecko-test.cpp)
-target_link_libraries(gecko-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(gecko-test tests/gecko-test.cpp)
+# target_link_libraries(gecko-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
-add_executable(zmq-message-test tests/zmq-message-test.cpp)
-target_link_libraries(zmq-message-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(zmq-message-test tests/zmq-message-test.cpp)
+# target_link_libraries(zmq-message-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
-add_executable(simple-zmq-test tests/simple-zmq-test.cpp)
-target_link_libraries(simple-zmq-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(simple-zmq-test tests/simple-zmq-test.cpp)
+# target_link_libraries(simple-zmq-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
 
-add_executable(zmq-req-test tests/zmq-req-test.cpp)
-target_link_libraries(zmq-req-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# add_executable(zmq-req-test tests/zmq-req-test.cpp)
+# target_link_libraries(zmq-req-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
 
 # add_executable(
 #     unit_test

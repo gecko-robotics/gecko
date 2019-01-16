@@ -3,8 +3,36 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdint.h>
+#include <time.h> // time_t
 
 using namespace std;
+
+typedef struct {
+    double x,y,z;
+    double operator[](int i){return x;}
+} vec_t;
+
+// typedef struct {
+//     char* str;
+//     uint8_t size;
+// } str_t;
+
+/*
+#include <stdio.h>
+#include <time.h>
+
+int main(void)
+{
+    time_t epoch = 0;
+    printf("%ld seconds since the epoch began\n", (long)epoch);
+    printf("%s", asctime(gmtime(&epoch)));
+}
+*/
+typedef struct {
+    vec_t a, g, m;
+    time_t timestamp;  // resolution of seconds only
+} imu_t;
 
 class Vector {
 public:
@@ -30,6 +58,7 @@ double &Vector::operator[](int index){
     else if (index == 1) return data[1];
     else if (index == 2) return data[2];
     else cout << "Vector[" << index <<"] is out of bounds" << endl;
+    return data[0];
 }
 
 
