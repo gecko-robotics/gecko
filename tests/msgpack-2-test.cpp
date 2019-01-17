@@ -1,6 +1,7 @@
 // https://msgpack.org/
 
 #include <msgpack.h>
+#include <msgpack/zbuffer.h>
 #include <stdio.h>
 #include <assert.h>
 #include <ctime>
@@ -27,6 +28,15 @@ class base_t {
 public:
     base_t(uint8_t t): type(t) {}
     const uint8_t type;
+
+    // void unpack_obj(const msgpack_object& obj){
+    //     msgpack_object_array a = static_cast<msgpack_object_array>(obj.via.array);
+    //     unpack(a);
+    // }
+    //
+    // void unpack(const msgpack_object_array& a){
+    //     printf("base_t::unpack NEVER CALL\n");
+    // }
 };
 
 class vec_t: public base_t {
@@ -67,10 +77,10 @@ public:
         msgpack_pack_double(pk, z);
     }
 
-    void unpack(const msgpack_object& obj){
-        msgpack_object_array a = static_cast<msgpack_object_array>(obj.via.array);
-        unpack(a);
-    }
+    // void unpack(const msgpack_object& obj){
+    //     msgpack_object_array a = static_cast<msgpack_object_array>(obj.via.array);
+    //     unpack(a);
+    // }
 
     void unpack(const msgpack_object_array& a){
         x = (double)a.ptr[1].via.f64;
@@ -129,10 +139,10 @@ public:
     }
 
     // shouldn't msgs ALWAYS be an object?
-    void unpack(const msgpack_object& obj){
-        msgpack_object_array a = static_cast<msgpack_object_array>(obj.via.array);
-        unpack(a);
-    }
+    // void unpack(const msgpack_object& obj){
+    //     msgpack_object_array a = static_cast<msgpack_object_array>(obj.via.array);
+    //     unpack(a);
+    // }
 
     void unpack(const msgpack_object_array& a){
         accel.unpack(a.ptr[1].via.array);
@@ -146,6 +156,8 @@ class Twist: public base_t, public msg_t {
 public:
     Twist(): base_t(GTWIST) {}
     vec_t linear, angular;
+    void pack(msgpack_packer* pk){}
+    void unpack(const msgpack_object_array& a){}
 };
 
 class Pose: public base_t, public msg_t {
@@ -155,31 +167,138 @@ public:
     quaternion_t orientation;
 };
 
+class LidarPt {
+public:
+    LidarPt(double a, double r){
+        angle = a;
+        range = r;
+    }
+    double angle, range;
+};
+
 class Lidar: public base_t, public msg_t {
 public:
     Lidar(): base_t(GLIDAR) {}
-    std::vector<double> scan;
+    std::vector<LidarPt> scan;
+
+    // void unpack(const msgpack_object& obj){
+    //     msgpack_object_array a = static_cast<msgpack_object_array>(obj.via.array);
+    //     unpack(a);
+    // }
 };
 
 ///////////////////////////////////////////////////////////
 
-// #define UNPACKED_BUFFER_SIZE 2048
-
+// template<typename message>
 // class Packer {
-// public:
-//     Packer(){
-//         msgpack_sbuffer_init(&sbuf);
-//         msgpack_packer_init(&pk, sbuf, msgpack_sbuffer_write);
+//     // template<typename message>
+//     void pack(message& msg){
+//         msg.pack(&pk);
 //     }
-//     msgpack_sbuffer sbuf;
-//     msgpack_packer pk;
+//
+//     void unpack(message& msg) {
+//         // buf is allocated by client.
+//         // msgpack_unpacked result;
+//         // msgpack_unpacked_init(&result);
+//         size_t len = buf.size;
+//         size_t off = 0;
+//         msgpack_unpack_return ret;
+//         int i = 0;
+//
+//         ret = msgpack_unpack_next(&result, buf.data, len, &off);
+//
+//         while (ret == MSGPACK_UNPACK_SUCCESS) {
+//             msgpack_object obj = result.data;
+//             // msg.unpack(obj);  // FIXME: WTF, doesn't find base_t::unpack()
+//             msg.unpack(obj.via.array);
+//             ret = msgpack_unpack_next(&result, buf.data, len, &off);
+//         }
+//         // // msgpack_object obj = result.data;
+//         // msg.unpack(obj);
+//         msgpack_unpacked_destroy(&result);
+//
+//         if (ret == MSGPACK_UNPACK_CONTINUE) {
+//             printf("All msgpack_object in the buffer is consumed.\n");
+//         }
+//         else if (ret == MSGPACK_UNPACK_PARSE_ERROR) {
+//             printf("The data in the buf is invalid format.\n");
+//         }
+//     }
 // }
+
 template<typename message>
 class sbuffer {
 public:
     sbuffer(){
         msgpack_sbuffer_init(&buf);
         msgpack_packer_init(&pk, &buf, msgpack_sbuffer_write);
+        msgpack_unpacked_init(&result);
+    }
+    ~sbuffer(){
+        msgpack_sbuffer_destroy(&buf);
+        msgpack_unpacked_destroy(&result);
+    }
+
+    void clear(){msgpack_sbuffer_clear(buf);}
+    void release(){msgpack_sbuffer_release(buf);}
+
+    // template<typename message>
+    void pack(message& msg){
+        msg.pack(&pk);
+    }
+
+    void unpack(message& msg) {
+        // buf is allocated by client.
+        // msgpack_unpacked result;
+        // msgpack_unpacked_init(&result);
+        size_t len = buf.size;
+        size_t off = 0;
+        msgpack_unpack_return ret;
+        int i = 0;
+
+        ret = msgpack_unpack_next(&result, buf.data, len, &off);
+
+        while (ret == MSGPACK_UNPACK_SUCCESS) {
+            msgpack_object obj = result.data;
+            // msg.unpack(obj);  // FIXME: WTF, doesn't find base_t::unpack()
+            msg.unpack(obj.via.array);
+            ret = msgpack_unpack_next(&result, buf.data, len, &off);
+        }
+        // // msgpack_object obj = result.data;
+        // msg.unpack(obj);
+        msgpack_unpacked_destroy(&result);
+
+        if (ret == MSGPACK_UNPACK_CONTINUE) {
+            printf("All msgpack_object in the buffer is consumed.\n");
+        }
+        else if (ret == MSGPACK_UNPACK_PARSE_ERROR) {
+            printf("The data in the buf is invalid format.\n");
+        }
+    }
+
+    inline size_t size(){return buf.size;}
+
+    msgpack_sbuffer buf;  // buf.data, buf.size -> zmq
+    msgpack_packer pk;
+    msgpack_unpacked result;
+};
+
+template<typename message>
+class zbuffer {
+public:
+    zbuffer(){
+        // const uint16_t MSGPACK_ZBUFFER_INIT_SIZE = 8192;
+        // #define Z_NO_COMPRESSION         0
+        // #define Z_BEST_SPEED             1
+        // #define Z_BEST_COMPRESSION       9
+        // #define Z_DEFAULT_COMPRESSION  (-1)
+        msgpack_zbuffer_init(&buf,Z_NO_COMPRESSION,MSGPACK_ZBUFFER_INIT_SIZE);
+        msgpack_packer_init(&pk, &buf, msgpack_zbuffer_write);
+        msgpack_unpacked_init(&result);
+    }
+    ~zbuffer(){
+        msgpack_zbuffer_destroy(&buf);
+        msgpack_unpacked_destroy(&result);
     }
 
     // template<typename message>
@@ -187,80 +306,64 @@ public:
         msg.pack(&pk);
     }
 
-    void zmq(){
-        // pack this
+    void unpack(message& msg) {
+        // buf is allocated by client.
+        // msgpack_unpacked result;
+        // msgpack_unpacked_init(&result);
+        size_t len = buf.init_size;
+        size_t off = 0;
+        msgpack_unpack_return ret;
+        int i = 0;
+
+        ret = msgpack_unpack_next(&result, buf.data, len, &off);
+
+        while (ret == MSGPACK_UNPACK_SUCCESS) {
+            msgpack_object obj = result.data;
+            // msg.unpack(obj);  // FIXME: WTF, doesn't find base_t::unpack()
+            msg.unpack(obj.via.array);
+            ret = msgpack_unpack_next(&result, buf.data, len, &off);
+        }
+        // // msgpack_object obj = result.data;
+        // msg.unpack(obj);
+        msgpack_unpacked_destroy(&result);
+
+        if (ret == MSGPACK_UNPACK_CONTINUE) {
+            printf("All msgpack_object in the buffer is consumed.\n");
+        }
+        else if (ret == MSGPACK_UNPACK_PARSE_ERROR) {
+            printf("The data in the buf is invalid format.\n");
+        }
     }
 
-    msgpack_sbuffer buf;  // buf.data, buf.size -> zmq
+    inline size_t size(){return buf.init_size;}
+
+    msgpack_zbuffer buf;  // buf.data, buf.size -> zmq
     msgpack_packer pk;
+    msgpack_unpacked result;
 };
 
-template<typename buffer,typename message>
-void pack_msg(buffer* sbuf, message& msg){
-    msgpack_packer pk;
-    msgpack_sbuffer_init(sbuf);
-    msgpack_packer_init(&pk, sbuf, msgpack_sbuffer_write);
-    msg.pack(&pk);
-}
-
-template<typename buffer,typename message>
-void unpack_msg(buffer* buf, size_t len, message& msg) {
-    // buf is allocated by client.
-    msgpack_unpacked result;
-    msgpack_unpacked_init(&result);
-
-    size_t off = 0;
-    msgpack_unpack_return ret;
-    int i = 0;
-
-    ret = msgpack_unpack_next(&result, buf->data, len, &off);
-
-    while (ret == MSGPACK_UNPACK_SUCCESS) {
-        msgpack_object obj = result.data;
-        msg.unpack(obj);
-        ret = msgpack_unpack_next(&result, buf->data, len, &off);
-    }
-    // // msgpack_object obj = result.data;
-    // msg.unpack(obj);
-    msgpack_unpacked_destroy(&result);
-
-    if (ret == MSGPACK_UNPACK_CONTINUE) {
-        printf("All msgpack_object in the buffer is consumed.\n");
-    }
-    else if (ret == MSGPACK_UNPACK_PARSE_ERROR) {
-        printf("The data in the buf is invalid format.\n");
-    }
-}
-
 int main(void) {
-    msgpack_sbuffer sbuf;
-    // msgpack_sbuffer_init(&sbuf);
-
-    // prepare(&sbuf);
+    // create data
     vec_t a(1.2,3.4,-5.6789);
     vec_t b(-1.2,-3.4,5.6789);
     vec_t c(1e-6,2e3,3e9);
 
     imu_t d(a,b,c);
-    pack_msg<msgpack_sbuffer,imu_t>(&sbuf, d);
+    printf("original message:\n");
+    d.print();
 
     imu_t e;
-    unpack_msg<msgpack_sbuffer,imu_t>(&sbuf, sbuf.size, e);
-    printf("end\n");
+
+    // sbuffer<imu_t> buff;
+    zbuffer<imu_t> buff;
+    buff.pack(d);
+
+    printf("sbuffer size: %zu \n", buff.size());
+
+    // how do i fill the sbuffer??
+    buff.unpack(e);
     e.print();
 
-
-    sbuffer<imu_t> buff;
-    buff.pack(e);
-    e.print();
-
-    // printf(">> buffer is %zu\n", sbuf.size);
-
-    // unpack(sbuf.data, sbuf.size);
-
-    // printf(">> buffer is %zu\n", sbuf.size);
-
-    msgpack_sbuffer_destroy(&sbuf);
     return 0;
 }
 
@@ -313,6 +416,44 @@ int main(void) {
 //
 //         ret = msgpack_unpack_next(&result, buf, len, &off);
 //     }
+//     msgpack_unpacked_destroy(&result);
+//
+//     if (ret == MSGPACK_UNPACK_CONTINUE) {
+//         printf("All msgpack_object in the buffer is consumed.\n");
+//     }
+//     else if (ret == MSGPACK_UNPACK_PARSE_ERROR) {
+//         printf("The data in the buf is invalid format.\n");
+//     }
+// }
+
+// template<typename buffer,typename message>
+// void pack_msg(buffer* sbuf, message& msg){
+//     msgpack_packer pk;
+//     msgpack_sbuffer_init(sbuf);
+//     msgpack_packer_init(&pk, sbuf, msgpack_sbuffer_write);
+//     msg.pack(&pk);
+// }
+//
+// template<typename buffer,typename message>
+// void unpack_msg(buffer* buf, size_t len, message& msg) {
+//     // buf is allocated by client.
+//     msgpack_unpacked result;
+//     msgpack_unpacked_init(&result);
+//
+//     size_t off = 0;
+//     msgpack_unpack_return ret;
+//     int i = 0;
+//
+//     ret = msgpack_unpack_next(&result, buf->data, len, &off);
+//
+//     while (ret == MSGPACK_UNPACK_SUCCESS) {
+//         msgpack_object obj = result.data;
+//         // msg.unpack(obj);  // FIXME: WTF, doesn't find base_t unpack()
+//         msg.unpack(obj.via.array);
+//         ret = msgpack_unpack_next(&result, buf->data, len, &off);
+//     }
+//     // // msgpack_object obj = result.data;
+//     // msg.unpack(obj);
 //     msgpack_unpacked_destroy(&result);
 //
 //     if (ret == MSGPACK_UNPACK_CONTINUE) {

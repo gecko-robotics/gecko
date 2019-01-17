@@ -70,6 +70,15 @@ endif()
 # message(STATUS "+++ ${MSGPACK_LIBRARY}")
 # message(STATUS ">> MsgPack Found: ${MSGPACK_VERSION}")
 
+
+find_package(ZLIB)
+if(ZLIB_FOUND)
+    message(STATUS ">> zlib Found: ${ZLIB_VERSION}")
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
+else()
+    message(WARNING "\n<<--- Could not find zlib --->>\n")
+endif()
+
 # Add local directories -------------------------------------------
 include_directories(src)
 
@@ -154,6 +163,9 @@ list(APPEND msgpktests
     tests/msgpack-test.cpp
     tests/msgpack-2-test.cpp
     # tests/msgpack-3-test.cpp
+    tests/msgpack-4-test.cpp
+    tests/msgpack-5-test.cpp
+    tests/msgpack-zlib-test.cpp
 )
 
 set(MSGPACK_ALL
