@@ -30,18 +30,18 @@ int main(){
     test a = {1,3,5,"hello"};
     printf("a: %d %d %d %s\n", a.a, a.b, a.c, a.d.c_str());
 
-    // stringstream ss;
-    msgpack::zbuffer ss;
+    stringstream ss;
+    // msgpack::zbuffer ss;
     msgpack::pack(ss, a);
     size_t offset = 0;
     cout << "offset: " << offset << endl;
-    // cout << "packed size: " << ss.str().size() << endl;
-    cout << "packed size: " << ss.size() << endl;
+    cout << "packed size: " << ss.str().size() << endl;
+    // cout << "packed size: " << ss.size() << endl;
     {
-        // msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size(), offset);
+        msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size(), offset);
         // msgpack::object_handle oh = msgpack::unpack(ss.data(), ss.size(), offset);
-        std::string decompressed = deflate(&ss.data(), Z_FINISH)
-        msgpack::object_handle oh = msgpack::unpack(decompressed.data(), decompressed.size(), offset);
+        // std::string decompressed = deflate(&ss.data(), Z_FINISH)
+        // msgpack::object_handle oh = msgpack::unpack(decompressed.data(), decompressed.size(), offset);
         msgpack::object obj = oh.get();
 
         cout << obj << endl;
