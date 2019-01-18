@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include "transport.hpp"
 #include "network.hpp"
-#include "rep_req.pb.h"
+// #include "rep_req.pb.h"
 #include "signals.hpp"
 #include "time.hpp"
 #include "helpers.hpp"
 
 using namespace std;
 // using namespace gecko;
-using namespace msg;
+// using namespace msg;
 
 
 /*
@@ -132,7 +132,7 @@ void gecko::init(const string& c){
     else Singleton::get().core_addr = zmqTCP(c, ":11311");
 
     bool found = pingCore(Singleton::get().core_addr);
-    
+
     if (found) Singleton::get().core_found = true;
     else {
         cout << "*** Couldn't find GeckoCore [" << Singleton::get().core_addr << "] ***" << endl;

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13.3)
+cmake_minimum_required(VERSION 3.10.0)
 project(gecko)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -17,31 +17,34 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 
 list(APPEND ALL_LIBS "")
 
-find_package(Protobuf REQUIRED)
-if ( Protobuf_FOUND )
-    include_directories(${Protobuf_INCLUDE_DIRS})
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    message( STATUS ">> Protobuf Found: ${Protobuf_VERSION}" )
-    # message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
-    # message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
-    # message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
-    # message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
+# list(APPEND PB_SRC "")  # protobuff
+# list(APPEND MP_SRC "")  # msgpack
 
-    list(APPEND ALL_LIBS ${ALL_LIBS} ${Protobuf_LIBRARIES})
-
-    set(
-        MSG_PROTOS
-        msgs/imu.proto
-        msgs/vector.proto
-        msgs/image.proto
-        msgs/rep_req.proto
-    )
-    protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${MSG_PROTOS})
-else()
-    # message(WARNING "*******************************")
-    message(WARNING "*** Could not find Protobuf ***")
-    # message(WARNING "*******************************")
-endif()
+# find_package(Protobuf REQUIRED)
+# if ( Protobuf_FOUND )
+#     include_directories(${Protobuf_INCLUDE_DIRS})
+#     include_directories(${CMAKE_CURRENT_BINARY_DIR})
+#     message( STATUS ">> Protobuf Found: ${Protobuf_VERSION}" )
+#     # message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
+#     # message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
+#     # message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
+#     # message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
+#
+#     list(APPEND ALL_LIBS ${ALL_LIBS} ${Protobuf_LIBRARIES})
+#
+#     set(
+#         MSG_PROTOS
+#         protobuf/imu.proto
+#         protobuf/vector.proto
+#         protobuf/image.proto
+#         protobuf/rep_req.proto
+#     )
+#     protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${MSG_PROTOS})
+# else()
+#     # message(WARNING "*******************************")
+#     message(WARNING "*** Could not find Protobuf ***")
+#     # message(WARNING "*******************************")
+# endif()
 
 
 # Get msgpack -----------------------------------------------------
@@ -116,12 +119,22 @@ endif()
 # message(STATUS "zmq lib: ${ZMQ_LIBRARIES}")
 # message(STATUS "thread lib: ${CMAKE_THREAD_LIBS_INIT}")
 
-# Build library ----------------------------------------------
+
+# set(PB_LIBS ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+
+# Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
 
-# set(ALL_LIBS ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+if(MSGPACK_FOUND)
+    # list(APPEND SOURCES
+    #     ${SOURCES}
+    #     msgpack/msgs.hpp
+    # )
+    include_directories(msgpack)
+endif()
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
+# add_library(${PROJECT_NAME} SHARED ${SOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
 list(APPEND ALL_LIBS ${ALL_LIBS} ${PROJECT_NAME})
@@ -140,7 +153,7 @@ list(APPEND tests
     # tests/zmq-req-test.cpp
 )
 
-message(STATUS "Tests ----------------------")
+message(STATUS "Gecko Tests ----------------------")
 foreach(src ${tests})
     get_filename_component(name ${src} NAME_WE)
     message(STATUS " -> ${name}")
@@ -148,23 +161,13 @@ foreach(src ${tests})
     target_link_libraries(${name} ${ALL_LIBS})
 endforeach()
 
-# add_executable(core-test tests/core-test.cpp)
-# target_link_libraries(core-test ${ALL_LIBS})
-#
-# add_executable(zmq-test tests/zmq-test.cpp)
-# target_link_libraries(zmq-test ${ALL_LIBS})
-
-
-# add_executable(all-test tests/all-test.cpp ${PROTO_SRCS} ${PROTO_HDRS})
-# target_link_libraries(all-test ${PROJECT_NAME} ${Protobuf_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
-
 list(APPEND msgpktests
     tests/msgpack-test.cpp
     tests/msgpack-2-test.cpp
     # tests/msgpack-3-test.cpp
     tests/msgpack-4-test.cpp
     tests/msgpack-5-test.cpp
+    tests/msgpack-6-test.cpp
     tests/msgpack-zlib-test.cpp
     tests/zlib-test.cpp
 )
@@ -184,14 +187,11 @@ foreach(src ${msgpktests})
     target_link_libraries(${name} ${MSGPACK_ALL})
 endforeach()
 
-# enable_testing()
-# find_package(GTest REQUIRED)
-#
-# add_executable(foo foo.cc)
-# target_link_libraries(foo GTest::GTest)
-#
-# gtest_discover_tests(AllTestsInFoo foo)
-
+#############################################################################
+##  gTest
+##
+## Code below taken from README
+#############################################################################
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -225,6 +225,19 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 # Now simply link against gtest or gtest_main as needed. Eg
-add_executable(gtest-example gtests/example.cpp)
-target_link_libraries(gtest-example gtest_main)
-add_test(NAME example_test COMMAND gtest-example)
+# add_executable(gtest-example gtests/example.cpp)
+# target_link_libraries(gtest-example gtest_main)
+# add_test(NAME example_test COMMAND gtest-example)
+
+list(APPEND gtests
+    gtests/example-gtest.cpp
+)
+
+message(STATUS "gTests ----------------------")
+foreach(src ${gtests})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+    add_executable(${name} ${src})
+    target_link_libraries(${name} gtest_main)
+    add_test(NAME example_test COMMAND ${name})
+endforeach()

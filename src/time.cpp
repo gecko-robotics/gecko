@@ -17,14 +17,14 @@ long Time::now(){
 
 // google::protobuf::Timestamp Time::unixNow(){}
 
-google::protobuf::Timestamp Time::unix(){
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    google::protobuf::Timestamp timestamp;
-    timestamp.set_seconds(tv.tv_sec);
-    timestamp.set_nanos(tv.tv_usec * 1000);  // tv.tv_usec is micro seconds
-    return timestamp;
-}
+// google::protobuf::Timestamp Time::unix(){
+//     struct timeval tv;
+//     gettimeofday(&tv, NULL);
+//     google::protobuf::Timestamp timestamp;
+//     timestamp.set_seconds(tv.tv_sec);
+//     timestamp.set_nanos(tv.tv_usec * 1000);  // tv.tv_usec is micro seconds
+//     return timestamp;
+// }
 
 void Time::msleep(int msec){
     this_thread::sleep_for(chrono::milliseconds(msec));

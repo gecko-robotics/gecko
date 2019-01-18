@@ -46,13 +46,13 @@ int main()
 #include <chrono>
 // #include <ctime>
 // #include <thread>
-#include <google/protobuf/util/time_util.h>
+// #include <google/protobuf/util/time_util.h>
 
 class Time {
 public:
     long now();  // chrono seconds since epic
     // google::protobuf::Timestamp unixNow();  // unix based timestamp
-    google::protobuf::Timestamp unix();  // unix based timestamp
+    // google::protobuf::Timestamp unix();  // unix based timestamp
     static void msleep(int msec);
     void sleep(int sec);
 };
