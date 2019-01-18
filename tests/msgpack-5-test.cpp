@@ -109,28 +109,46 @@ int main(){
     imu_t a(b,c,d);
     a.print();
 
-    stringstream ss;
-    // msgpack::zbuffer ss;
+    // stringstream ss;
+    msgpack::zbuffer ss;
     msgpack::pack(ss, a);
     size_t offset = 0;
     cout << "offset: " << offset << endl;
-    cout << "packed size: " << ss.str().size() << endl;
-    {
-        msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size(), offset);
-        // msgpack::object_handle oh = msgpack::unpack(ss.data(), ss.size(), offset);
-        msgpack::object obj = oh.get();
-
-        cout << obj << endl;
-
-        imu_t e;
-        obj.convert(e);
-        e.print();
-
-        // assert(a.a == b.a);
-        // assert(a.b == b.b);
-        // assert(a.c == b.c);
-        // assert(a.d == b.d);
-    }
+    // cout << "packed size: " << ss.str().size() << endl;
+    // {
+    //     char c[500];
+    //     z_stream infstream;
+    //     std::string decompressed;
+    //
+    //     infstream.zalloc = Z_NULL;
+    //     infstream.zfree = Z_NULL;
+    //     infstream.opaque = Z_NULL;
+    //     // setup "b" as the input and "c" as the compressed output
+    //     infstream.avail_in = (uInt)((char*)defstream.next_out - b); // size of input
+    //     infstream.next_in = (Bytef *)ss.data(); // input char array
+    //     infstream.avail_out = (uInt)sizeof(c); // size of output
+    //     infstream.next_out = (Bytef *)c; // output char array
+    //
+    //     // the actual DE-compression work.
+    //     inflateInit(&infstream);
+    //     inflate(&infstream, Z_NO_FLUSH);
+    //     inflateEnd(&infstream);
+    //
+    //     msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size(), offset);
+    //     // msgpack::object_handle oh = msgpack::unpack(ss.data(), ss.size(), offset);
+    //     msgpack::object obj = oh.get();
+    //
+    //     cout << obj << endl;
+    //
+    //     imu_t e;
+    //     obj.convert(e);
+    //     e.print();
+    //
+    //     // assert(a.a == b.a);
+    //     // assert(a.b == b.b);
+    //     // assert(a.c == b.c);
+    //     // assert(a.d == b.d);
+    // }
 
     return 0;
 }

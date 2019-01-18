@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.13.3)
 project(gecko)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -166,6 +166,7 @@ list(APPEND msgpktests
     tests/msgpack-4-test.cpp
     tests/msgpack-5-test.cpp
     tests/msgpack-zlib-test.cpp
+    tests/zlib-test.cpp
 )
 
 set(MSGPACK_ALL
@@ -183,48 +184,47 @@ foreach(src ${msgpktests})
     target_link_libraries(${name} ${MSGPACK_ALL})
 endforeach()
 
-# add_executable(msgpack-test tests/msgpack-test.cpp)
-# add_executable(msgpack-2-test tests/msgpack-2-test.cpp)
-# target_link_libraries(msgpack-2-test ${MSGPACK_LIBRARY})
+# enable_testing()
+# find_package(GTest REQUIRED)
+#
+# add_executable(foo foo.cc)
+# target_link_libraries(foo GTest::GTest)
+#
+# gtest_discover_tests(AllTestsInFoo foo)
 
-# add_executable(time-test tests/time-test.cpp)
-# target_link_libraries(time-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# Download and unpack googletest at configure time
+configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+if(result)
+  message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+if(result)
+  message(FATAL_ERROR "Build step for googletest failed: ${result}")
+endif()
 
-# add_executable(ip-test tests/ip-test.cpp)
-# target_link_libraries(ip-test ${PROJECT_NAME})
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-# add_executable(proc-test tests/proc-test.cpp)
-# target_link_libraries(proc-test ${PROJECT_NAME})
+# Add googletest directly to our build. This defines
+# the gtest and gtest_main targets.
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
+                 ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+                 EXCLUDE_FROM_ALL)
 
-# add_executable(protobuf-test tests/protobuf-test.cpp ${PROTO_SRCS} ${PROTO_HDRS})
-# target_link_libraries(protobuf-test ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
+# The gtest/gtest_main targets carry header search path
+# dependencies automatically when using CMake 2.8.11 or
+# later. Otherwise we have to add them here ourselves.
+if (CMAKE_VERSION VERSION_LESS 2.8.11)
+  include_directories("${gtest_SOURCE_DIR}/include")
+endif()
 
-# add_executable(node-test tests/node-test.cpp)
-# target_link_libraries(node-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
-# add_executable(gecko-test tests/gecko-test.cpp)
-# target_link_libraries(gecko-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
-# add_executable(zmq-message-test tests/zmq-message-test.cpp)
-# target_link_libraries(zmq-message-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
-# add_executable(simple-zmq-test tests/simple-zmq-test.cpp)
-# target_link_libraries(simple-zmq-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
-
-# add_executable(zmq-req-test tests/zmq-req-test.cpp)
-# target_link_libraries(zmq-req-test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
-# add_executable(
-#     unit_test
-#     tests/ctest-test.cpp
-# )
-# add_dependencies(unit_test catch)
-# target_include_directories(unit_test PUBLIC ${CATCH_INCLUDE_DIR})
-# target_link_libraries(unit_test ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-# add_test(
-#   NAME
-#     unit
-#   COMMAND
-#     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/unit_test
-# )
+# Now simply link against gtest or gtest_main as needed. Eg
+add_executable(gtest-example gtests/example.cpp)
+target_link_libraries(gtest-example gtest_main)
+add_test(NAME example_test COMMAND gtest-example)
