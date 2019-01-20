@@ -13,12 +13,9 @@ message(STATUS "  Project: ${PROJECT_NAME}")
 message(STATUS "-------------------------------------")
 
 # set path for FindXXX.cmake
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 list(APPEND ALL_LIBS "")
-
-# list(APPEND PB_SRC "")  # protobuff
-# list(APPEND MP_SRC "")  # msgpack
 
 # find_package(Protobuf REQUIRED)
 # if ( Protobuf_FOUND )
@@ -113,15 +110,6 @@ else()
     message(WARNING "*** Could not find ZeroMQ ***")
 endif()
 
-# Messages --------------------------------------------------------
-# message(STATUS "Project: ${PROJECT_NAME}")
-# message(STATUS "include: ${ZMQ_INCLUDE_DIRS}")
-# message(STATUS "zmq lib: ${ZMQ_LIBRARIES}")
-# message(STATUS "thread lib: ${CMAKE_THREAD_LIBS_INIT}")
-
-
-# set(PB_LIBS ${Protobuf_LIBRARIES} ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ZMQ_LIBRARIES})
-
 # Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
 
@@ -131,6 +119,8 @@ if(MSGPACK_FOUND)
     #     # msgpack/transport.cpp
     #     # msgpack/transport-impl.cpp
     # )
+
+    # this is a template library, so no cpp
     include_directories(msgpack)
 endif()
 
@@ -196,7 +186,7 @@ endforeach()
 ## Code below taken from README
 #############################################################################
 # Download and unpack googletest at configure time
-configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+configure_file(cmake/CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )

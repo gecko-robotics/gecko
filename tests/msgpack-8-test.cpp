@@ -11,16 +11,23 @@
 
 using namespace std;
 
+/*
+for 32/64 bit OS
+/usr/include/bits/typesizes.h
+#define __UID_T_TYPE            __U32_TYPE
+#define __GID_T_TYPE            __U32_TYPE
+#define __PID_T_TYPE            __S32_TYPE
+*/
 typedef struct {
     string topic;
     string endpoint;
-    // uint16_t pid;
-    MSGPACK_DEFINE(topic,endpoint);
+    int32_t pid;
+    MSGPACK_DEFINE(topic,endpoint,pid);
 } reqrep_t;
 
 void sub()
 {
-    reqrep_t t = {"hi", "hello"};
+    reqrep_t t = {"hi", "hello",12345};
     reqrep_t t2 = {"hi2"};
     cout << t.topic << t.endpoint << endl;
     cout << t2.topic << t2.endpoint << endl;
