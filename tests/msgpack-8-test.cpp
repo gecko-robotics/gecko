@@ -14,6 +14,7 @@ using namespace std;
 typedef struct {
     string topic;
     string endpoint;
+    // uint16_t pid;
     MSGPACK_DEFINE(topic,endpoint);
 } reqrep_t;
 
