@@ -101,6 +101,14 @@ Subscriber::Subscriber(string addr, string topic, bool bind): zmqBase(ZMQ_SUB)
     update();
 }
 
+Subscriber::Subscriber(string addr, bool bind): zmqBase(ZMQ_SUB)
+{
+    sock.connect(addr);
+    sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+    callback = nullptr;
+    update();
+}
+
 zmq::message_t Subscriber::recv(int flags){
     zmq::message_t msg;
     sock.recv(&msg, flags);

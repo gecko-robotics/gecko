@@ -37,6 +37,7 @@ class Subscriber: public zmqBase {
 public:
     Subscriber();
     Subscriber(std::string addr, std::string topic, bool bind=false);
+    Subscriber(std::string addr, bool bind=false);
     zmq::message_t recv(int flags=0);
     inline zmq::message_t recv_nb(){return recv(ZMQ_DONTWAIT);}
     void setCallback(void(*callback)(zmq::message_t&));

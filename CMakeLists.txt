@@ -128,7 +128,8 @@ file(GLOB SOURCES src/*.cpp)
 if(MSGPACK_FOUND)
     # list(APPEND SOURCES
     #     ${SOURCES}
-    #     msgpack/msgs.hpp
+    #     # msgpack/transport.cpp
+    #     # msgpack/transport-impl.cpp
     # )
     include_directories(msgpack)
 endif()
@@ -148,7 +149,7 @@ list(APPEND tests
     tests/proc-test.cpp
     tests/node-test.cpp
     tests/gecko-test.cpp
-    # tests/zmq-message-test.cpp
+    tests/zmq-message-test.cpp
     tests/simple-zmq-test.cpp
     # tests/zmq-req-test.cpp
 )
@@ -168,6 +169,8 @@ list(APPEND msgpktests
     tests/msgpack-4-test.cpp
     tests/msgpack-5-test.cpp
     tests/msgpack-6-test.cpp
+    tests/msgpack-7-test.cpp
+    tests/msgpack-8-test.cpp
     tests/msgpack-zlib-test.cpp
     tests/zlib-test.cpp
 )
