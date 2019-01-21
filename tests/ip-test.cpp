@@ -88,6 +88,6 @@ using namespace std;
 
 int main(){
     HostInfo h = HostInfo();
-    cout << h.hostname << " [" << h.addr << "]" << endl;
+    cout << h.hostname << " [" << h.address << "]" << endl;
     return 0;
 }

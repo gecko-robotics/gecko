@@ -10,6 +10,7 @@ getnameinfo()! In particular, gethostbyname() doesn't work well with IPv6.
 class HostInfo {
 public:
     HostInfo();
+    std::string cleanHostname(); // removes .local
     std::string hostname;
-    std::string addr;
+    std::string address;
 };

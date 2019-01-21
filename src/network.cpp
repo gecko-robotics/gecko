@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string>
+#include <sstream>
 #include <iostream>
 
 using namespace std;
@@ -29,6 +30,14 @@ HostInfo::HostInfo(){
 
     // To convert an Internet network
     // address into ASCII string
-    addr = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0]));
-    if (addr.empty()) cout << "IP address error" << endl;
+    address = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0]));
+    if (address.empty()) cout << "IP address error" << endl;
+}
+
+string HostInfo::cleanHostname(){
+    // might be easier to use string.erase() and string.find()???
+    stringstream ss(hostname);
+    string name;
+    getline(ss,name,'.');
+    return name;
 }

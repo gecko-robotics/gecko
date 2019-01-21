@@ -141,6 +141,7 @@ list(APPEND tests
     tests/gecko-test.cpp
     tests/zmq-message-test.cpp
     tests/simple-zmq-test.cpp
+    tests/directory-test.cpp
     # tests/multicast-test.cpp
     # tests/zmq-req-test.cpp
 )

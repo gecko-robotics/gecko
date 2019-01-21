@@ -11,6 +11,50 @@
 
 using namespace std;
 
+/////////////////////////////////////////////////////////////////////////
+
+void Directory::push(const string& key, const string& topic, const string& endpt){
+    db[key][topic] = endpt;
+}
+
+void Directory::pop(const string& key, const string& topic){
+    printf("*** FIXME ***\n");
+}
+
+string Directory::find(const string& key, const string& topic){
+    string ret;
+
+    auto dir = db.find(key);
+    if(dir != db.end()){
+        auto row = dir->second.find(topic);
+        if(row != dir->second.end()) ret = row->second;
+    }
+
+    return ret; // empty if not found
+}
+
+void Directory::print() const {
+    printf("====================================\n");
+    printf(" Directory keys: %d\n", numberKeys());
+    for (auto const& [key,dir]: db){
+        printf("[%s: %d]------------------\n", key.c_str(), numberTopics(key));
+        for (auto [topic,endpt]: dir){
+            printf(" %s => %s\n", topic.c_str(), endpt.c_str());
+        }
+    }
+    printf("-----------------------\n");
+}
+
+int Directory::numberKeys() const {
+    return db.size();
+}
+
+int Directory::numberTopics(const string& key) const {
+    auto dir = db.find(key);
+    if(dir != db.end()) return dir->second.size();
+    return -1; // key wasn't found
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // std::vector<std::string> split(const std::string& s, char delimiter){
 //     std::vector<std::string> tokens;
@@ -24,13 +68,19 @@ using namespace std;
 // }
 ////////////////////////////////////////////////////////////////////////////////
 
-Core::Core(string grp, int port){
+Core::Core(string grp, int port): ok(true){
     HostInfo h = HostInfo();
     key = h.hostname;
 
     printf("Core ---------------------\n");
-    printf(" %s [%s]\n", h.hostname.c_str(), h.addr.c_str());
+    printf(" %s [%s]\n", h.hostname.c_str(), h.address.c_str());
     printf(" multicast on %s:%d\n", grp.c_str(), port);
+    printf(" key: %s\n", key.c_str());
+    printf("\n");
+}
+
+Core::~Core(){
+    ok = false;
 }
 
 void Core::run(int hertz){
@@ -66,6 +116,7 @@ void Core::requestLoop(void){
     while(ok){
         string req = beacon.listen_nb();
         if(!req.empty()){
+            printf("core listen: %s\n", req.c_str());
             vector<string> v;
             par.parse(req, v);
 
