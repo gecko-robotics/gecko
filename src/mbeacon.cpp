@@ -20,9 +20,24 @@
 using namespace std;
 
 
-Beacon::Beacon(string grp, int port): group(grp), port(port), MSGBUFSIZE(255), fd(0) {}
+bool Parser::parse(const std::string& str, std::vector<std::string>& toks){
+    stringstream ss(str);
+    string token;
+    try{
+        while(getline(ss,token,sep)) toks.push_back(token);
+    }
+    catch(exception& e){
+        cout << e.what() << endl;
+        return false;
+    }
+    return true;
+}
 
-bool Beacon::initSocket(bool reuse){
+////////////////////////////////////////////////////////////////////////////
+
+Beacon::Beacon(): MSGBUFSIZE(255), fd(0) {}
+
+bool Beacon::initSocket(string group, int port, bool reuse){
 
     // create what looks like an ordinary UDP socket
     fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -73,18 +88,13 @@ bool Beacon::ready(int usec){
 
     FD_ZERO(&readfds);
     FD_SET(fd, &readfds);
-    // FD_SET(0, &readfds);  // standard in
 
     // don't care about writefds and exceptfds:
     err = select(fd+1, &readfds, NULL, NULL, &tv);
     if (err < 0) cout << "** select issue: " << err << endl;
 
     if (FD_ISSET(fd, &readfds)) return true;
-    // else if (FD_ISSET(0, &readfds)) {
-    //     cout << "key" << endl;
-    //     return false;
-    // }
-    else return false;
+    return false;
 }
 
 // bool Beacon::recv(string& msg){
@@ -127,16 +137,10 @@ string Beacon::recv(){
 
 //////////////////////////////////////////////////////////////////////////////
 
-Listener::Listener(string key, string grp, int port): Beacon(grp, port), key(key){
-    // Beacon::initSocket(true);
+Listener::Listener(): Beacon(){}
 
-    printf("Listener -------------------------------------\n");
-    printf(" Addr: %s:%d\n", grp.c_str(), port);
-    printf(" Key: %s\n", key.c_str());
-}
-
-bool Listener::init(){
-    bool er = Beacon::initSocket(true);
+bool Listener::init(string group, int port){
+    bool er = Beacon::initSocket(group, port, true);
     if (er) return er;
 
     // bind to all interfaces to receive address
@@ -159,32 +163,41 @@ bool Listener::init(){
         perror("Listener::listen() --> setsockopt");
         return true;
     }
+
+    printf("Listener -------------------------------------\n");
+    printf(" Addr: %s:%d\n", group.c_str(), port);
+    // printf(" Key: %s\n", key.c_str());
+
     return false;
 }
 
 string Listener::listen(){
     string msg;
     while (msg.empty()){
-        bool data = Beacon::ready(1000);  // data available?
+        bool data = Beacon::ready(1000);  // data available to read?
         if (data) msg = Beacon::recv();
     }
 
     return msg;
 }
 
+string Listener::listen_nb(){
+    string msg;
+    bool data = Beacon::ready(1000);  // data available to read?
+    if (data) msg = Beacon::recv();
+    return msg;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 
-Search::Search(string grp, int port): Beacon(grp, port){
-    // Beacon::initSocket(false);
+Search::Search(): Beacon(){}
+
+bool Search::init(string group, int port){
+    return Beacon::initSocket(group, port, false);
 
     printf("Search -------------------------------------\n");
-    printf(" Addr: %s:%d\n", grp.c_str(), port);
-    // printf(" Key: %s\n", key.c_str());
-}
-
-bool Search::init(){
-    return Beacon::initSocket(false);
+    printf(" Addr: %s:%d\n", group.c_str(), port);
 }
 
 string Search::find(string message){
@@ -193,13 +206,9 @@ string Search::find(string message){
         bool err = Beacon::send(message);
         if (err) perror("Search::find");
 
-        bool data = Beacon::ready(1000);
-
+        bool data = Beacon::ready(10000); // usec
         if (data){
             ans = Beacon::recv();
-            // err = Beacon::recv(ans);
-            // if (err) perror("Search::find -> recv");
-            // else cout << ">> search got answer: " << ans << endl;
             break;
         }
         Time::msleep(100);

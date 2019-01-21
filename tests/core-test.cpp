@@ -3,8 +3,8 @@
 // using namespace gecko;
 
 int main(void){
-    Core c = Core(1234);
-    c.run();
+    Core c = Core();
+    c.run(1);
 
     return 0;
 }

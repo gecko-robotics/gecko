@@ -1,6 +1,7 @@
 #include "geckocpp.hpp"
 #include <iostream>
 #include <string>
+#include <map>
 #include <stdio.h>
 #include <unistd.h>  // getopt
 #include "transport.hpp"
@@ -47,21 +48,21 @@ public:
     // Any other public methods.
     void print(){
         cout << "[GeckoCore]--------------------------" << endl;
-        cout << "  Status: " << ((core_found) ? "Core Found" : "Core Unknown") << endl;
-        cout << "  Core: " << core_addr << endl;
+        // cout << "  Status: " << ((core_found) ? "Core Found" : "Core Unknown") << endl;
+        // cout << "  Core: " << core_addr << endl;
         cout << "  Host: " << host_addr << endl;
     }
-    string core_addr;  // address geckocore runs at
+    // string core_addr;  // address geckocore runs at
     string host_addr;  // address of the system this process/thread runs at
     vector<Subscriber*> subs;
     bool initialized;  // has geckocore been initialized yet?
-    bool core_found;
+    // bool core_found;
+    map<string,string> pubs;  // topics, endpoints
 
 protected:
-    Singleton(): initialized(false), core_found(false)
+    Singleton(): initialized(false) //, core_found(false)
     {
         cout << "GeckoCore: constructor" << endl;
-
     }
 
     ~Singleton() {
@@ -69,6 +70,38 @@ protected:
         for (auto const& p: subs) delete p;
         subs.clear();
     }
+
+    // void thread_loop(){
+    //     Listener listen(key,ip,port);
+    //     bool err = listen.init();
+    //     if(err){
+    //         printf("Listener error\n");
+    //         return;
+    //     }
+    //
+    //     //  in: key|topic
+    //     // out: key|topic|tcp://hostname:port
+    //     while(ok){
+    //         string s = listen.listen();
+    //         cout << ">> listen: "<< s << endl;
+    //         stringstream ss(s);
+    //         string token;
+    //         vector<string> toks;
+    //         while(getline(ss,token,'|')) toks.push_back(token);
+    //
+    //         if (toks[0] == key) {
+    //             stringstream ans;
+    //             auto search = db.find(toks[1]);
+    //             if(search != db.end()){
+    //                 ans << key << "|" << topic << "|" << search->second;
+    //                 listen.send(ans.str());
+    //             }
+    //             else
+    //                 printf("valid key, but no topic supported\n");
+    //             break;
+    //         }
+    //     }
+    // }
 };
 
 // args --------------------------
@@ -103,6 +136,9 @@ args_t processArgs(int argc, char* argv[]){
 void gecko::init(int argc, char* argv[]){
     printf("\n*** FIXME ***\n");
 
+
+    if (Singleton::get().initialized) return;
+
     string help("\n"
     "./program -h -m name \n"
     "  h: help \n"
@@ -132,23 +168,18 @@ void gecko::init(int argc, char* argv[]){
 
     if (machine.empty()) machine = "localhost";
 
-    cout << "Machine: " << machine << endl;
+    // cout << "Machine: " << machine << endl;
 
-    exit(0);
+    // exit(0);
 
-    string s;
-    init(s);
-}
-
-
-void gecko::init(const string& c){
-    if (Singleton::get().core_found) return;
-
+    // string s;
+    // init(s);
+    // if (Singleton::get().initialized)
     HostInfo h = HostInfo();
     Singleton::get().host_addr = h.addr;
 
-    if (c.empty()) Singleton::get().core_addr = zmqTCP(h.addr, ":11311");
-    else Singleton::get().core_addr = zmqTCP(c, ":11311");
+    // if (c.empty()) Singleton::get().core_addr = zmqTCP(h.addr, ":11311");
+    // else Singleton::get().core_addr = zmqTCP(c, ":11311");
 
     // bool found = pingCore(Singleton::get().core_addr);
 
@@ -159,7 +190,30 @@ void gecko::init(const string& c){
     // }
 
     Singleton::get().print();
+
+    exit(0);
 }
+
+
+// void gecko::init(const string& c){
+//     // if (Singleton::get().core_found) return;
+//     if (Singleton::get().core_found)
+//     HostInfo h = HostInfo();
+//     Singleton::get().host_addr = h.addr;
+//
+//     if (c.empty()) Singleton::get().core_addr = zmqTCP(h.addr, ":11311");
+//     else Singleton::get().core_addr = zmqTCP(c, ":11311");
+//
+//     // bool found = pingCore(Singleton::get().core_addr);
+//
+//     // if (found) Singleton::get().core_found = true;
+//     // else {
+//     //     cout << "*** Couldn't find GeckoCore [" << Singleton::get().core_addr << "] ***" << endl;
+//     //     // exit(1);
+//     // }
+//
+//     Singleton::get().print();
+// }
 
 bool gecko::ok(){
     return Singleton::get().isOk();
@@ -174,7 +228,7 @@ Publisher* gecko::advertise(string topic, int queue, bool bind){
 
 Subscriber* gecko::subscribe(string topic, void(*cb)(zmq::message_t&), int queue, bool bind){
     // Singleton gc = Singleton::Instance();
-    Request req(Singleton::get().core_addr);
+    // Request req(Singleton::get().core_addr);
     // zmq::message_t reqt(topic.c_str(), topic.size());
     // zmq::message_t respt = req.get(reqt);
     //

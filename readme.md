@@ -14,8 +14,6 @@ This library uses:
 This draws many ideas from [ros](https://ros.org), but doesn't strickly always
 follow the API. It also pulls a lot from rospy. This library is step as:
 
-- There is no `roscore`, but rather publishers are found via simple multicast
-message calls
 - The gecko library is serialization independent. I have chosen `msgpack`, but
 you could swap it out for Google's `protobuf`.
     - All `zmq` interfaces are standarized on `zmq::message_t` as input/output
