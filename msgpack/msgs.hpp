@@ -4,6 +4,7 @@
 // #include <ctime>
 #include <stdio.h>
 #include <stdint.h>
+#include <msgpack.hpp>
 
 enum GeckoMsgs {
     GVECTOR,
@@ -18,6 +19,7 @@ enum GeckoMsgs {
 
 /**
  * Base class for keeping track of message type
+ * FIXME: using msgpack, I question the value of this
  */
 class base_t {
 public:
@@ -29,3 +31,4 @@ public:
 
 #include "common.hpp"
 #include "stamped.hpp"
+#include "serialization.hpp"

@@ -141,6 +141,7 @@ list(APPEND tests
     tests/gecko-test.cpp
     tests/zmq-message-test.cpp
     tests/simple-zmq-test.cpp
+    # tests/multicast-test.cpp
     # tests/zmq-req-test.cpp
 )
 
@@ -163,6 +164,7 @@ list(APPEND msgpktests
     tests/msgpack-8-test.cpp
     tests/msgpack-zlib-test.cpp
     tests/zlib-test.cpp
+    tests/multicast-test.cpp
 )
 
 set(MSGPACK_ALL

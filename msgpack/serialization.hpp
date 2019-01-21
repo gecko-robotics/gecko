@@ -17,6 +17,7 @@ public:
     int compression_level;
 
     zmq::message_t pack(msg& m);
+    std::string pack_str(msg& m);
 
     // unpack an array of messages
     void unpack(const zmq::message_t& zm, std::vector<msg>& recv);
@@ -61,6 +62,18 @@ zmq::message_t Transport<msg>::pack(msg& m){
     // std::cout << "compressed message_t size: " << zm.size() << std::endl;
     // std::cout << "pack addr: " << &zm << std::endl;
     return zm;
+}
+
+template<class msg>
+std::string Transport<msg>::pack_str(msg& m){
+    std::stringstream ss;
+    msgpack::pack(ss, m);
+
+    // std::cout << "uncompressed string size: " << ss.str().size() << std::endl;
+
+    std::string cs = compress_string(ss.str());
+
+    return cs;
 }
 
 template<class msg>

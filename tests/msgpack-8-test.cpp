@@ -69,7 +69,6 @@ void pub()
 }
 
 int main(){
-
     std::cout << "start" << std::endl;
     std::thread t1(sub);
     std::thread t2(pub);

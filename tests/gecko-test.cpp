@@ -3,12 +3,13 @@
 #include <thread>
 #include <iostream>
 #include "time.h"
+#include "msgs.hpp"
 
 using namespace std;
 
 
-void pubt(void){
-    gecko::init();
+void pubt(int argc, char* argv[]){
+    gecko::init(argc, argv);
 
     Rate rate(2);
 
@@ -24,23 +25,22 @@ void pubt(void){
     delete p;
 }
 
-
 void callback(zmq::message_t& m){
     cout << m << endl;
 }
 
-void subt(void){
-    gecko::init();
+void subt(int argc, char* argv[]){
+    gecko::init(argc, argv);
     // gecko::subscribe("bob", callback);
     // gecko::spin();
 }
 
 int main(int argc, char* argv[]){
-    thread t1(pubt);
-    thread t2(subt);
+    thread t1(pubt, argc, argv);
+    // thread t2(subt, argc, argv);
 
     t1.join();
-    t2.join();
+    // t2.join();
 
     return 0;
 }

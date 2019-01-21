@@ -9,6 +9,6 @@ public:
     void shutdown();
     bool isOk();
 
-protected:
+// protected:
     static bool ok;
 };

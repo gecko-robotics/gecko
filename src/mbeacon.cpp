@@ -20,15 +20,15 @@
 using namespace std;
 
 
-Beacon::Beacon(string grp): group(grp), port(1900), MSGBUFSIZE(255) {}
+Beacon::Beacon(string grp, int port): group(grp), port(port), MSGBUFSIZE(255), fd(0) {}
 
-int Beacon::initSocket(bool reuse){
+bool Beacon::initSocket(bool reuse){
 
     // create what looks like an ordinary UDP socket
     fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (fd < 0) {
         perror("Beacon::initSocket");
-        return 1;
+        return true;
     }
 
     // allow multiple sockets to use the same PORT number
@@ -37,7 +37,7 @@ int Beacon::initSocket(bool reuse){
         int err = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
         if (err < 0){
            perror("Reusing ADDR failed");
-           return 1;
+           return true;
         }
     }
 
@@ -47,7 +47,7 @@ int Beacon::initSocket(bool reuse){
     addr.sin_addr.s_addr = inet_addr(group.c_str());
     addr.sin_port = htons(port);
 
-    return 0;
+    return false;
 }
 
 bool Beacon::send(string message){
@@ -87,7 +87,27 @@ bool Beacon::ready(int usec){
     else return false;
 }
 
-bool Beacon::recv(string& msg){
+// bool Beacon::recv(string& msg){
+//     char msgbuf[MSGBUFSIZE];
+//     socklen_t addrlen = sizeof(addr);
+//     int nbytes = recvfrom(
+//         fd,
+//         msgbuf,
+//         MSGBUFSIZE,
+//         0,
+//         (struct sockaddr *) &addr,
+//         &addrlen
+//     );
+//     if (nbytes < 0) return true;
+//
+//     msgbuf[nbytes] = '\0';
+//     msg = msgbuf;
+//
+//     return false;
+// }
+
+string Beacon::recv(){
+    string ret;
     char msgbuf[MSGBUFSIZE];
     socklen_t addrlen = sizeof(addr);
     int nbytes = recvfrom(
@@ -98,36 +118,26 @@ bool Beacon::recv(string& msg){
         (struct sockaddr *) &addr,
         &addrlen
     );
-    if (nbytes < 0) return true;
-
-    msgbuf[nbytes] = '\0';
-    msg = msgbuf;
-
-    return false;
+    if (nbytes > 0) {
+        msgbuf[nbytes] = '\0';
+        ret = msgbuf;
+    }
+    return ret;
 }
 
-void Beacon::print(string kind){
-    // cout << kind << "----------------------------------" << endl;
-    // cout << " addr: " << group << endl;
-    // cout << " port: " << to_string(port) << endl;
-    // cout << "   fd: " << to_string(fd) << endl;
-    printf(
-        "%-8s ------------------------------- \n"
-        " addr: %s \n"
-        " port: %d \n"
-        "   fd: %d \n", kind.c_str(), group.c_str(), port, fd);
+//////////////////////////////////////////////////////////////////////////////
+
+Listener::Listener(string key, string grp, int port): Beacon(grp, port), key(key){
+    // Beacon::initSocket(true);
+
+    printf("Listener -------------------------------------\n");
+    printf(" Addr: %s:%d\n", grp.c_str(), port);
+    printf(" Key: %s\n", key.c_str());
 }
 
-
-
-Listener::Listener(): Beacon("239.255.255.250"){
-    Beacon::initSocket(true);
-    Beacon::print("Listener");
-    // cout << "Listener [" << group << ":" << to_string(port) << "]";
-    // cout << " fd: " << to_string(fd) << endl;
-}
-
-int Listener::listen(){
+bool Listener::init(){
+    bool er = Beacon::initSocket(true);
+    if (er) return er;
 
     // bind to all interfaces to receive address
     struct sockaddr_in aaddr;
@@ -137,7 +147,7 @@ int Listener::listen(){
     aaddr.sin_port = htons(port);
     if (::bind(fd, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
         perror("Listener::listen() --> bind");
-        return 1;
+        return true;
     }
 
     // use setsockopt() to request that the kernel join a multicast group
@@ -147,53 +157,51 @@ int Listener::listen(){
     int err = setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq));
     if (err < 0){
         perror("Listener::listen() --> setsockopt");
-        return 1;
+        return true;
     }
-
-    // now just enter a read-print loop
-    while (1) {
-        string msg;
-        bool err = Beacon::recv(msg);
-        if (err) perror("Listener::listen --> recv");
-        // else cout << "listener: "<< msg << endl;
-
-        // if (msg == "kevin") break;
-        if (msg == "kevin") {
-            cout << ">> listener sees good message " << endl;
-            err = Beacon::send("walchko");
-            if (err) perror("Listener::listen -> walchko");
-        }
-    }
-
-    return 0;
+    return false;
 }
 
+string Listener::listen(){
+    string msg;
+    while (msg.empty()){
+        bool data = Beacon::ready(1000);  // data available?
+        if (data) msg = Beacon::recv();
+    }
 
-Search::Search(): Beacon("239.255.255.250"){
-    Beacon::initSocket(false);
-    Beacon::print("Search");
-    // sleep(1); // give listener time to spin up
+    return msg;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+Search::Search(string grp, int port): Beacon(grp, port){
+    // Beacon::initSocket(false);
+
+    printf("Search -------------------------------------\n");
+    printf(" Addr: %s:%d\n", grp.c_str(), port);
+    // printf(" Key: %s\n", key.c_str());
+}
+
+bool Search::init(){
+    return Beacon::initSocket(false);
 }
 
 string Search::find(string message){
-    // string message = "kevin";
     string ans;
-    // std::cout << "find" << std::endl;
     for(int cnt = 50; cnt > 0; --cnt) {
-        bool err = Beacon::send("kevin");
+        bool err = Beacon::send(message);
         if (err) perror("Search::find");
-        // else cout << "> ping: " << message << endl;
 
         bool data = Beacon::ready(1000);
 
         if (data){
-            err = Beacon::recv(ans);
-            if (err) perror("Search::find -> recv");
-            else cout << ">> search got answer: " << ans << endl;
+            ans = Beacon::recv();
+            // err = Beacon::recv(ans);
+            // if (err) perror("Search::find -> recv");
+            // else cout << ">> search got answer: " << ans << endl;
             break;
         }
-        // else cout << "*** data lost ***" << endl;
-        // usleep(100000);
         Time::msleep(100);
     }
     return ans;
