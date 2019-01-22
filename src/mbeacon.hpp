@@ -23,6 +23,9 @@ public:
     const char sep;
 };
 
+/*
+Beacon sends/receives string messages for setting up network connections
+*/
 class Beacon {
 public:
     Beacon();
@@ -43,8 +46,9 @@ class Listener: public Beacon {
 public:
     Listener();
     bool init(std::string grp={"239.255.255.250"}, int port=1900); // binds to address
-    std::string listen();  // key|topic -> key|topic|endpoint
-    std::string listen_nb();
+    std::string listen(int usec=1000);  // key|topic -> key|topic|endpoint
+    std::string listen_nb(int usec=1000);
+    // std::string listen_nb(int usec);
 };
 
 
@@ -52,5 +56,5 @@ class Search: public Beacon {
 public:
     Search();
     bool init(std::string grp={"239.255.255.250"}, int port=1900);
-    std::string find(std::string message);  // topic:bob
+    std::string find(std::string message, int usec=1000);  // topic:bob
 };

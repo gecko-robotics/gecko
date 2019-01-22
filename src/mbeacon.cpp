@@ -141,7 +141,10 @@ Listener::Listener(): Beacon(){}
 
 bool Listener::init(string group, int port){
     bool er = Beacon::initSocket(group, port, true);
-    if (er) return er;
+    if (er) {
+        perror("Listener::init()");
+        return er;
+    }
 
     // bind to all interfaces to receive address
     struct sockaddr_in aaddr;
@@ -164,29 +167,31 @@ bool Listener::init(string group, int port){
         return true;
     }
 
-    printf("Listener -------------------------------------\n");
+    printf("Listener Beacon --------------------------------\n");
     printf(" Addr: %s:%d\n", group.c_str(), port);
     // printf(" Key: %s\n", key.c_str());
+    print("\n");
 
     return false;
 }
 
-string Listener::listen(){
+string Listener::listen(int usec){
     string msg;
     while (msg.empty()){
-        bool data = Beacon::ready(1000);  // data available to read?
+        bool data = Beacon::ready(usec);  // data available to read?
         if (data) msg = Beacon::recv();
     }
 
     return msg;
 }
 
-string Listener::listen_nb(){
+string Listener::listen_nb(int usec){
     string msg;
-    bool data = Beacon::ready(1000);  // data available to read?
+    bool data = Beacon::ready(usec);  // data available to read?
     if (data) msg = Beacon::recv();
     return msg;
 }
+
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -194,24 +199,24 @@ string Listener::listen_nb(){
 Search::Search(): Beacon(){}
 
 bool Search::init(string group, int port){
-    return Beacon::initSocket(group, port, false);
+    bool err = Beacon::initSocket(group, port, false);
+    if(err){
+        perror("Search::init FAILED");
+        return err;
+    }
 
-    printf("Search -------------------------------------\n");
+    printf("Search Beacon ---------------------------------\n");
     printf(" Addr: %s:%d\n", group.c_str(), port);
+    print("\n");
+    return false;
 }
 
-string Search::find(string message){
+string Search::find(string message, int usec){
     string ans;
-    for(int cnt = 50; cnt > 0; --cnt) {
-        bool err = Beacon::send(message);
-        if (err) perror("Search::find");
-
-        bool data = Beacon::ready(10000); // usec
-        if (data){
-            ans = Beacon::recv();
-            break;
-        }
-        Time::msleep(100);
+    int cnt = 50;
+    while(cnt--) {
+        if (Beacon::send(message)) perror("Search::find");
+        if (Beacon::ready(usec)) return Beacon::recv();
     }
     return ans;
 }

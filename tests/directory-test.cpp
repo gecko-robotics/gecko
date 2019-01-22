@@ -18,5 +18,11 @@ int main(){
     d.print();
 
     printf("find[bob][b]: %s\n", d.find("bob", "b").c_str());
-    printf("Dir: %d keys  bob: %d   tom: %d\n", d.numberKeys(), d.numberTopics("bob"), d.numberTopics("tom"));
+    printf("find[max][b] - fail: %s\n", d.find("max","b").c_str());
+    printf("find[tom][b] - fail: %s\n", d.find("tom","b").c_str());
+
+    // d.pop() test
+
+    d.print();
+    // printf("Dir: %d keys  bob: %d   tom: %d\n", d.numberKeys(), d.numberTopics("bob"), d.numberTopics("tom"));
 }

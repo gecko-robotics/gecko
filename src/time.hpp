@@ -60,7 +60,7 @@ public:
 
 class Rate {
 public:
-    Rate(double);
+    Rate(double hertz);
     void sleep(void);
 protected:
     std::chrono::time_point<std::chrono::system_clock> last_time;

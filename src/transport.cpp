@@ -1,6 +1,7 @@
 #include "transport.hpp"
 #include "zmq.hpp"
 #include "time.hpp"
+// #include <algorithm>  // erase
 
 using namespace std;
 
@@ -34,16 +35,18 @@ bool zmqBase::check(int retry){
     return false;
 }
 
-void zmqBase::update(){
-    std::array<char, 100> e;  // tcp://x.x.x.x:port
-    size_t e_size = e.size();
-    sock.getsockopt(ZMQ_LAST_ENDPOINT, e.data(), &e_size);
+void zmqBase::setEndPt(){
+    // std::array<char, 100> e;  // tcp://x.x.x.x:port
+    // size_t e_size = e.size();
+    // sock.getsockopt(ZMQ_LAST_ENDPOINT, e.data(), &e_size);
+    size_t s = 100;
+    char e[s];
+    sock.getsockopt(ZMQ_LAST_ENDPOINT, e, &s);
 
-    endpoint.assign(e.data(), e.size());
-    std::cout << ">> endpoint: " << endpoint << std::endl;
+    endpoint = e;
+    // std::cout << ">> endpoint: " << endpoint << std::endl;
 }
 
-// ~zmqBase(){sock.close(); gContext.close();}
 zmqBase::~zmqBase(){
     // any pending sends will block the context destructor
     cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
@@ -63,50 +66,41 @@ https://stackoverflow.com/questions/16699890/connect-to-first-free-port-with-tcp
 */
 Publisher::Publisher(string addr, bool bind): zmqBase(ZMQ_PUB)
 {
-    if (bind){
-        sock.bind(addr);
-    }
-    else {
-        sock.connect(addr);
-    }
-    update();
-    // char port[1024]; //make this sufficiently large to avoid invalid argument.
-    // size_t size = sizeof(port);
-    // sock.getsockopt( ZMQ_LAST_ENDPOINT, &port, &size );
-    // endpoint = port;
-    // cout << "socket is bound at port " << port_number << endl;
+    if (bind) sock.bind(addr);
+    else sock.connect(addr);
+
+    setEndPt();
+    printf(">> Publisher[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
 }
 
 void Publisher::pub(zmq::message_t& msg){
     sock.send(msg);
 }
 
-// void Publisher::serialize(){}
-
-
 ///////////////////////////////////////////////////
 
-Subscriber::Subscriber(): zmqBase(ZMQ_SUB)
-{
-    // subscriber.connect(addr + string(":") + to_string(port));
-    // subscriber.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());
-    callback = nullptr;
-}
+Subscriber::Subscriber(): zmqBase(ZMQ_SUB), callback(nullptr) {}
 
 Subscriber::Subscriber(string addr, string topic, bool bind): zmqBase(ZMQ_SUB)
 {
-    sock.connect(addr);
+    if (bind) sock.bind(addr);
+    else sock.connect(addr);
+
     sock.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());
-    callback = nullptr;
-    update();
+    // callback = nullptr;
+    setEndPt();
+    printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
 }
 
 Subscriber::Subscriber(string addr, bool bind): zmqBase(ZMQ_SUB)
 {
-    sock.connect(addr);
+    if (bind) sock.bind(addr);
+    else sock.connect(addr);
+
     sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    callback = nullptr;
-    update();
+    // callback = nullptr;
+    setEndPt();
+    printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
 }
 
 zmq::message_t Subscriber::recv(int flags){
@@ -124,7 +118,7 @@ void Subscriber::setCallback(void(*cb)(zmq::message_t&)){
 
 Reply::Reply(std::string addr): zmqBase(ZMQ_REP) {
     sock.bind(addr);
-    update();
+    setEndPt();
 }
 
 void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
@@ -148,7 +142,7 @@ void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
 
 Request::Request(std::string addr): zmqBase(ZMQ_REQ)  {
     sock.connect(addr);
-    update();
+    setEndPt();
 }
 
 zmq::message_t Request::get(zmq::message_t& msg, int flags){

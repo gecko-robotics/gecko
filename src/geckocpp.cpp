@@ -11,6 +11,7 @@
 #include "helpers.hpp"
 
 #include <thread>
+#include <mutex>
 #include "mbeacon.hpp"
 
 using namespace std;
@@ -56,6 +57,7 @@ public:
         // // cout << "  Core: " << core_addr << endl;
         // cout << "  Host: " << host_addr << endl;
         printf("GeckoCore --------------------------\n");
+        printf(" initialized: %s\n", initialized ? "true" : "false");
         printf(" %s [%s]\n", host_name.c_str(), host_addr.c_str());
         printf(" key: %s\n", key.c_str());
         printf("\n");
@@ -63,15 +65,18 @@ public:
     // string core_addr;  // address geckocore runs at
     string host_addr;  // address of the system this process/thread runs at
     string host_name;
+    string core_addr;
+    int core_port;
     string key;
     vector<Subscriber*> subs;
     bool initialized;  // has geckocore been initialized yet?
     // bool core_found;
     map<string,string> pubs;  // topics, endpoints
     bool ok;
+    mutex g_pages_mutex;
 
 protected:
-    Singleton(): initialized(false), ok(true) //, core_found(false)
+    Singleton(): core_port(-1), initialized(false), ok(true) //, core_found(false)
     {
         cout << "GeckoCore: constructor" << endl;
 
@@ -118,136 +123,151 @@ args_t processArgs(int argc, char* argv[]){
 //---------------------------------
 
 void gecko::init(int argc, char* argv[]){
-    printf("\n*** FIXME ***\n");
 
+    std::lock_guard<std::mutex> guard(Singleton::get().g_pages_mutex);
 
     if (Singleton::get().initialized) return;
 
+    cout<<"Address geckocore: " << &Singleton::get() << endl;
+
+    printf("\n*** FIXME ***\n");
+
     string help("\n"
     "./program -h -m name \n"
+    "  c: multicast core address\n"
+    "  p: multicast core port\n"
     "  h: help \n"
     "  k: key name for pub/sub if different from hostname \n");
-
-    // string key;
 
     args_t args = processArgs(argc, argv);
 
     for( auto const& [key, val] : args.args ) {
         switch(key){
-        // case 'd':
-        //     printf("d => %d\n", stoi(val));
-        //     break;
-        // case 'f':
-        //     printf("f => %s\n", val.c_str());
-        //     break;
+        case 'c':
+            Singleton::get().core_addr = val;
+            break;
+        case 'p':
+            Singleton::get().core_port = stoi(val);
+            break;
         case 'h':
             printf("%s\n", help.c_str());
+            break;
         case 'k':
             printf("Args: %c %s\n", key, val.c_str());
             Singleton::get().key = val;
-            // key = val;
-            // key.assign(val);
             break;
         default:
             printf("*** Unknown args: %c %s ***\n",key,val.c_str());
         }
     }
 
+    if (Singleton::get().core_addr.empty())
+        Singleton::get().core_addr = "239.255.255.250";
+
+    if (Singleton::get().core_port == -1)
+        Singleton::get().core_port = 11311;
+
     if (Singleton::get().key.empty())
         Singleton::get().key = Singleton::get().host_name;
-    // else Singleton::get().key = key;
 
-    // cout << "Machine: " << machine << endl;
-
-    // exit(0);
-
-    // string s;
-    // init(s);
-    // // if (Singleton::get().initialized)
-    // HostInfo h = HostInfo();
-    // Singleton::get().host_addr = h.address;
-    // Singleton::get().host_name = h.hostname;
-
-    // if (c.empty()) Singleton::get().core_addr = zmqTCP(h.addr, ":11311");
-    // else Singleton::get().core_addr = zmqTCP(c, ":11311");
-
-    // bool found = pingCore(Singleton::get().core_addr);
-
-    // if (found) Singleton::get().core_found = true;
-    // else {
-    //     cout << "*** Couldn't find GeckoCore [" << Singleton::get().core_addr << "] ***" << endl;
-    //     // exit(1);
-    // }
-
+    Singleton::get().initialized = true;
     Singleton::get().print();
-
-    // exit(0);
 }
 
 bool gecko::ok(){
-    // return Singleton::get().isOk();
     return Singleton::get().ok;
 }
 
 Publisher* gecko::advertise(string topic, int queue, bool bind){
-    // string addr = zmqTCP(Singleton::get().host_addr );  // bind to next available port
-    string addr = zmqTCP(Singleton::get().host_addr);
+    string addr = zmqTCP(Singleton::get().host_addr);  // bind to next available port
     Publisher *p = new Publisher(addr, true);
 
     Search beacon;
-    beacon.init();
-    stringstream ss;
-    ss << Singleton::get().host_name << "|" << topic << p->endpoint;
-    string ans = beacon.find(ss.str());
-    printf("advertise: %s\n", ans.c_str());
-
-    if (ans.empty()){
-        printf("Couldn't find endpoint for topic %s", topic.c_str());
+    bool err = beacon.init(Singleton::get().core_addr, Singleton::get().core_port);
+    if(err){
+        printf("beacon::init error\n");
+        exit(1);
     }
-    else {
-        Parser par;
-        vector<string> v;
-        bool err = par.parse(ans,v);
-        printf("");
-        p = new Publisher(addr, true);
+
+    stringstream ss;
+    ss << Singleton::get().host_name << "|" << topic << "|" << p->endpoint;
+
+    int cnt = 50;
+    bool find = true;
+    while(find && cnt--)
+    {
+        printf("advertise[%d] sent: %s\n", cnt, ss.str().c_str());
+        string ans = beacon.find(ss.str(),100000);
+
+        if (ans.empty()){
+            printf("advertise: Couldn't register endpoint for topic %s\n", topic.c_str());
+        }
+        else {
+            printf(">> advertise got: %s\n", ans.c_str());
+            Parser par;
+            vector<string> v;
+            bool err = par.parse(ans,v);
+
+            printf("\n>> %s %lu\n",v[2].c_str(),v[2].size());
+            printf("\n>> %s %lu\n",p->endpoint.c_str(),p->endpoint.size());
+
+            // assert(v[0] == Singleton::get().host_name);
+            // assert(v[1] == topic);
+            // assert(v[2] == p->endpoint);
+            // assert(v[3] == "ok");
+
+            if((v[0] == Singleton::get().host_name) && (v[1] == topic) && (v[2] == p->endpoint) && (v[3] == "ok")){
+                printf("<<<<<<< Pub notification successful >>>>>>>>\n");
+                for(auto const& s: v) printf("> %s\n",s.c_str());
+                find = false;
+            }
+            else {
+                printf("advertise: Couldn't register endpoint for topic %s\n", topic.c_str());
+                printf("\nDEBUG: %s\n\n",ans.c_str());
+
+                for(auto const& s: v) printf("> %s\n",s.c_str());
+
+                printf("\n* %s\n",Singleton::get().host_name.c_str());
+                printf("* %s\n",topic.c_str());
+                printf("* %s\n\n",p->endpoint.c_str());
+            }
+        }
+    }
+    if(find){
+        printf("FAILED to register %s\n\n", topic.c_str());
+        exit(1);
     }
 
     return p;
 }
 
 Subscriber* gecko::subscribe(string topic, void(*cb)(zmq::message_t&), int queue, bool bind){
-    // Singleton gc = Singleton::Instance();
-    // Request req(Singleton::get().core_addr);
-    // zmq::message_t reqt(topic.c_str(), topic.size());
-    // zmq::message_t respt = req.get(reqt);
-    //
-    // string m(static_cast<char*>(respt.data()), respt.size());
-    // vector<string> toks = split(m, ':');  // host:topic:addr:port
-    //
-    // string addr = zmqTCP(toks[2], toks[3]);
-
-    // string addr = getTopic(Singleton::get().core_addr, topic);
     Search beacon;
-    beacon.init();
+    beacon.init(Singleton::get().core_addr, Singleton::get().core_port);
     stringstream ss;
     ss << Singleton::get().host_name << "|" << topic;
-    string ans = beacon.find(ss.str());
 
     Subscriber *s = nullptr;
+    int cnt = 5;
+    bool find = true;
+    while (find && cnt--){
+        printf(">> subscribe sent: %s\n", ss.str().c_str());
+        string ans = beacon.find(ss.str());
 
-    if (ans.empty()){
-        printf("Couldn't find endpoint for topic %s", topic.c_str());
+        if (ans.empty()){
+            printf("Subscribe: Couldn't find endpoint for topic %s\n", topic.c_str());
+        }
+        else {
+            printf(">> subscribe recv'd: %s\n", ans.c_str());
+            Parser par;
+            vector<string> v;
+            bool err = par.parse(ans, v);
+            printf(">> Subscribing to %s on %s\n", v[1].c_str(), v[2].c_str());
+            s = new Subscriber(v[2].c_str(), topic, bind);
+            if(cb != nullptr) s->setCallback(cb);
+            Singleton::get().subs.push_back(s);
+        }
     }
-    else {
-        Parser par;
-        vector<string> v;
-        bool err = par.parse(ans, v);
-        printf(">> Subscribing to %s on %s\n", v[1].c_str(), v[2].c_str());
-        s = new Subscriber(v[2].c_str(), topic, bind);
-        if(cb != nullptr) s->setCallback(cb);
-        Singleton::get().subs.push_back(s);
-    }
-
     return s;
 }
 
@@ -259,7 +279,7 @@ void gecko::spin(int hertz){
         // }
         for (auto const& p: Singleton::get().subs){
             zmq::message_t msg = p->recv_nb();
-            p->callback(msg);
+            if (p != nullptr) p->callback(msg);
         }
         rate.sleep();
     }

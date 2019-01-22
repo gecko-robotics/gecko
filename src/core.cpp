@@ -88,7 +88,8 @@ void Core::run(int hertz){
 
     Rate rate(hertz);
     while(ok){
-        cout << "." << flush;
+        // cout << "." << flush;
+        // directory.print();
         rate.sleep();
     }
     cout << "bye" << endl;
@@ -97,6 +98,7 @@ void Core::run(int hertz){
 }
 
 void Core::requestLoop(void){
+    printf("<<<<<<< thread started >>>>>>>>>>>\n");
     Listener beacon;
     bool err = beacon.init("239.255.255.250", 11311);
     if(err) printf("\nCrap crakers ... beacon::init() failed\n\n");
@@ -114,33 +116,38 @@ void Core::requestLoop(void){
         perf: pid|name|cpu|memory
     */
     while(ok){
-        string req = beacon.listen_nb();
+        string req = beacon.listen_nb(10000);
         if(!req.empty()){
-            printf("core listen: %s\n", req.c_str());
+            printf("* core listen found: %s\n", req.c_str());
             vector<string> v;
             par.parse(req, v);
 
             if (v[0] == key) {
                 // handle advertise message
                 if (v.size() == 2){
-                    stringstream ans;
-                    auto search = directory.find(v[1]);
-                    if(search != directory.end()){
-                        ans << key << "|" << search->first << "|" << search->second;
+                    printf("* core:subscribe %s:%s\n",v[0].c_str(),v[1].c_str());
+                    string s = directory.find(key, v[1]);
+                    if(!s.empty()){
+                        stringstream ans;
+                        ans << key << "|" << v[1] << "|" << s;
+                        beacon.send(ans.str());
                         beacon.send(ans.str());
                     }
                     else
-                        printf("valid key, but no topic supported\n");
+                        printf("* valid key, but no topic supported\n");
                     break;
                 }
                 else if (v.size() == 3){ // handle pub notification
-                    directory[v[1]] = v[2];
+                    printf("* core:publish %s:%s:%s\n",v[0].c_str(),v[1].c_str(),v[2].c_str());
+                    directory.push(key, v[1], v[2]);
                     stringstream ans;
-                    ans << key << "|" << v[1] << "|" << v[2] << "ok";
+                    ans << key << "|" << v[1] << "|" << v[2] << "|"<< "ok";
                     beacon.send(ans.str());
-                    printf("listener, pub note: %s\n", ans.str().c_str());
+                    beacon.send(ans.str());
+                    // printf("listener sent: %s\n", ans.str().c_str());
                 }
             }
         }
+        // else cout << '.' << flush;
     }
 }

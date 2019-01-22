@@ -13,7 +13,7 @@ public:
     zmqBase(int type);
     ~zmqBase();
 
-    void update();
+    void setEndPt();
 
     bool check(int retry=5);
     static zmq::context_t gContext;  // context

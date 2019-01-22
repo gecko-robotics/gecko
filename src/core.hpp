@@ -31,7 +31,8 @@ public:
     void run(int hertz=100);
     void requestLoop(void);
 
-    std::map<std::string, std::string> directory;
+    // std::map<std::string, std::string> directory;
+    Directory directory;
     std::string key;
     bool ok;
 };
