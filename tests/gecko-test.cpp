@@ -35,12 +35,25 @@ void subt(int argc, char* argv[]){
     // gecko::spin();
 }
 
-int main(int argc, char* argv[]){
-    thread t1(pubt, argc, argv);
+int main(){
+    // fake args
+    int argc = 3;
+    char* argv[] =
+    {
+        (char*)("./main"),
+        (char*)("-c"),
+        (char*)("239.255.255.250"),
+        (char*)("-p"),
+        (char*)("12345")
+    };
+
+    thread t1(pubt, argc, argv); t1.detach();
     // thread t2(subt, argc, argv);
 
-    t1.join();
+    // t1.join();
     // t2.join();
+
+    while(1);
 
     return 0;
 }

@@ -70,12 +70,25 @@ int Directory::numberTopics(const string& key) const {
 
 Core::Core(string grp, int port): ok(true){
     HostInfo h = HostInfo();
-    key = h.hostname;
+    init(grp, port, h.hostname);
+}
+
+Core::Core(string grp, int port, string key): ok(true){
+    init(grp, port, key);
+}
+
+void Core::init(string grp, int port, string key){
+    this->key = key;
+    this->group = grp;
+    this->port = port;
+
+    HostInfo h = HostInfo();
 
     printf("Core ---------------------\n");
     printf(" %s [%s]\n", h.hostname.c_str(), h.address.c_str());
     printf(" multicast on %s:%d\n", grp.c_str(), port);
     printf(" key: %s\n", key.c_str());
+    printf(" addr: %p  sizeof: %lu\n", this, sizeof(*this));
     printf("\n");
 }
 
@@ -99,9 +112,11 @@ void Core::run(int hertz){
 
 void Core::requestLoop(void){
     printf("<<<<<<< thread started >>>>>>>>>>>\n");
-    Listener beacon;
-    bool err = beacon.init("239.255.255.250", 11311);
-    if(err) printf("\nCrap crakers ... beacon::init() failed\n\n");
+    BeaconServer beacon;
+    // bool err = beacon.init("239.255.255.250", 11311);
+    // bool err = beacon.init(this->group, this->port);
+    if(beacon.init(this->group, this->port))
+        printf("\nCrap crakers ... beacon::init() failed\n\n");
 
     Parser par;
 

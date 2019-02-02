@@ -19,6 +19,7 @@ public:
     static zmq::context_t gContext;  // context
     zmq::socket_t sock;
     std::string endpoint;
+    bool bind;
 };
 
 class Publisher: public zmqBase {

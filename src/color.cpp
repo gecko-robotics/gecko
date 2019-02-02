@@ -1,0 +1,46 @@
+#include "color.hpp"
+#include <string>
+// #include <stdio.h>
+
+using namespace std;
+
+
+char* ColorPrint::color(int fg, const char* s, bool reset)
+{
+    // static char command[13];
+    /* Command is the control command to the terminal */
+    // sprintf(command, "\x1B[%d;%d;%dm%s", attr, fg + 30, bg + 40, s);
+    const char* fmt = (reset ? "\x1B[%dm%s\x1B[0m" : "\x1B[%dm%s");
+    sprintf(command, fmt, fg + 30, s);
+    return command;
+}
+
+char* ColorPrint::color(int fg, int bg, const char* s, bool reset)
+{
+    // static char command[13];
+    /* Command is the control command to the terminal */
+    // sprintf(command, "\x1B[%d;%d;%dm%s", attr, fg + 30, bg + 40, s);
+    const char* fmt = (reset ? "\x1B[%d;%dm%s\x1B[0m" : "\x1B[%d;%dm%s");
+    sprintf(command, fmt, fg + 30, bg + 40, s);
+    return command;
+}
+
+char* ColorPrint::color(int attr, int fg, int bg, const char* s, bool reset)
+{
+    // static char command[13];
+    /* Command is the control command to the terminal */
+    // sprintf(command, "\x1B[%d;%d;%dm%s", attr, fg + 30, bg + 40, s);
+    const char* fmt = (reset ? "\x1B[%d;%d;%dm%s\x1B[0m" : "\x1B[%d;%d;%dm%s");
+    sprintf(command, fmt, attr, fg + 30, bg + 40, s);
+    return command;
+}
+// char* color(const& a_t t, bool reset=true)
+// {
+//     // static char command[13];
+//     /* Command is the control command to the terminal */
+//     // sprintf(command, "\x1B[%d;%d;%dm%s", attr, fg + 30, bg + 40, s);
+//     // const char* fmt = (reset ? "\x1B[%d;%d;%dm%s\x1B[0m" : "\x1B[%d;%d;%dm%s");
+//     // sprintf(command, fmt, attr, fg + 30, bg + 40, s);
+//
+//     return command;
+// }

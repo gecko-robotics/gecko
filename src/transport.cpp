@@ -6,7 +6,7 @@
 using namespace std;
 
 zmq::context_t zmqBase::gContext(1);
-zmqBase::zmqBase(int type): sock(gContext, type) {}
+zmqBase::zmqBase(int type): sock(gContext, type), bind(false) {}
 
 /*
 typedef struct
@@ -50,6 +50,7 @@ void zmqBase::setEndPt(){
 zmqBase::~zmqBase(){
     // any pending sends will block the context destructor
     cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
+    if(bind) sock.unbind(endpoint);
     int msec = 5;
     sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));
     sock.close();
@@ -66,7 +67,13 @@ https://stackoverflow.com/questions/16699890/connect-to-first-free-port-with-tcp
 */
 Publisher::Publisher(string addr, bool bind): zmqBase(ZMQ_PUB)
 {
-    if (bind) sock.bind(addr);
+    if (bind) {
+        this->bind = true;
+        // https://github.com/pi-hole/FTL/blob/master/socket.c#L63
+        // setsockopt(int option_, const void *optval_, size_t optvallen_)
+        // sock.setsockopt(SO_REUSEADDR, &(int){ 1 }, sizeof(int));
+        sock.bind(addr);
+    }
     else sock.connect(addr);
 
     setEndPt();
@@ -83,7 +90,10 @@ Subscriber::Subscriber(): zmqBase(ZMQ_SUB), callback(nullptr) {}
 
 Subscriber::Subscriber(string addr, string topic, bool bind): zmqBase(ZMQ_SUB)
 {
-    if (bind) sock.bind(addr);
+    if (bind) {
+        this->bind = true;
+        sock.bind(addr);
+    }
     else sock.connect(addr);
 
     sock.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());

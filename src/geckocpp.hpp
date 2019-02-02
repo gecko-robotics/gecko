@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <map>
 #include "transport.hpp"
 
 enum MsgLevel {INFO, WARN, ERROR};
@@ -12,10 +13,17 @@ typedef struct {
     // MSGPACK_DEFINE(level, msg);
 } log_msg_t;
 
+typedef struct {
+    std::string program;
+    std::map<char, std::string> args;
+} args_t;
+
 
 namespace gecko {
-    void init(int argc, char* argv[]);
+    void init(int argc,  char* argv[]);
     void init(const std::string& c={});
+    // void init(args_t arg={{""},{{}}});
+    void init(args_t arg={});
     // void shutdown(void){ok = false;}
     bool ok();
 

@@ -24,9 +24,13 @@ public:
 class Core {
     /*
     GeckoCore
+
+    multicast:"239.255.255.250"
+    port: 1234
     */
 public:
-    Core(std::string grp={"239.255.255.250"}, int port=11311);
+    Core(std::string grp, int port);
+    Core(std::string grp, int port, std::string key);
     ~Core();
     void run(int hertz=100);
     void requestLoop(void);
@@ -35,4 +39,9 @@ public:
     Directory directory;
     std::string key;
     bool ok;
+    std::string group;
+    int port;
+
+protected:
+    void init(std::string grp, int port, std::string key);
 };
