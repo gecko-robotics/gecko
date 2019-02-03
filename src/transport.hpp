@@ -33,7 +33,7 @@ public:
     zmqBase(int type);
     ~zmqBase();
 
-    void setEndPt();  // determine ip:port that was given by OS
+    // void setEndPt();  // determine ip:port that was given by OS
     void close();  // close socket
     bool check(int retry=5);  // select: has data arrived to read?
     static zmq::context_t gContext;  // zmq context
@@ -41,6 +41,8 @@ public:
     std::string endpoint;  // tcp://x.x.x.x:port
     bool bind;  // was socket bound or connected?
     int type;  // pub/sub/etc
+protected:
+    void setEndPt();  // determine ip:port that was given by OS
 };
 
 class Publisher: public zmqBase {

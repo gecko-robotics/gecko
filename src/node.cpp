@@ -13,10 +13,10 @@ using namespace std;
 
 
 // FIXME: pass other args
-void Threaded::run(void(*f)(void* args)){
-    thread t(f, &ok);
-    t.join();
-}
+// void Threaded::run(void(*f)(void* args)){
+//     thread t(f, &ok);
+//     t.join();
+// }
 
 ////////////////////////////////////////////////////////
 Node::~Node(){
@@ -29,6 +29,12 @@ void Node::run(void(*f)(bool*)){
     the_thread = thread(f, &ok);
     cout << ">> Started thread " << the_thread.get_id() << endl;
 }
+
+bool Node::initialized = false;
+std::mutex Node::g_mutex;
+Directory Node::db;
+std::string Node::host_name;
+std::string Node::host_addr;
 
 // Node::Node(){
 //     ;

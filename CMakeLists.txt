@@ -80,7 +80,7 @@ else()
 endif()
 
 # Add local directories -------------------------------------------
-include_directories(src)
+# include_directories(src)
 
 # ZeroMQ CPP ------------------------------------------------------
 # https://github.com/zeromq/cppzmq
@@ -112,6 +112,7 @@ endif()
 
 # Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
+include_directories(src)
 
 if(MSGPACK_FOUND)
     # list(APPEND SOURCES
@@ -141,6 +142,7 @@ list(APPEND tests
     tests/node-2-test.cpp
     tests/node-3-test.cpp
     tests/node-4-test.cpp
+    tests/node-5-test.cpp
     tests/gecko-test.cpp
     tests/zmq-message-test.cpp
     tests/zmq-interrupt-test.cpp
