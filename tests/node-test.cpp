@@ -18,7 +18,7 @@ void test(void* args){
 }
 
 int main(){
-    ThreadedNode n;
-    n.run(&test);
+    // ThreadedNode n;
+    // n.run(&test);
     return 0;
 }

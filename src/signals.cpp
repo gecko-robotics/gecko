@@ -31,24 +31,19 @@ bool SigCapture::ok = true;
 
 SigCapture::SigCapture(){
     struct sigaction sigIntHandler;
-    // sigIntHandler.sa_handler = SigCapture::my_handler;
-    // auto fp = std::bind(&SigCapture::my_handler, *this, std::placeholders::_1);
-    // sigIntHandler.sa_handler = fp;
-
-    // sigIntHandler.sa_handler = static_cast<void (*)(int)> (&SigCapture::my_handler);
-
     sigIntHandler.sa_handler = SigCapture::my_handler;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
 
     sigaction(SIGINT, &sigIntHandler, NULL);
+    // sigaction(SIGTERM, &sigIntHandler, NULL);  // value?
+    printf(">> setup signal handler\n");
 }
 
 void SigCapture::my_handler(int s){
     // printf("Caught signal %d\n",s);
-    cout << " [signal caught: " << s << "] ";
+    cout << ">> Signal caught: " << s << endl;
     ok = false;
-    // exit(1);
 }
 
 void SigCapture::shutdown(){

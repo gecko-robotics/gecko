@@ -138,8 +138,12 @@ list(APPEND tests
     tests/ip-test.cpp
     tests/proc-test.cpp
     tests/node-test.cpp
+    tests/node-2-test.cpp
+    tests/node-3-test.cpp
+    tests/node-4-test.cpp
     tests/gecko-test.cpp
     tests/zmq-message-test.cpp
+    tests/zmq-interrupt-test.cpp
     tests/simple-zmq-test.cpp
     tests/directory-test.cpp
     tests/thread-test.cpp

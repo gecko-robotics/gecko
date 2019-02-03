@@ -5,21 +5,42 @@
 #include <iostream>
 #include "zmq.hpp"
 #include "time.hpp"
-// #include "rep_req.pb.h"
 
+class zmqType {
+public:
+    zmqType(int i): type(i) {}
+    std::string to_string();
+    const char* c_str();
+    // {
+    //     std::string ans;
+    //     switch(type){
+    //     case ZMQ_PUB:
+    //         ans = "ZMQ_PUB";
+    //         break;
+    //     case ZMQ_SUB:
+    //         ans = "ZMQ_SUB";
+    //         break;
+    //     default:
+    //         ans = "ZMQ_UNKNOWN";
+    //     }
+    //     return ans;
+    // }
+    int type;
+};
 
 class zmqBase {
 public:
     zmqBase(int type);
     ~zmqBase();
 
-    void setEndPt();
-
-    bool check(int retry=5);
-    static zmq::context_t gContext;  // context
+    void setEndPt();  // determine ip:port that was given by OS
+    void close();  // close socket
+    bool check(int retry=5);  // select: has data arrived to read?
+    static zmq::context_t gContext;  // zmq context
     zmq::socket_t sock;
-    std::string endpoint;
-    bool bind;
+    std::string endpoint;  // tcp://x.x.x.x:port
+    bool bind;  // was socket bound or connected?
+    int type;  // pub/sub/etc
 };
 
 class Publisher: public zmqBase {
@@ -27,10 +48,9 @@ public:
     Publisher();
     Publisher(std::string addr, bool bind=true);  // tcp://x.x.x.x:port
     void pub(zmq::message_t& msg);
-    // static Publisher advertise(std::string topic, int queue);
-    // std::string port_number;
+
 protected:
-    // void serialize();
+
 };
 
 

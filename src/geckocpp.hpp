@@ -21,7 +21,7 @@ typedef struct {
 
 namespace gecko {
     void init(int argc,  char* argv[]);
-    void init(const std::string& c={});
+    // void init(const std::string& c={});
     // void init(args_t arg={{""},{{}}});
     void init(args_t arg={});
     // void shutdown(void){ok = false;}

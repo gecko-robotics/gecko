@@ -5,8 +5,47 @@
 
 using namespace std;
 
+// enum zmq_types_t {pub, sub, rep, req};
+// enum class socket_type : int
+// {
+//     req = ZMQ_REQ,
+//     rep = ZMQ_REP,
+//     // dealer = ZMQ_DEALER,
+//     // router = ZMQ_ROUTER,
+//     pub = ZMQ_PUB,
+//     sub = ZMQ_SUB,
+//     // xpub = ZMQ_XPUB,
+//     // xsub = ZMQ_XSUB,
+//     // push = ZMQ_PUSH,
+//     // pull = ZMQ_PULL,
+//     // pair = ZMQ_PAIR
+//     // std::string to_str(){
+//     //
+//     // }
+// };
+
+std::string zmqType::to_string() {
+    std::string ans;
+    switch(type){
+    case ZMQ_PUB:
+        ans = "ZMQ_PUB";
+        break;
+    case ZMQ_SUB:
+        ans = "ZMQ_SUB";
+        break;
+    default:
+        ans = "ZMQ_UNKNOWN";
+    }
+    return ans;
+}
+
+const char* zmqType::c_str(){
+    return to_string().c_str();
+}
+
+
 zmq::context_t zmqBase::gContext(1);
-zmqBase::zmqBase(int type): sock(gContext, type), bind(false) {}
+zmqBase::zmqBase(int t): type(t), sock(gContext, t), bind(false) {}
 
 /*
 typedef struct
@@ -48,8 +87,20 @@ void zmqBase::setEndPt(){
 }
 
 zmqBase::~zmqBase(){
+    // // any pending sends will block the context destructor
+    // cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
+    // if(bind) sock.unbind(endpoint);
+    // int msec = 5;
+    // sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));
+    // sock.close();
+    zmqBase::close();
+}
+
+void zmqBase::close(){
     // any pending sends will block the context destructor
-    cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
+    zmqType z(type);
+    // cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
+    printf(">> %s killing (ZMQ_LINGER): %s\n",z.c_str(), endpoint.c_str());
     if(bind) sock.unbind(endpoint);
     int msec = 5;
     sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));

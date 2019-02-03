@@ -1,11 +1,11 @@
 #pragma once
 
-// #include <thread>
+#include <thread>
 #include <string>
-#include <unistd.h>
-#include "signals.hpp"
+#include <unistd.h>     // sleep
+#include "signals.hpp"  // SigCapture
 
-namespace gecko {
+// namespace gecko {
 
 
 class Process {
@@ -24,12 +24,35 @@ public:
     void run(void(*f)(void*));
 };
 
-// what is the value of this?
-class Node {
+// // what is the value of this?
+// class Node {
+// public:
+//     Node();
+// };
+
+// class ThreadedNode: public Node, public Threaded {};
+//
+// };
+
+// thread class member
+// https://rafalcieslak.wordpress.com/2014/05/16/c11-stdthreads-managed-by-a-designated-class/
+class Node: public SigCapture {
 public:
-    Node();
+    ~Node();
+    void run(void(*f)(bool*));
+    static void wait(){
+        while(ok) {sleep(1);}
+    }
+    std::thread::id getId(){return the_thread.get_id();}
+protected:
+    std::thread the_thread;
 };
 
-class ThreadedNode: public Node, public Threaded {};
-
-};
+// Node::~Node(){
+//     the_thread.join();
+//     printf(">> Node bye ...\n");
+// }
+//
+// void Node::run(void(*f)(bool*)){
+//     the_thread = thread(f, &ok);
+// }

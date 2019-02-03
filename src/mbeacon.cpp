@@ -60,6 +60,7 @@ bool Beacon::initSocket(string group, int port, bool reuse){
         // u_char yes = 1;
         // int err = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
         if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0){
+        // if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)) < 0){
            perror("Reusing ADDR failed");
            return true;
         }

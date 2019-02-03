@@ -3,8 +3,9 @@
 #include <pwd.h>  // geteuid,getpwuid
 #include <sys/types.h>  // umask
 #include <sys/stat.h>  // umask
+#include <iostream>
 
-using namespace gecko;
+// using namespace gecko;
 using namespace std;
 
 #define EXIT_FAILURE 1
@@ -17,9 +18,21 @@ void Threaded::run(void(*f)(void* args)){
     t.join();
 }
 
-Node::Node(){
-    ;
+////////////////////////////////////////////////////////
+Node::~Node(){
+    cout << ">> Stopping thread " << the_thread.get_id() << endl;
+    the_thread.join();
+    printf(">> Node bye ...\n");
 }
+
+void Node::run(void(*f)(bool*)){
+    the_thread = thread(f, &ok);
+    cout << ">> Started thread " << the_thread.get_id() << endl;
+}
+
+// Node::Node(){
+//     ;
+// }
 
 //////////////////////////////////////////////////////
 char *getUserName(void)

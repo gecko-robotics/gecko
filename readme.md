@@ -32,3 +32,11 @@ something found *in* the message sent
     - `advertise`: Broadcasts endpoint for topics
     - Periodically (~3 sec) broadcasts performance [TBD]
     - Interface to message logging [TBD]
+
+# Status
+
+- multiccast beacon for making connections is broken
+    - hence core not working
+    - gecko::publish/subscribe broken
+- pub/sub and req/rep working
+-

@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <unistd.h>  // usleep
 
+#include "time.hpp"
+#include "event.hpp"
+#include "signals.hpp"
+
 // copy header from here
 // https://github.com/zeromq/cppzmq
 #include "zmq.hpp"
@@ -11,40 +15,46 @@
 
 using namespace std;
 
-void sub(void){
+void sub(Event *e){
     zmq::context_t context(1);
     const string protocol = "tcp://localhost:5555";
     zmq::socket_t sock (context, ZMQ_SUB);
     sock.connect(protocol);
     sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
-    while(true){
+    Rate r(10);
+
+    while(e->is_set()){
         zmq::message_t msg;
-        // sock.recv(&msg, ZMQ_DONTWAIT); // non-blocking
-        sock.recv(&msg, 0); // blocking
+        sock.recv(&msg, ZMQ_DONTWAIT); // non-blocking
+        // sock.recv(&msg, 0); // blocking
         if(msg.size() > 0){
             string s(static_cast<char*>(msg.data()), msg.size());
             printf(">> [SUB] msg[%zu]: %s\n", s.size(), s.c_str());
         }
         else printf("** No data found\n");
-        usleep(100000);
+        // usleep(100000);
+        r.sleep();
     }
     sock.close();
+    printf(">> sub bye\n");
 }
 
-void pub(void){
+void pub(Event *e){
     zmq::context_t context(1);
     const string protocol = "tcp://*:5555";
     zmq::socket_t sock (context, ZMQ_PUB);
     sock.bind(protocol);
+    Rate r(1);
 
-    while(true){
+    while(e->is_set()){
         zmq::message_t msg((void*)"kevin", 5);
         sock.send(msg);
         printf(">> [PUB] sent msg\n");
-        usleep(1000000);
+        r.sleep();
     }
     sock.close();
+    printf(">> pub bye\n");
 }
 
 ////////////////////////////////////////////////////////////////
@@ -63,7 +73,8 @@ void msub(void){
     while(true){
         // zmq::message_t msg;
         // sock.recv(&msg, ZMQ_DONTWAIT); // non-blocking
-        bool ok = multi.recv(sock, ZMQ_DONTWAIT);
+        // bool ok = multi.recv(sock, ZMQ_DONTWAIT);
+        bool ok = multi.recv(sock);
         if (ok) {
             printf(">> [MSUB] msg size: %zu\n", multi.size());
 
@@ -104,14 +115,19 @@ void mpub(void){
 }
 
 int main(void){
-    thread s(msub);
-    thread p(mpub);
-    thread s2(sub);
-    thread p2(pub);
+    Event e;
+    e.set();  // flag == true
 
-    s.join();
-    s2.join();
-    p.join();
+    SigCapture sig;
+
+    thread s(sub, &e); s.detach();
+    thread p(pub, &e); p.detach();
+    // thread s2(msub); s2.detach();
+    // thread p2(mpub); p2.detach();
+
+    while(sig.ok){sleep(1);}
+    e.clear();
+    sleep(2);
 
     return 0;
 }

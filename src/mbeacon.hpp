@@ -8,6 +8,11 @@
 typedef std::vector<std::string> parse_t;
 
 /*
+Good docs:
+- https://stackoverflow.com/questions/14388706/socket-options-so-reuseaddr-and-so-reuseport-how-do-they-differ-do-they-mean-t
+*/
+
+/*
 Messages
  sub req: key|topic
   answer: key|topic|tcp://hostname:port

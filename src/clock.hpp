@@ -1,7 +1,7 @@
 #pragma once
 
-// #include <time.h>
-#include <ctime.h>
+#include <time.h>
+#include <ctime>
 
 class Clock {
 public:
@@ -11,7 +11,7 @@ public:
     void print();
 
 protected:
-    std::timespec start_time, stop_time;
+    timespec start_time, stop_time;
 };
 //
 // #include <stdio.h>
