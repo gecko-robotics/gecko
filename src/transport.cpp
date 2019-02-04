@@ -1,6 +1,7 @@
 #include "transport.hpp"
 #include "zmq.hpp"
 #include "time.hpp"
+#include "color.hpp"
 // #include <algorithm>  // erase
 
 using namespace std;
@@ -26,15 +27,22 @@ using namespace std;
 
 std::string zmqType::to_string() {
     std::string ans;
+    ColorPrint c;
     switch(type){
     case ZMQ_PUB:
-        ans = "ZMQ_PUB";
+        ans = c.color(0,6,"ZMQ_PUB");
         break;
     case ZMQ_SUB:
-        ans = "ZMQ_SUB";
+        ans = c.color(0,7,"ZMQ_SUB");
+        break;
+    case ZMQ_REQ:
+        ans = c.color(0,2,"ZMQ_REQ");
+        break;
+    case ZMQ_REP:
+        ans = c.color(0,3,"ZMQ_REP");
         break;
     default:
-        ans = "ZMQ_UNKNOWN";
+        ans = c.color(0,1,"ZMQ_ZMQ_UNKNOWNSUB");
     }
     return ans;
 }
@@ -99,7 +107,6 @@ zmqBase::~zmqBase(){
 void zmqBase::close(){
     // any pending sends will block the context destructor
     zmqType z(type);
-    // cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
     printf(">> %s killing (ZMQ_LINGER): %s\n",z.c_str(), endpoint.c_str());
     if(bind) sock.unbind(endpoint);
     int msec = 5;

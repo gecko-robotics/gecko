@@ -37,7 +37,7 @@ SigCapture::SigCapture(){
 
     sigaction(SIGINT, &sigIntHandler, NULL);
     // sigaction(SIGTERM, &sigIntHandler, NULL);  // value?
-    printf(">> setup signal handler\n");
+    // printf(">> setup signal handler\n");
 }
 
 void SigCapture::my_handler(int s){

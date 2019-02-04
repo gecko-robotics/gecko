@@ -6,25 +6,13 @@
 #include "zmq.hpp"
 #include "time.hpp"
 
+// Returns the type of zmq connection as a colored string
+// Useful for debugging
 class zmqType {
 public:
     zmqType(int i): type(i) {}
     std::string to_string();
     const char* c_str();
-    // {
-    //     std::string ans;
-    //     switch(type){
-    //     case ZMQ_PUB:
-    //         ans = "ZMQ_PUB";
-    //         break;
-    //     case ZMQ_SUB:
-    //         ans = "ZMQ_SUB";
-    //         break;
-    //     default:
-    //         ans = "ZMQ_UNKNOWN";
-    //     }
-    //     return ans;
-    // }
     int type;
 };
 

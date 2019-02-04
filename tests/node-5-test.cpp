@@ -84,11 +84,11 @@ void pub(bool *e){
 
 int main(void){
     // setup a pre-done directory
-    dir_map_t d;
-    d["test"]["a"] = "tcp://logan.local:5000";
-    d["test"]["b"] = "tcp://logan.local:5000";
-    d["logan.local"]["a"] = "tcp://logan.local:5000";
-    d["tom.local"]["b"] = "tcp://logan.local:5000";
+    // dir_map_t d;
+    // d["test"]["a"] = "tcp://logan.local:5000";
+    // d["test"]["b"] = "tcp://logan.local:5000";
+    // d["logan.local"]["a"] = "tcp://logan.local:5000";
+    // d["tom.local"]["b"] = "tcp://logan.local:5000";
 
     // Node::init(d);
     Node::init();
