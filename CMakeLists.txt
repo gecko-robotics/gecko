@@ -174,6 +174,7 @@ list(APPEND msgpktests
     tests/msgpack-zlib-test.cpp
     tests/zlib-test.cpp
     tests/multicast-test.cpp
+    tests/multicast-2-test.cpp
 )
 
 set(MSGPACK_ALL

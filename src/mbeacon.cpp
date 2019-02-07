@@ -188,7 +188,7 @@ string Beacon::recv(){
         msgbuf,
         MSGBUFSIZE,
         0,
-        (struct sockaddr *) &addr,
+        (struct sockaddr *) &addr,  // this is wrong!!
         &addrlen
     );
     if (nbytes > 0) {
