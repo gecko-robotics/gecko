@@ -5,7 +5,7 @@
 #include <string>
 #include <unistd.h>       // sleep
 #include "signals.hpp"    // SigCapture
-#include "directory.hpp"  // db
+// #include "directory.hpp"  // db
 #include "transport.hpp"  // pub/sub
 #include "network.hpp"    // hostinfo
 #include "helpers.hpp"    // zmqtTCP
@@ -52,22 +52,23 @@ public:
     }
 
     // static functions ---------------------------------
-    static void init(){
-        dir_map_t dm;
-        init(dm);
-    }
+    // static void init(){
+    //     dir_map_t dm;
+    //     init(dm);
+    // }
 
     //
-    static void init(dir_map_t& dm){
+    // static void init(dir_map_t& dm){
+    static void init(){
         std::lock_guard<std::mutex> guard(g_mutex);
         if (initialized) return;
 
-        for (auto const& [key,dir]: dm){
-            for (auto [topic,endpt]: dir){
-                db.push(key, topic, endpt);
-            }
-        }
-        db.print();
+        // for (auto const& [key,dir]: dm){
+        //     for (auto [topic,endpt]: dir){
+        //         db.push(key, topic, endpt);
+        //     }
+        // }
+        // db.print();
 
         HostInfo h = HostInfo();
         host_addr = h.address;
@@ -106,7 +107,7 @@ public:
         Publisher *p = new Publisher(addr, true);
 
         SSocket ss;
-        ss.init("224.3.29.110", 11311);
+        ss.init(mc_addr, mc_port);
 
         Ascii a;
         ascii_t tmp = {key,topic,std::to_string(12345),p->endpoint};
@@ -133,25 +134,25 @@ public:
         return nullptr;
     }
 
-    static Subscriber* subscribe(
-            const std::string& key,
-            const std::string& topic,
-            int queue=1,
-            bool bind=false){
+    // static Subscriber* subscribe(
+    //         const std::string& key,
+    //         const std::string& topic,
+    //         int queue=1,
+    //         bool bind=false){
+    //
+    //     Subscriber *s = nullptr;
+    //
+    //     while(s == nullptr){
+    //         std::string endpt = db.find(key, topic);
+    //         if(endpt.empty()) sleep(1);
+    //         else s = new Subscriber(endpt, bind);
+    //     }
+    //     return s;
+    // }
 
-        Subscriber *s = nullptr;
-
-        while(s == nullptr){
-            std::string endpt = db.find(key, topic);
-            if(endpt.empty()) sleep(1);
-            else s = new Subscriber(endpt, bind);
-        }
-        return s;
-    }
-
-    static Subscriber* subscribe2(std::string key, std::string topic, int pid, int retry=5){
+    static Subscriber* subscribe(std::string key, std::string topic, int pid, int retry=5){
         SSocket ss;
-        ss.init("224.3.29.110", 11311);
+        ss.init(mc_addr, mc_port);
 
         Ascii a;
         ascii_t tmp = {key,topic, std::to_string(pid)};
@@ -186,7 +187,7 @@ public:
     }
 
     static bool initialized;
-    static Directory db;
+    // static Directory db;
     static std::string host_name;
     static std::string host_addr;
     static std::string mc_addr;

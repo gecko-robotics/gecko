@@ -28,7 +28,7 @@ using namespace std;
 
 void sub(bool *e){
     try {
-        Subscriber *s = Node::subscribe2("local","a",12345);
+        Subscriber *s = Node::subscribe("local","a",12345);
         if (s == nullptr) return;
 
         Rate r(3);
@@ -94,6 +94,7 @@ int main(void){
     Node::init();
 
     Node p; p.run(pub);
+    sleep(2);
     // Node s; s.run(sub);
 
     Node *n = nullptr;
@@ -104,5 +105,5 @@ int main(void){
 
     Node::wait();
 
-    return 0;  // FIXME: don't see all threads joined by exit!!!
+    return 0;
 }
