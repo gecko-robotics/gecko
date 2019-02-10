@@ -148,7 +148,7 @@ list(APPEND tests
     tests/zmq-interrupt-test.cpp
     tests/simple-zmq-test.cpp
     # tests/directory-test.cpp
-    tests/thread-test.cpp
+    # tests/thread-test.cpp
     tests/color-test.cpp
     # tests/multicast-test.cpp
     # tests/zmq-req-test.cpp
