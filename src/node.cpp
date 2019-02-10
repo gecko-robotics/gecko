@@ -35,6 +35,8 @@ std::mutex Node::g_mutex;
 Directory Node::db;
 std::string Node::host_name;
 std::string Node::host_addr;
+std::string Node::mc_addr = {"224.3.29.110"};
+int Node::mc_port = 11311;
 
 // Node::Node(){
 //     ;

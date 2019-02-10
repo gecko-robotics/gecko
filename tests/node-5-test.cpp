@@ -28,7 +28,7 @@ using namespace std;
 
 void sub(bool *e){
     try {
-        Subscriber *s = Node::subscribe("test","a");
+        Subscriber *s = Node::subscribe("local","a");
         if (s == nullptr) return;
 
         Rate r(3);
@@ -57,7 +57,7 @@ void pub(bool *e){
 
     Transport<imu_t> buffer;
     try {
-        Publisher *p = Node::advertise("test", "a");
+        Publisher *p = Node::advertise("local", "a", 12345);
         Rate r(1);
 
         while(*e){

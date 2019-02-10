@@ -133,7 +133,7 @@ list(APPEND ALL_LIBS ${ALL_LIBS} ${PROJECT_NAME})
 
 # Tests --------------------------------------------------------------
 list(APPEND tests
-    tests/core-test.cpp
+    # tests/core-test.cpp
     tests/zmq-test.cpp
     tests/time-test.cpp
     tests/ip-test.cpp
@@ -173,8 +173,8 @@ list(APPEND msgpktests
     tests/msgpack-8-test.cpp
     tests/msgpack-zlib-test.cpp
     tests/zlib-test.cpp
-    tests/multicast-test.cpp
-    tests/multicast-2-test.cpp
+    # tests/multicast-test.cpp
+    # tests/multicast-2-test.cpp
 )
 
 set(MSGPACK_ALL

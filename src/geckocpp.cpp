@@ -12,16 +12,16 @@
 
 #include <thread>
 #include <mutex>
-#include "mbeacon.hpp"
+// #include "mbeacon.hpp"
 
 using namespace std;
 
-void beacon(bool& ok){
-    Rate rate(10);
-    while (ok){
-        rate.sleep();
-    }
-}
+// void beacon(bool& ok){
+//     Rate rate(10);
+//     while (ok){
+//         rate.sleep();
+//     }
+// }
 
 
 /*
@@ -190,63 +190,63 @@ Publisher* gecko::advertise(string topic, int queue, bool bind){
     string addr = zmqTCP(Singleton::get().host_addr);  // bind to next available port
     Publisher *p = new Publisher(addr, true);
 
-    BeaconClient beacon;
-    bool err = beacon.init(Singleton::get().core_addr, Singleton::get().core_port);
-    if(err){
-        printf("beacon::init error\n");
-        return nullptr;
-    }
-
-    // stringstream ss;
-    // ss << Singleton::get().host_name << "|" << topic << "|" << p->endpoint;
-
-    int cnt = 50;
-    bool find = true;
-    while(find && cnt--)
-    {
-        printf("advertise[%d] sent\n", cnt);
-        // string ans = beacon.find(ss.str());
-        string ans = beacon.notify(key, topic, p->endpoint);
-
-        if (ans.empty()){
-            printf("advertise: Couldn't register endpoint for topic %s\n", topic.c_str());
-            sleep(1);
-        }
-        else {
-            printf(">> advertise got: %s\n", ans.c_str());
-            Parser par;
-            vector<string> v;
-            bool err = par.parse(ans,v);
-
-            printf("\n>> %s %lu\n",v[2].c_str(),v[2].size());
-            printf("\n>> %s %lu\n",p->endpoint.c_str(),p->endpoint.size());
-
-            // assert(v[0] == Singleton::get().host_name);
-            // assert(v[1] == topic);
-            // assert(v[2] == p->endpoint);
-            // assert(v[3] == "ok");
-
-            if((v[0] == Singleton::get().host_name) && (v[1] == topic) && (v[2] == p->endpoint) && (v[3] == "ok")){
-                printf("<<<<<<< Pub notification successful >>>>>>>>\n");
-                for(auto const& s: v) printf("> %s\n",s.c_str());
-                find = false;
-            }
-            else {
-                printf("advertise: Couldn't register endpoint for topic %s\n", topic.c_str());
-                printf("\nDEBUG: %s\n\n",ans.c_str());
-
-                for(auto const& s: v) printf("> %s\n",s.c_str());
-
-                printf("\n* %s\n",Singleton::get().host_name.c_str());
-                printf("* %s\n",topic.c_str());
-                printf("* %s\n\n",p->endpoint.c_str());
-            }
-        }
-    }
-    if(find){
-        printf("FAILED to register %s\n\n", topic.c_str());
-        exit(1);
-    }
+    // BeaconClient beacon;
+    // bool err = beacon.init(Singleton::get().core_addr, Singleton::get().core_port);
+    // if(err){
+    //     printf("beacon::init error\n");
+    //     return nullptr;
+    // }
+    //
+    // // stringstream ss;
+    // // ss << Singleton::get().host_name << "|" << topic << "|" << p->endpoint;
+    //
+    // int cnt = 50;
+    // bool find = true;
+    // while(find && cnt--)
+    // {
+    //     printf("advertise[%d] sent\n", cnt);
+    //     // string ans = beacon.find(ss.str());
+    //     string ans = beacon.notify(key, topic, p->endpoint);
+    //
+    //     if (ans.empty()){
+    //         printf("advertise: Couldn't register endpoint for topic %s\n", topic.c_str());
+    //         sleep(1);
+    //     }
+    //     else {
+    //         printf(">> advertise got: %s\n", ans.c_str());
+    //         Parser par;
+    //         vector<string> v;
+    //         bool err = par.parse(ans,v);
+    //
+    //         printf("\n>> %s %lu\n",v[2].c_str(),v[2].size());
+    //         printf("\n>> %s %lu\n",p->endpoint.c_str(),p->endpoint.size());
+    //
+    //         // assert(v[0] == Singleton::get().host_name);
+    //         // assert(v[1] == topic);
+    //         // assert(v[2] == p->endpoint);
+    //         // assert(v[3] == "ok");
+    //
+    //         if((v[0] == Singleton::get().host_name) && (v[1] == topic) && (v[2] == p->endpoint) && (v[3] == "ok")){
+    //             printf("<<<<<<< Pub notification successful >>>>>>>>\n");
+    //             for(auto const& s: v) printf("> %s\n",s.c_str());
+    //             find = false;
+    //         }
+    //         else {
+    //             printf("advertise: Couldn't register endpoint for topic %s\n", topic.c_str());
+    //             printf("\nDEBUG: %s\n\n",ans.c_str());
+    //
+    //             for(auto const& s: v) printf("> %s\n",s.c_str());
+    //
+    //             printf("\n* %s\n",Singleton::get().host_name.c_str());
+    //             printf("* %s\n",topic.c_str());
+    //             printf("* %s\n\n",p->endpoint.c_str());
+    //         }
+    //     }
+    // }
+    // if(find){
+    //     printf("FAILED to register %s\n\n", topic.c_str());
+    //     exit(1);
+    // }
 
     return p;
 }
@@ -254,38 +254,38 @@ Publisher* gecko::advertise(string topic, int queue, bool bind){
 Subscriber* gecko::subscribe(string topic, void(*cb)(zmq::message_t&), int queue, bool bind){
     string key = Singleton::get().host_name; // arg
 
-    BeaconClient beacon;
-    bool err = beacon.init(Singleton::get().core_addr, Singleton::get().core_port);
-    if(err){
-        perror("subscribe::");
-        return nullptr;
-    }
-    // stringstream ss;
-    // ss << Singleton::get().host_name << "|" << topic;
-
+    // BeaconClient beacon;
+    // bool err = beacon.init(Singleton::get().core_addr, Singleton::get().core_port);
+    // if(err){
+    //     perror("subscribe::");
+    //     return nullptr;
+    // }
+    // // stringstream ss;
+    // // ss << Singleton::get().host_name << "|" << topic;
+    //
     Subscriber *s = nullptr;
-    int cnt = 5;
-    bool find = true;
-    while (find && cnt--){
-        printf(">> subscribe sent: %s | %s\n", key.c_str(), topic.c_str());
-        // string ans = beacon.find(ss.str());
-        string ans = beacon.find(key, topic);
-
-        if (ans.empty()){
-            printf("Subscribe: Couldn't find endpoint for topic %s\n", topic.c_str());
-        }
-        else {
-            printf(">> subscribe recv'd: %s\n", ans.c_str());
-            Parser par;
-            vector<string> v;
-            bool err = par.parse(ans, v);
-            printf(">> Subscribing to %s on %s\n", v[1].c_str(), v[2].c_str());
-            s = new Subscriber(v[2].c_str(), topic, bind);
-            if(cb != nullptr) s->setCallback(cb);
-            Singleton::get().subs.push_back(s);
-        }
-        sleep(1);
-    }
+    // int cnt = 5;
+    // bool find = true;
+    // while (find && cnt--){
+    //     printf(">> subscribe sent: %s | %s\n", key.c_str(), topic.c_str());
+    //     // string ans = beacon.find(ss.str());
+    //     string ans = beacon.find(key, topic);
+    //
+    //     if (ans.empty()){
+    //         printf("Subscribe: Couldn't find endpoint for topic %s\n", topic.c_str());
+    //     }
+    //     else {
+    //         printf(">> subscribe recv'd: %s\n", ans.c_str());
+    //         Parser par;
+    //         vector<string> v;
+    //         bool err = par.parse(ans, v);
+    //         printf(">> Subscribing to %s on %s\n", v[1].c_str(), v[2].c_str());
+    //         s = new Subscriber(v[2].c_str(), topic, bind);
+    //         if(cb != nullptr) s->setCallback(cb);
+    //         Singleton::get().subs.push_back(s);
+    //     }
+    //     sleep(1);
+    // }
     return s;
 }
 

@@ -9,5 +9,6 @@ include_directories(./)
 link_directories(/usr/local/lib)
 
 
-add_executable(mrecv mcreceive.cpp msocket.cpp)
-add_executable(msend mcsend.cpp msocket.cpp)
+# add_executable(mrecv mcreceive.cpp msocket.cpp)
+# add_executable(msend mcsend.cpp msocket.cpp)
+add_executable(finder finder.cpp msocket.cpp)
