@@ -28,7 +28,7 @@ using namespace std;
 
 void sub(bool *e){
     try {
-        Subscriber *s = Node::subscribe("local","a");
+        Subscriber *s = Node::subscribe2("local","a",12345);
         if (s == nullptr) return;
 
         Rate r(3);
@@ -40,7 +40,7 @@ void sub(bool *e){
                 imu_t m = buffer.unpack(msg);
                 printf(">> msg time: %f\n", m.timestamp);
             }
-            else printf("** No data found\n");
+            // else printf("** No data found\n");
             r.sleep();
         }
         delete s;
@@ -93,8 +93,8 @@ int main(void){
     // Node::init(d);
     Node::init();
 
-    Node s; s.run(sub);
     Node p; p.run(pub);
+    // Node s; s.run(sub);
 
     Node *n = nullptr;
     for (int i=5;i;i--) {
