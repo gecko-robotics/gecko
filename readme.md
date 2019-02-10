@@ -6,7 +6,7 @@ This library uses:
     - Subscribe/publish
     - Request/reply
 - [Msgpack]() for serialization of messages
-- [zlib]() for compression of serialized messages
+- [zlib]() for compression of serialized messages (**TBD**)
 - C++17 syntax
 
 ## ROS Influence
@@ -35,8 +35,7 @@ something found *in* the message sent
 
 # Status
 
-- multiccast beacon for making connections is broken
-    - hence core not working
-    - gecko::publish/subscribe broken
+- multicast works (sort of)
+    - right now my core is written python ... i want to convert it c++ eventually
 - pub/sub and req/rep working
--
+- need to sort out `Node` and `gecko` classes, they sort of do the same thing

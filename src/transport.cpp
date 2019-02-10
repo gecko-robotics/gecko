@@ -73,7 +73,7 @@ bool zmqBase::check(int retry){
         int ret = zmq_poll(items, 1, 10);  // wait 10 msec
         // cout << count << endl;
         if (ret < 0){
-            cout << "zmqBase::check failed: " << ret << endl;
+            // cout << "zmqBase::check failed: " << ret << endl;
             return false;
         }
         if (ret > 0) return true;
