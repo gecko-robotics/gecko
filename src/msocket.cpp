@@ -60,7 +60,7 @@ bool SSocket::ready(int msec){
     return false;
 }
 
-std::string SSocket::recv(){
+std::string SSocket::recv(int msec){
     uint16_t recv_len = 0;
     uint16_t MAX_LEN = 1024;
     unsigned int from_len;
@@ -68,7 +68,7 @@ std::string SSocket::recv(){
     struct sockaddr_in from_addr;
     std::string msg;
 
-    if(ready()) // check to see if data is waiting using select()
+    if(ready(msec)) // check to see if data is waiting using select()
     {
         /* clear the receive buffers & structs */
         memset(recv_str, 0, sizeof(recv_str));

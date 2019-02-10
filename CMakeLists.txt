@@ -143,15 +143,17 @@ list(APPEND tests
     tests/node-3-test.cpp
     tests/node-4-test.cpp
     tests/node-5-test.cpp
-    tests/gecko-test.cpp
+    # tests/gecko-test.cpp
     tests/zmq-message-test.cpp
     tests/zmq-interrupt-test.cpp
     tests/simple-zmq-test.cpp
-    tests/directory-test.cpp
+    # tests/directory-test.cpp
     tests/thread-test.cpp
     tests/color-test.cpp
     # tests/multicast-test.cpp
     # tests/zmq-req-test.cpp
+    tests/process-test.cpp
+    tests/process-2-test.cpp
 )
 
 message(STATUS "Gecko Tests ----------------------")

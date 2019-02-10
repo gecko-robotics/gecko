@@ -3,6 +3,7 @@
 #include <thread>
 #include <mutex>
 #include <string>
+#include <sys/types.h>  // pid (type int)
 #include <unistd.h>       // sleep
 #include "signals.hpp"    // SigCapture
 // #include "directory.hpp"  // db
@@ -44,6 +45,7 @@ Spins off a thread for a given function
 class Node: public SigCapture {
 public:
     // Node(): mc_addr("224.3.29.110"), mc_port(11311) {}
+    Node(){}
     ~Node();
     void run(void(*f)(bool*));
 
@@ -78,7 +80,7 @@ public:
         printf("Node --------------------------\n");
         printf(" initialized: %s\n", initialized ? "true" : "false");
         printf(" %s [%s]\n", host_name.c_str(), host_addr.c_str());
-        // printf(" multicast: %s:%d\n", core_addr.c_str(), core_port);
+        printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
         // printf(" key: %s\n", key.c_str());
         printf("\n");
     }
@@ -102,7 +104,7 @@ public:
     //
     //     return p;
     // }
-    static Publisher* advertise(std::string key, std::string topic, int pid, int retry=5){
+    static Publisher* advertise(std::string key, std::string topic, int retry=5){
         std::string addr = zmqTCP(host_addr);  // bind to next available port
         Publisher *p = new Publisher(addr, true);
 
@@ -110,13 +112,14 @@ public:
         ss.init(mc_addr, mc_port);
 
         Ascii a;
-        ascii_t tmp = {key,topic,std::to_string(12345),p->endpoint};
+        pid_t pid = getpid();
+        ascii_t tmp = {key,topic,std::to_string(pid),p->endpoint};
         std::string msg = a.pack(tmp);
 
         for (int i=0; i<retry; i++){
             ss.send(msg);
             printf("pub send\n");
-            std::string ans = ss.recv();
+            std::string ans = ss.recv(900);
 
             if(!ans.empty()){
                 ascii_t t = a.unpack(ans);
@@ -150,11 +153,12 @@ public:
     //     return s;
     // }
 
-    static Subscriber* subscribe(std::string key, std::string topic, int pid, int retry=5){
+    static Subscriber* subscribe(std::string key, std::string topic, int retry=5){
         SSocket ss;
         ss.init(mc_addr, mc_port);
 
         Ascii a;
+        pid_t pid = getpid();
         ascii_t tmp = {key,topic, std::to_string(pid)};
         std::string msg = a.pack(tmp);
 
@@ -184,6 +188,11 @@ public:
 
     static void wait(){
         while(ok) {sleep(1);}
+    }
+
+    static void wait(uint16_t sec){
+        for (int i=sec; i>0; i--) {sleep(1);}
+        ok = false;
     }
 
     static bool initialized;

@@ -31,11 +31,11 @@ void Node::run(void(*f)(bool*)){
 }
 
 bool Node::initialized = false;
-std::mutex Node::g_mutex;
+mutex Node::g_mutex;
 // Directory Node::db;
-std::string Node::host_name;
-std::string Node::host_addr;
-std::string Node::mc_addr = {"224.3.29.110"};
+string Node::host_name;
+string Node::host_addr;
+string Node::mc_addr = {"224.3.29.110"};
 int Node::mc_port = 11311;
 
 // Node::Node(){
@@ -45,22 +45,22 @@ int Node::mc_port = 11311;
 //////////////////////////////////////////////////////
 char *getUserName(void)
 {
-	char * username;
-	// the getpwuid() function shall search the user database for an entry with a matching uid
-	// the geteuid() function shall return the effective user ID of the calling process - this is used as the search criteria for the getpwuid() function
-	uid_t euid = geteuid();
-	struct passwd *pw = getpwuid(euid);
-	if(pw)
-	{
-		username = strdup(pw->pw_name);
-	}
-	else
-	{
-		if(asprintf(&username, "%i", euid) < 0)
-			return NULL;
-	}
+    char * username;
+    // the getpwuid() function shall search the user database for an entry with a matching uid
+    // the geteuid() function shall return the effective user ID of the calling process - this is used as the search criteria for the getpwuid() function
+    uid_t euid = geteuid();
+    struct passwd *pw = getpwuid(euid);
+    if(pw)
+    {
+        username = strdup(pw->pw_name);
+    }
+    else
+    {
+        if(asprintf(&username, "%i", euid) < 0)
+            return NULL;
+    }
 
-	return username;
+    return username;
 }
 
 //////////////////////////////////////////////////////////
@@ -68,86 +68,86 @@ char *getUserName(void)
 
 void Process::go_daemon(void)
 {
-	pid_t process_id = 0;
+    pid_t process_id = 0;
 
-	// Create child process
-	process_id = fork();
+    // Create child process
+    process_id = fork();
 
-	// Indication of fork() failure
-	if (process_id < 0)
-	{
-		printf("fork failed!\n");
-		// Return failure in exit status
-		exit(EXIT_FAILURE);
-	}
+    // Indication of fork() failure
+    if (process_id < 0)
+    {
+        printf("fork failed!\n");
+        // Return failure in exit status
+        exit(EXIT_FAILURE);
+    }
 
-	// PARENT PROCESS. Need to kill it.
-	if (process_id > 0)
-	{
-		printf("started!\n");
-		// return success in exit status
-		exit(EXIT_SUCCESS);
-	}
+    // PARENT PROCESS. Need to kill it.
+    if (process_id > 0)
+    {
+        printf("started!\n");
+        // return success in exit status
+        exit(EXIT_SUCCESS);
+    }
 
-	//unmask the file mode
-	umask(0);
+    //unmask the file mode
+    umask(0);
 
-	// set new session
-	// creates a session and sets the process group ID
-	// pid_t sid = 0;
-	sid = setsid();
-	if(sid < 0)
-	{
-		// Return failure
-		printf("setsid failed!\n");
-		exit(EXIT_FAILURE);
-	}
+    // set new session
+    // creates a session and sets the process group ID
+    // pid_t sid = 0;
+    sid = setsid();
+    if(sid < 0)
+    {
+        // Return failure
+        printf("setsid failed!\n");
+        exit(EXIT_FAILURE);
+    }
 
-	// Create grandchild process
-	// Fork a second child and exit immediately to prevent zombies.  This
-	// causes the second child process to be orphaned, making the init
-	// process responsible for its cleanup.  And, since the first child is
-	// a session leader without a controlling terminal, it's possible for
-	// it to acquire one by opening a terminal in the future (System V-
-	// based systems).  This second fork guarantees that the child is no
-	// longer a session leader, preventing the daemon from ever acquiring
-	// a controlling terminal.
-	process_id = fork();
+    // Create grandchild process
+    // Fork a second child and exit immediately to prevent zombies.  This
+    // causes the second child process to be orphaned, making the init
+    // process responsible for its cleanup.  And, since the first child is
+    // a session leader without a controlling terminal, it's possible for
+    // it to acquire one by opening a terminal in the future (System V-
+    // based systems).  This second fork guarantees that the child is no
+    // longer a session leader, preventing the daemon from ever acquiring
+    // a controlling terminal.
+    process_id = fork();
 
-	// Indication of fork() failure
-	if (process_id < 0)
-	{
-		printf("fork failed!\n");
-		// Return failure in exit status
-		exit(EXIT_FAILURE);
-	}
+    // Indication of fork() failure
+    if (process_id < 0)
+    {
+        printf("fork failed!\n");
+        // Return failure in exit status
+        exit(EXIT_FAILURE);
+    }
 
-	// PARENT PROCESS. Need to kill it.
-	if (process_id > 0)
-	{
-		// return success in exit status
-		exit(EXIT_SUCCESS);
-	}
+    // PARENT PROCESS. Need to kill it.
+    if (process_id > 0)
+    {
+        // return success in exit status
+        exit(EXIT_SUCCESS);
+    }
 
-	// savepid();
+    // savepid();
 
-	// Closing stdin, stdout and stderr is handled by dnsmasq
+    // Closing stdin, stdout and stderr is handled by dnsmasq
 }
 
 void Process::savepid(const string& fname)
 {
-	FILE *f;
+    FILE *f;
     pid_t pid = sid;
-	// pid_t pid = getpid();
-	if((f = fopen(fname.c_str(), "w+")) == NULL)
-	{
-		// logg("WARNING: Unable to write PID to file.");
-		// logg("         Continuing anyway...");
-	}
-	else
-	{
-		fprintf(f, "%i", (int)pid);
-		fclose(f);
-	}
-	printf("PID of FTL process: %i", (int)pid);
+    // pid_t pid = getpid();
+    if((f = fopen(fname.c_str(), "w+")) == NULL)
+    {
+        // logg("WARNING: Unable to write PID to file.");
+        // logg("         Continuing anyway...");
+    }
+    else
+    {
+        fprintf(f, "%i", (int)pid);
+        fclose(f);
+    }
+    printf("PID of FTL process: %i", (int)pid);
 }

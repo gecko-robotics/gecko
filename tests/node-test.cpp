@@ -4,7 +4,7 @@
 #include "gecko.hpp"
 
 using namespace std;
-using namespace gecko;
+// using namespace gecko;
 
 void test(void* args){
     Rate r(1);

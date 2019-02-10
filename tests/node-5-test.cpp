@@ -28,8 +28,13 @@ using namespace std;
 
 void sub(bool *e){
     try {
-        Subscriber *s = Node::subscribe("local","a",12345);
-        if (s == nullptr) return;
+        pid_t pid = getpid();
+        printf("-> sub pid: %d\n",pid);
+        Subscriber *s = Node::subscribe("local","a");
+        if (s == nullptr) {
+            printf("Subscription failed\n");
+            return;
+        }
 
         Rate r(3);
         Transport<imu_t> buffer;
@@ -57,7 +62,13 @@ void pub(bool *e){
 
     Transport<imu_t> buffer;
     try {
-        Publisher *p = Node::advertise("local", "a", 12345);
+        pid_t pid = getpid();
+        printf("-> pub pid: %d\n",pid);
+        Publisher *p = Node::advertise("local", "a");
+        if (p == nullptr){
+            printf("Pubisher failed\n");
+            return;
+        }
         Rate r(1);
 
         while(*e){
@@ -94,16 +105,18 @@ int main(void){
     Node::init();
 
     Node p; p.run(pub);
+    printf("sleep\n");
     sleep(2);
-    // Node s; s.run(sub);
+    printf("awake\n");
 
     Node *n = nullptr;
-    for (int i=5;i;i--) {
+    for (int i=5;i>0;i--) {
         n = new Node();
         n->run(sub);
+        printf("-> thread[%d]: %p\n",i,&n);
     }
 
-    Node::wait();
+    Node::wait(5);
 
     return 0;
 }
