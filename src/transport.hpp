@@ -1,10 +1,13 @@
 #pragma once
 
+#include <stdint.h>
 #include <string>
 #include <array>
 #include <iostream>
 #include "zmq.hpp"
-#include "time.hpp"
+// #include "time.hpp"
+
+std::string zmqTCP(std::string addr, std::string port={"*"});
 
 // Returns the type of zmq connection as a colored string
 // Useful for debugging
@@ -23,7 +26,7 @@ public:
 
     // void setEndPt();  // determine ip:port that was given by OS
     void close();  // close socket
-    bool check(int retry=5);  // select: has data arrived to read?
+    bool check(uint16_t msec=50);  // select: has data arrived to read?
     static zmq::context_t gContext;  // zmq context
     zmq::socket_t sock;
     std::string endpoint;  // tcp://x.x.x.x:port

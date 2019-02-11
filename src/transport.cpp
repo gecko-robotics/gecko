@@ -25,6 +25,15 @@ using namespace std;
 //     // }
 // };
 
+string zmqTCP(string addr, string port){
+    // return fmtstr("tcp://%s:%s", addr.c_str(), port.c_str());
+    // return std::string("tcp://") + addr + std::string(":") + port;
+    stringstream ss;
+    ss << "tcp://" << addr << ":" << port;
+    printf("%s\n", ss.str().c_str());
+    return ss.str();
+}
+
 std::string zmqType::to_string() {
     std::string ans;
     ColorPrint c;
@@ -64,23 +73,29 @@ typedef struct
     short //revents//;
 } zmq_pollitem_t;
 */
-bool zmqBase::check(int retry){
+bool zmqBase::check(uint16_t msec){
     zmq_pollitem_t items[] = {
       {sock, 0, ZMQ_POLLIN, 0},
     };
 
-    for (int count = retry; count > 0; --count){
-        int ret = zmq_poll(items, 1, 10);  // wait 10 msec
-        // cout << count << endl;
-        if (ret < 0){
-            // cout << "zmqBase::check failed: " << ret << endl;
-            return false;
-        }
-        if (ret > 0) return true;
-        // Time::msleep(1);
-    }
+    // if (zmq_poll(items, 1, msec) > 0) return true;
+    int ret = zmq_poll(items, 1, msec);
+    if (ret < 0) perror("zmq_poll failed");
+    else if (ret > 0) return true;
     return false;
 }
+// bool zmqBase::check(int retry){
+//     zmq_pollitem_t items[] = {
+//       {sock, 0, ZMQ_POLLIN, 0},
+//     };
+//
+//     for (int count = retry; count > 0; --count){
+//         int ret = zmq_poll(items, 1, 10);  // wait 10 msec
+//         if (ret < 0) return false;
+//         else if (ret > 0) return true;
+//     }
+//     return false;
+// }
 
 void zmqBase::setEndPt(){
     // std::array<char, 100> e;  // tcp://x.x.x.x:port
@@ -184,7 +199,7 @@ void Subscriber::setCallback(void(*cb)(zmq::message_t&)){
 
 ////////////////////////////////////////////////////
 
-Reply::Reply(std::string addr): zmqBase(ZMQ_REP) {
+Reply::Reply(std::string addr): zmqBase(ZMQ_REP){
     sock.bind(addr);
     setEndPt();
 }
@@ -208,7 +223,7 @@ void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
 
 ////////////////////////////////////////////////////
 
-Request::Request(std::string addr): zmqBase(ZMQ_REQ)  {
+Request::Request(std::string addr): zmqBase(ZMQ_REQ){
     sock.connect(addr);
     setEndPt();
 }

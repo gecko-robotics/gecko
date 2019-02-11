@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <iostream>
+// #include <iostream>
 
 /*
 https://stackoverflow.com/questions/1641182/how-can-i-catch-a-ctrl-c-event
@@ -41,8 +41,8 @@ SigCapture::SigCapture(){
 }
 
 void SigCapture::my_handler(int s){
-    // printf("Caught signal %d\n",s);
-    cout << ">> Signal caught: " << s << endl;
+    printf(">> Caught signal %d\n", s);
+    // cout << ">> Signal caught: " << s << endl;
     ok = false;
 }
 

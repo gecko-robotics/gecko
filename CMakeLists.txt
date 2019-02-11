@@ -238,6 +238,9 @@ endif()
 
 list(APPEND gtests
     gtests/example-gtest.cpp
+    gtests/zmq-gtest.cpp
+    gtests/ascii-gtest.cpp
+    gtests/msgpack-gtest.cpp
 )
 
 message(STATUS "gTests ----------------------")
@@ -245,6 +248,6 @@ foreach(src ${gtests})
     get_filename_component(name ${src} NAME_WE)
     message(STATUS " -> ${name}")
     add_executable(${name} ${src})
-    target_link_libraries(${name} gtest_main)
-    add_test(NAME example_test COMMAND ${name})
+    target_link_libraries(${name} gtest_main ${MSGPACK_ALL})
+    add_test(NAME ${name} COMMAND ${name})
 endforeach()
