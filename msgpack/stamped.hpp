@@ -74,3 +74,11 @@ public:
     std::vector<LidarPt> scan;
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), scan);
 };
+
+class Image: public base_t, public msg_t {
+public:
+    Image(): base_t(GIMAGE) {}
+    // std::vector<LidarPt> scan;
+    int width, height, depth;
+    MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), width, height, depth);
+};
