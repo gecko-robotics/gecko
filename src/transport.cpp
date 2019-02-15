@@ -2,6 +2,7 @@
 #include "zmq.hpp"
 #include "time.hpp"
 #include "color.hpp"
+#include <iostream>
 // #include <algorithm>  // erase
 
 using namespace std;

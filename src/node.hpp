@@ -4,7 +4,7 @@
 #include <mutex>
 #include <string>
 #include <sys/types.h>  // pid (type int)
-#include <unistd.h>       // sleep
+#include <unistd.h>       // getpid
 #include "signals.hpp"    // SigCapture
 // #include "directory.hpp"  // db
 #include "transport.hpp"  // pub/sub

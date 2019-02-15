@@ -53,6 +53,15 @@ public:
     long now();  // chrono seconds since epic
     static void msleep(int msec);
     void sleep(int sec);
+
+    // get time since unix epoch
+    // double now();
+    
+    // time since creation of class
+    // double get_time();
+
+    // given a new epic, calculate the diff
+    // double from_time(double epic);
 };
 
 

@@ -4,13 +4,19 @@
 // #include <cstdarg>
 
 #include "gecko.hpp"
+#include "log.hpp"
 
 using namespace std;
 
 void sub(bool *e){
+    Logger log;
     try {
         pid_t pid = getpid();
         printf("-> sub pid: %d\n",pid);
+
+        string tt("loginfo test\n");
+        log.loginfo(tt);
+        
         Subscriber *s = Node::subscribe("local","a");
         if (s == nullptr) {
             printf("Subscription failed\n");

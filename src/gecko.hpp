@@ -10,6 +10,7 @@
 #include "network.hpp"     // ip hostname
 #include "exceptions.hpp"  // NotImplemented
 #include "color.hpp"       // ColorPrint
+#include "log.hpp"         // logging, local and remote
 
 // msgpack stuff
 #include <msgpack.hpp>

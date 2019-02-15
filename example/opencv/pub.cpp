@@ -1,27 +1,10 @@
-#include <iostream>
-// #include <thread>
-// #include <chrono>
-#include <stdio.h>
-#include <unistd.h>  // usleep
-// #include <cstdarg>
+#include "gecko.hpp"
 
-#include "time.hpp"
-#include "node.hpp"
-// #include "signals.hpp"
-#include "transport.hpp"
-
-// msgpack stuff
-#include <msgpack.hpp>
-#include "msgs.hpp"
-#include "serialization.hpp"
-
-// copy header from here
-// https://github.com/zeromq/cppzmq
-#include "zmq.hpp"
 
 using namespace std;
 
 void pub(bool *e){
+    Logger log;
 
     Transport<imu_t> buffer;
     try {
@@ -42,6 +25,11 @@ void pub(bool *e){
             p->pub(msg);
             // printf(">> [PUB] sent msg\n");
             r.sleep();
+
+            log.loginfo("[PUB]\n  sent\n  msg\n");
+            log.logwarn("[PUB] sent msg\n");
+            log.logerror("[PUB] sent msg\n");
+            log.logdebug("[PUB] sent msg\n");
         }
         delete p;
     }

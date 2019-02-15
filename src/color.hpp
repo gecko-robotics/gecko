@@ -81,6 +81,6 @@ public:
     // char* color(int fg, int bg, const char* s, bool reset=true);
     // char* color(int attr, int fg, int bg, const char* s, bool reset=true);
 
-protected:
-    char command[13];
+// protected:
+//     char command[13];
 };

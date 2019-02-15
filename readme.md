@@ -39,3 +39,22 @@ something found *in* the message sent
     - right now my core is written python ... i want to convert it c++ eventually
 - pub/sub and req/rep working
 - need to sort out `Node` and `gecko` classes, they sort of do the same thing
+
+## Multicast Messages
+
+```
+sub: key|topic|pid
+=> sub: key|topic|endpt
+
+pub: key|topic|pid|endpt
+=> pub: key|topic|endpt|ok
+
+---
+multiple nodes can connect to endpt
+connect: key|topic|pid
+=> connect: key|topic|endpt
+
+only one node can bind to an endpt
+bind: key|topic|pid|endpt
+=> bind: key|topic|endpt|ok
+```

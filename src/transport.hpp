@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 #include <string>
-#include <array>
-#include <iostream>
+// #include <array>
+// #include <iostream>
 #include "zmq.hpp"
 // #include "time.hpp"
 
@@ -55,7 +55,7 @@ public:
     zmq::message_t recv(int flags=0);
     inline zmq::message_t recv_nb(){return recv(ZMQ_DONTWAIT);}
     void setCallback(void(*callback)(zmq::message_t&));
-// protected:
+
     void(*callback)(zmq::message_t&);
 };
 
