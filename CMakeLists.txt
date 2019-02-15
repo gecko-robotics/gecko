@@ -17,95 +17,64 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 list(APPEND ALL_LIBS "")
 
-# find_package(Protobuf REQUIRED)
-# if ( Protobuf_FOUND )
-#     include_directories(${Protobuf_INCLUDE_DIRS})
-#     include_directories(${CMAKE_CURRENT_BINARY_DIR})
-#     message( STATUS ">> Protobuf Found: ${Protobuf_VERSION}" )
-#     # message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
-#     # message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
-#     # message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
-#     # message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
-#
-#     list(APPEND ALL_LIBS ${ALL_LIBS} ${Protobuf_LIBRARIES})
-#
-#     set(
-#         MSG_PROTOS
-#         protobuf/imu.proto
-#         protobuf/vector.proto
-#         protobuf/image.proto
-#         protobuf/rep_req.proto
-#     )
-#     protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${MSG_PROTOS})
-# else()
-#     # message(WARNING "*******************************")
-#     message(WARNING "*** Could not find Protobuf ***")
-#     # message(WARNING "*******************************")
-# endif()
 
+# Load in pkg-config support --------------------------------------
+find_package(PkgConfig)
 
 # Get msgpack -----------------------------------------------------
-include_directories(/usr/local/include)
-link_directories(/usr/local/lib)
+# include_directories(/usr/local/include)
+# link_directories(/usr/local/lib)
 # include_directories(/usr/local/opt/libunwind-headers/include)
-# find_package(MsgPack)
 
-# include(FindMsgPack.cmake)
-find_package(MsgPack REQUIRED)
+# find_package(MsgPack REQUIRED)
 
-# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-# "/usr/local/lib/cmake")
-# set(CMAKE_MODULE_PATH "/usr/local/lib/cmake")
-# find_package(msgpack) # msgpack_found not set!!!!
-if(MSGPACK_FOUND)
-    include_directories(${MSGPACK_INCLUDE_DIR})
-    message(STATUS ">> MsgPack Found: ${MSGPACK_VERSION}")
+pkg_check_modules(MessagePack REQUIRED msgpack)
+if(MessagePack_FOUND)
+    include_directories(${MessagePack_INCLUDE_DIR})
+    message(STATUS ">> MsgPack Found: ${MessagePack_VERSION}")
 
-    list(APPEND ALL_LIBS ${ALL_LIBS} ${MSGPACK_LIBRARIES})
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${MessagePack_LIBRARIES})
+
+    # this is a template library, so no cpp
+    include_directories(msgpack)
 
 else()
     message(WARNING "\n<<--- Could not find MsgPack --->>\n")
 endif()
 
-# message(STATUS "+++ ${MSGPACK_LIBRARY}")
-# message(STATUS ">> MsgPack Found: ${MSGPACK_VERSION}")
-
-
+# Get zlib -----------------------------------------------------
 find_package(ZLIB)
 if(ZLIB_FOUND)
-    message(STATUS ">> zlib Found: ${ZLIB_VERSION}")
+    message(STATUS ">> zlib Found: ${ZLIB_VERSION_STRING}")
     list(APPEND ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
 else()
     message(WARNING "\n<<--- Could not find zlib --->>\n")
 endif()
 
-# Add local directories -------------------------------------------
-# include_directories(src)
-
-# ZeroMQ CPP ------------------------------------------------------
-# https://github.com/zeromq/cppzmq
-include_directories(zmq)
-
-# Load in pkg-config support --------------------------------------
-# find_package(PkgConfig)
-
 # Threads ---------------------------------------------------------
 find_package(Threads REQUIRED)
 if(Threads_FOUND)
-    message(STATUS ">> Threads found: ${CMAKE_THREAD_VERSION}")
+    message(STATUS ">> Threads found")
+    if(CMAKE_USE_PTHREADS_INIT)
+        message(STATUS " -> Using pthreads")
+    endif()
     list(APPEND ALL_LIBS ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 else()
     message(WARNING "*** Could not find Threads ***")
 endif()
 
 # ZeroMQ ----------------------------------------------------------
-find_package(ZMQ REQUIRED)
-if(ZMQ_FOUND)
-    message(STATUS ">> ZeroMQ found: ${ZMQ_VERSION}")
+pkg_check_modules(libzmq REQUIRED libzmq)
+if(libzmq_FOUND)
+    message(STATUS ">> ZeroMQ found: ${libzmq_VERSION}")
     # add_compile_definitions(ZMQ_BUILD_DRAFT_API)
     # add_compile_definitions(ZMQ_CPP11)
-    include_directories(${ZMQ_INCLUDE_DIRS})
-    list(APPEND ALL_LIBS ${ALL_LIBS} ${ZMQ_LIBRARIES})
+    include_directories(${libzmq_INCLUDE_DIRS})
+    list(APPEND ALL_LIBS ${ALL_LIBS} ${libzmq_LIBRARIES})
+
+    # ZeroMQ CPP ------------------------------------------------------
+    # https://github.com/zeromq/cppzmq
+    include_directories(zmq)
 else()
     message(WARNING "*** Could not find ZeroMQ ***")
 endif()
@@ -113,17 +82,6 @@ endif()
 # Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
 include_directories(src)
-
-if(MSGPACK_FOUND)
-    # list(APPEND SOURCES
-    #     ${SOURCES}
-    #     # msgpack/transport.cpp
-    #     # msgpack/transport-impl.cpp
-    # )
-
-    # this is a template library, so no cpp
-    include_directories(msgpack)
-endif()
 
 # add_library(${PROJECT_NAME} SHARED ${SOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

@@ -26,10 +26,10 @@ void pub(bool *e){
             // printf(">> [PUB] sent msg\n");
             r.sleep();
 
-            log.loginfo("[PUB]\n  sent\n  msg\n");
-            log.logwarn("[PUB] sent msg\n");
-            log.logerror("[PUB] sent msg\n");
-            log.logdebug("[PUB] sent msg\n");
+            // log.loginfo("[PUB]\n  sent\n  msg\n");
+            // log.logwarn("[PUB] sent msg\n");
+            // log.logerror("[PUB] sent msg\n");
+            // log.logdebug("[PUB] sent msg\n");
         }
         delete p;
     }
