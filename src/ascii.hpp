@@ -1,9 +1,7 @@
 #pragma once
 
-// #include <stdio.h>
+
 #include <string>
-// #include <unistd.h>
-// #include <sstream>
 #include <vector>
 
 typedef std::vector<std::string> ascii_t;

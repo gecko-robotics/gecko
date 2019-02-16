@@ -44,24 +44,26 @@ int main()
 */
 
 #include <chrono>
-// #include <ctime>
-// #include <thread>
-// #include <google/protobuf/util/time_util.h>
 
 class Time {
 public:
-    long now();  // chrono seconds since epic
-    static void msleep(int msec);
+    Time(): epic(now()) {}
+    // long now();  // chrono seconds since epic
+    void msleep(int msec);
+    void usleep(int msec);
     void sleep(int sec);
 
     // get time since unix epoch
-    // double now();
-    
-    // time since creation of class
-    // double get_time();
+    double now();
 
-    // given a new epic, calculate the diff
-    // double from_time(double epic);
+    // time since creation of class
+    double get_time();  // runtime() ???
+
+    // given a new datumn, calculate the diff
+    double from_time(double datumn);
+
+protected:
+    double epic;  // static??
 };
 
 

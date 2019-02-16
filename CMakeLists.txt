@@ -5,9 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# set(CMAKE_C_COMPILER /usr/local/bin/gcc-8)
-# set(CMAKE_CXX_COMPILER /usr/local/bin/g++-8)
-
 message(STATUS "-------------------------------------")
 message(STATUS "  Project: ${PROJECT_NAME}")
 message(STATUS "-------------------------------------")
@@ -17,17 +14,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 list(APPEND ALL_LIBS "")
 
+# Add local -----------------------------------------------------
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
 
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
 # Get msgpack -----------------------------------------------------
-# include_directories(/usr/local/include)
-# link_directories(/usr/local/lib)
-# include_directories(/usr/local/opt/libunwind-headers/include)
-
-# find_package(MsgPack REQUIRED)
-
 pkg_check_modules(MessagePack REQUIRED msgpack)
 if(MessagePack_FOUND)
     include_directories(${MessagePack_INCLUDE_DIR})
@@ -82,8 +76,6 @@ endif()
 # Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
 include_directories(src)
-
-# add_library(${PROJECT_NAME} SHARED ${SOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
@@ -101,7 +93,8 @@ list(APPEND tests
     tests/node-3-test.cpp
     tests/node-4-test.cpp
     tests/node-5-test.cpp
-    # tests/gecko-test.cpp
+    tests/gecko-test.cpp
+    tests/gecko-2-test.cpp
     tests/zmq-message-test.cpp
     tests/zmq-interrupt-test.cpp
     tests/simple-zmq-test.cpp

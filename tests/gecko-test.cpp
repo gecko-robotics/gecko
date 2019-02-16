@@ -4,20 +4,25 @@
 #include <iostream>
 #include "time.h"
 #include "msgs.hpp"
+#include "signals.hpp"
+#include "geckocpp.hpp"
+#include <stdlib.h>
 
 using namespace std;
 
 
-void pubt(int argc, char* argv[]){
-    gecko::init(argc, argv);
+void pubt(){
+    gecko::init();
 
     Rate rate(2);
 
-    Publisher *p = gecko::advertise("bob");
+    Publisher *p = gecko::advertise("local", "bob2");
+    if (p == nullptr) return;
 
     while(gecko::ok()){
         zmq::message_t msg("hello",5);
-        cout << msg << endl;
+        // cout << msg << endl;
+        // gecko::log(gecko::DEBUG, "debug level\n");
         p->pub(msg);
         rate.sleep();
     }
@@ -25,35 +30,40 @@ void pubt(int argc, char* argv[]){
     delete p;
 }
 
-void callback(zmq::message_t& m){
-    cout << m << endl;
-}
+void subt(){
+    gecko::init();
+    Subscriber *s = gecko::subscribe("local", "bob2");
+    if (s == nullptr) return;
+    Rate r(10);
 
-void subt(int argc, char* argv[]){
-    gecko::init(argc, argv);
-    // gecko::subscribe("bob", callback);
-    // gecko::spin();
+    while(gecko::ok()){
+        zmq::message_t m = s->recv_nb();
+        if (m.size() > 0) gecko::log(gecko::DEBUG, "got message\n");
+        r.sleep();
+    }
+
+    delete s;
 }
 
 int main(){
     // fake args
-    int argc = 3;
-    char* argv[] =
-    {
-        (char*)("./main"),
-        (char*)("-c"),
-        (char*)("239.255.255.250"),
-        (char*)("-p"),
-        (char*)("12345")
-    };
+    // int argc = 3;
+    // char* argv[] =
+    // {
+    //     (char*)("./main"),
+    //     (char*)("-c"),
+    //     (char*)("239.255.255.250"),
+    //     (char*)("-p"),
+    //     (char*)("12345")
+    // };
 
-    thread t1(pubt, argc, argv); t1.detach();
-    // thread t2(subt, argc, argv);
+    // system("../../pycore/pycore.py");
 
-    // t1.join();
-    // t2.join();
 
-    while(1);
+    thread t1(pubt); t1.detach();
+    thread t2(subt); t2.detach();
+
+    while(gecko::ok());
 
     return 0;
 }

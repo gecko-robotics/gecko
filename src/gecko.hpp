@@ -2,7 +2,7 @@
 
 // These are the headers a user would access. Others are for internal
 // use only.
-// #include "geckocpp.hpp"
+#include "geckocpp.hpp"
 #include "time.hpp"        // rate
 #include "node.hpp"        // threads
 #include "transport.hpp"   // pub-sub
@@ -11,6 +11,7 @@
 #include "exceptions.hpp"  // NotImplemented
 #include "color.hpp"       // ColorPrint
 #include "log.hpp"         // logging, local and remote
+#include "signals.hpp"
 
 // msgpack stuff
 #include <msgpack.hpp>

@@ -19,6 +19,11 @@ list(APPEND ALL_LIBS "")
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
+
+# Add local -----------------------------------------------------
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+
 # Get msgpack -----------------------------------------------------
 include_directories(/usr/local/include ../../src ../../msgpack)
 link_directories(/usr/local/lib ../../build)
@@ -80,7 +85,7 @@ if(libzmq_FOUND)
 
     # ZeroMQ CPP ------------------------------------------------------
     # https://github.com/zeromq/cppzmq
-    # include_directories(zmq)
+    include_directories(../../zmq)
 else()
     message(WARNING "*** Could not find ZeroMQ ***")
 endif()
