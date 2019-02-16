@@ -15,32 +15,39 @@ using namespace std;
 //     return time;
 // }
 
-double Time::now(){
+double gecko::now(){
     auto now_ms = time_point_cast<microseconds>(system_clock::now());
     auto epic = now_ms.time_since_epoch();
-    long time = epic.count();
+    double time = (double)epic.count();
     return time/1E6;
 }
 
-double Time::get_time(){
-    return now() - epic;
-}
+// double Time::now(){
+//     auto now_ms = time_point_cast<microseconds>(system_clock::now());
+//     auto epic = now_ms.time_since_epoch();
+//     double time = (double)epic.count();
+//     return time/1E6;
+// }
+//
+// double Time::get_time(){
+//     return now() - epic;
+// }
 
-double Time::from_time(double datumn){
-    return now() - datumn;
-}
+// double Time::from_time(double datumn){
+//     return now() - datumn;
+// }
 
-void Time::msleep(int msec){
-    this_thread::sleep_for(chrono::milliseconds(msec));
-}
-
-void Time::usleep(int msec){
-    this_thread::sleep_for(chrono::microseconds(msec));
-}
-
-void Time::sleep(int sec){
-    this_thread::sleep_for(chrono::seconds(sec));
-}
+// void Time::msleep(int msec){
+//     this_thread::sleep_for(chrono::milliseconds(msec));
+// }
+//
+// void Time::usleep(int usec){
+//     this_thread::sleep_for(chrono::microseconds(usec));
+// }
+//
+// void Time::sleep(int sec){
+//     this_thread::sleep_for(chrono::seconds(sec));
+// }
 
 //////////////////////////////////////////////////////////////////////
 

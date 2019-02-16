@@ -44,27 +44,17 @@ int main()
 */
 
 #include <chrono>
+#include <thread>  // sleep_for
 
-class Time {
-public:
-    Time(): epic(now()) {}
-    // long now();  // chrono seconds since epic
-    void msleep(int msec);
-    void usleep(int msec);
-    void sleep(int sec);
+namespace gecko {
 
-    // get time since unix epoch
-    double now();
+double now();
+inline double from_time(double datumn){ return now() - datumn; }
+inline void msleep(int msec){ std::this_thread::sleep_for(std::chrono::milliseconds(msec)); }
+inline void usleep(int usec){ std::this_thread::sleep_for(std::chrono::microseconds(usec)); }
+inline void  sleep(int  sec){ std::this_thread::sleep_for(std::chrono::seconds(sec)); }
 
-    // time since creation of class
-    double get_time();  // runtime() ???
-
-    // given a new datumn, calculate the diff
-    double from_time(double datumn);
-
-protected:
-    double epic;  // static??
-};
+}
 
 
 class Rate {

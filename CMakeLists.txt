@@ -149,6 +149,7 @@ endforeach()
 message(STATUS "Gecko Tools ----------------------")
 list(APPEND tools
     tools/logserver/logserver.cpp
+    tools/echo/echo.cpp
 )
 
 foreach(src ${tools})

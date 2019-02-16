@@ -1,8 +1,7 @@
 #include <iostream>
-// #include <chrono>
-// #include <ctime>
-#include <thread>
-#include "time.hpp"
+#include <stdio.h>
+#include "gecko.hpp"
+
 
 /*
 https://www.geeksforgeeks.org/chrono-in-c/
@@ -20,32 +19,10 @@ high_resolution_clock– It provides the smallest possible tick period. It is
 // using namespace std::chrono;
 using namespace std;
 
-// class Time {
-// public:
-//     long now();
-// };
-
-// long Time::now(){
-//     // auto now = system_clock::now();
-//     auto now_ms = time_point_cast<milliseconds>(system_clock::now());
-//     auto epic = now_ms.time_since_epoch();
-//     long time = epic.count();
-//     return time;
-// }
-
-
 int main (){
-    Rate r(5);
+    double start = gecko::now();
+    printf(">> Start %f\n", start);
+    gecko::sleep(3);
 
-    Time a;
-    long s, f;
-    // cout << a.now() << endl;
-    s = a.now();
-
-    // usleep(1E6);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-    f = a.now();
-
-    cout << ">> sleep for 1000: " << f-s << endl;
+    cout << ">> sleep for 3 sec: " << gecko::from_time(start) << endl;
 }

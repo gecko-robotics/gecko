@@ -22,7 +22,7 @@ namespace gecko {
     static string host_addr;
     static string mc_addr = {"224.3.29.110"};
     static int mc_port = 11311;
-    Time time;
+    // Time time;
     Logger logger;
     static SigCapture sig;
 

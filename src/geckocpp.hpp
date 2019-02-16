@@ -1,6 +1,7 @@
 #pragma once
 
-#include <thread>
+#include <thread>  // sleep
+// #include <chrono>  // time
 #include <mutex>
 #include <string>
 #include <sys/types.h>  // pid (type int)
@@ -26,7 +27,7 @@ namespace gecko {
 
     [[deprecated("Use *bind* or *connect* functions")]]
     Subscriber* subscribe(std::string key, std::string topic, bool bind=false);
-    
+
     void wait();
     // void wait(uint16_t sec);
     bool ok();
@@ -45,5 +46,17 @@ namespace gecko {
     enum LogLevel {INFO, WARN, ERROR, DEBUG};
 
     void log(int level, const std::string& s);
+
+    // double Time::get_time(){
+    //     return now() - epic;
+    // }
+
+    // double Time::from_time(double datumn){
+    //     return now() - datumn;
+    // }
+    //
+    // inline void msleep(int msec){ std::this_thread::sleep_for(std::chrono::milliseconds(msec)); }
+    // inline void usleep(int usec){ std::this_thread::sleep_for(std::chrono::microseconds(usec)); }
+    // inline void  sleep(int  sec){ std::this_thread::sleep_for(std::chrono::seconds(sec)); }
 
 };
