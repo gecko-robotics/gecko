@@ -7,7 +7,26 @@
 #include "zmq.hpp"
 // #include "time.hpp"
 
-std::string zmqTCP(std::string addr, std::string port={"*"});
+// std::string zmqTCP(std::string addr, std::string port={"*"});
+std::string zmqTCP(const std::string& addr);
+std::string zmqUDS(const std::string& file);
+
+class zzmqTCP {
+public:
+    zzmqTCP(const std::string& addr){
+        endpoint = "tcp://" + addr + ":*";
+    }
+    std::string endpoint;
+};
+
+
+class zzmqUDS {
+public:
+    zzmqUDS(const std::string& file){
+        endpoint = "ipc://" + file;
+    }
+    std::string endpoint;
+};
 
 // Returns the type of zmq connection as a colored string
 // Useful for debugging
@@ -26,7 +45,7 @@ public:
 
     // void setEndPt();  // determine ip:port that was given by OS
     void close();  // close socket
-    bool check(uint16_t msec=50);  // select: has data arrived to read?
+    bool check(uint16_t msec=500);  // select: has data arrived to read?
     static zmq::context_t gContext;  // zmq context
     zmq::socket_t sock;
     std::string endpoint;  // tcp://x.x.x.x:port

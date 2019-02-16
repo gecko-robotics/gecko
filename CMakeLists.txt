@@ -145,6 +145,19 @@ foreach(src ${msgpktests})
     target_link_libraries(${name} ${MSGPACK_ALL})
 endforeach()
 
+
+message(STATUS "Gecko Tools ----------------------")
+list(APPEND tools
+    tools/logserver/logserver.cpp
+)
+
+foreach(src ${tools})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+    add_executable(${name} ${src})
+    target_link_libraries(${name} ${ALL_LIBS})
+endforeach()
+
 #############################################################################
 ##  gTest
 ##

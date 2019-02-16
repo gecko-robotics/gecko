@@ -20,7 +20,10 @@ void pubt(void *k){
     Rate rate(2);
 
     Publisher *p = gecko::advertise("local", "bob2");
-    if (p == nullptr) return;
+    if (p == nullptr) {
+        gecko::shutdown();
+        return;
+    }
 
     while(gecko::ok()){
         zmq::message_t msg("hello",5);
@@ -34,7 +37,10 @@ void pubt(void *k){
 void subt(void *k){
     gecko::init();
     Subscriber *s = gecko::subscribe("local", "bob2");
-    if (s == nullptr) return;
+    if (s == nullptr) {
+        gecko::shutdown();
+        return;
+    }
     Rate r(10);
 
     while(gecko::ok()){
@@ -53,7 +59,8 @@ int main(){
     Node p; p.run(pubt, (void*)tmp);
     Node s; s.run(subt);
 
-    while(gecko::ok());
+    // while(gecko::ok());
+    gecko::wait();
 
     return 0;
 }

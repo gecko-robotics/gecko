@@ -6,7 +6,6 @@
 #include <sys/types.h>  // pid (type int)
 #include <unistd.h>       // getpid
 #include "signals.hpp"    // SigCapture
-// #include "directory.hpp"  // db
 #include "transport.hpp"  // pub/sub
 #include "network.hpp"    // hostinfo
 #include "helpers.hpp"    // zmqtTCP
@@ -21,11 +20,27 @@ namespace gecko {
 
     // functions ---------------------------------
     void init(std::string mc={"224.3.29.110"}, int port=11311);
-    Publisher* advertise(std::string key, std::string topic, int retry=5);
-    Subscriber* subscribe(std::string key, std::string topic, int retry=5);
-    // void wait();
+
+    [[deprecated("Use *bind* or *connect* functions")]]
+    Publisher* advertise(std::string key, std::string topic, bool bind=true);
+
+    [[deprecated("Use *bind* or *connect* functions")]]
+    Subscriber* subscribe(std::string key, std::string topic, bool bind=false);
+    
+    void wait();
     // void wait(uint16_t sec);
     bool ok();
+    void shutdown();
+
+    Subscriber* subBindTCP(std::string key, std::string topic);
+    Subscriber* subBindUDS(std::string key, std::string topic, std::string file);
+    Subscriber* subConnectTCP(std::string key, std::string topic);
+    Subscriber* subConnectUDS(std::string key, std::string topic, std::string file);
+
+    Publisher* pubBindTCP(std::string key, std::string topic);
+    Publisher* pubBindUDS(std::string key, std::string topic, std::string file);
+    Publisher* pubConnectTCP(std::string key, std::string topic);
+    Publisher* pubConnectUDS(std::string key, std::string topic, std::string file);
 
     enum LogLevel {INFO, WARN, ERROR, DEBUG};
 

@@ -15,8 +15,8 @@ public:
         uint16_t mc_port=11311,
         uint8_t mc_ttl=1
     );
-    bool ready(int msec=500);
-    std::string recv(int msec=500);
+    bool ready(long msec=500);
+    std::string recv(long msec=500);
     bool send(std::string msg);
 
 protected:

@@ -33,34 +33,32 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl){
   mc_addr.sin_port        = htons(mc_port);
 }
 
-bool SSocket::ready(int msec){
+bool SSocket::ready(long msec){
     struct timeval tv;
     fd_set readfds;
-    // int err;
-    long usec = msec * 1000;
+    long sec = 0;
 
-    if (usec > 999999){
-        printf("====================================\n");
-        printf(" Beacon::ready msec < 1,000 msec\n");
-        printf("====================================\n\n");
-        usec = 999999;
+    if (msec >= 1000) {
+        sec = msec/1000;
+        msec %= 1000;
+        // printf("time %ld %ld\n",sec, msec);
     }
 
-    tv.tv_sec = 0;
-    tv.tv_usec = usec;
+    tv.tv_sec = sec;
+    tv.tv_usec = msec * 1000;
 
     FD_ZERO(&readfds);
     FD_SET(sock, &readfds);
 
     // don't care about writefds and exceptfds:
     if (select(sock+1, &readfds, NULL, NULL, &tv) < 0)
-        perror("ready select issue");
+        perror("SSocket::ready select issue");
 
     if (FD_ISSET(sock, &readfds)) return true;
     return false;
 }
 
-std::string SSocket::recv(int msec){
+std::string SSocket::recv(long msec){
     uint16_t recv_len = 0;
     uint16_t MAX_LEN = 1024;
     unsigned int from_len;
@@ -68,7 +66,7 @@ std::string SSocket::recv(int msec){
     struct sockaddr_in from_addr;
     std::string msg;
 
-    if(ready(msec)) // check to see if data is waiting using select()
+    if(ready(1000)) // check to see if data is waiting using select()
     {
         /* clear the receive buffers & structs */
         memset(recv_str, 0, sizeof(recv_str));
