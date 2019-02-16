@@ -14,6 +14,9 @@ using namespace std;
 void pubt(void *k){
     gecko::init();
 
+    string *s = (string*)k;
+    printf("Args: %s\n", s->c_str());
+
     Rate rate(2);
 
     Publisher *p = gecko::advertise("local", "bob2");
@@ -45,7 +48,9 @@ void subt(void *k){
 
 int main(){
 
-    Node p; p.run(pubt);
+    string *tmp = new string("hello");
+
+    Node p; p.run(pubt, (void*)tmp);
     Node s; s.run(subt);
 
     while(gecko::ok());

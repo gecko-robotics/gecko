@@ -28,7 +28,7 @@ public:
 class Node: public SigCapture {
 public:
     ~Node();
-    void run(void(*f)(void*));
+    void run(void(*f)(void*), void* p=nullptr);
 
     std::thread::id getId();
     static void wait();

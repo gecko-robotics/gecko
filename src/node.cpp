@@ -16,8 +16,8 @@ Node::~Node(){
     the_thread.join();
 }
 
-void Node::run(void(*f)(void*)){
-    the_thread = thread(f, &ok);
+void Node::run(void(*f)(void*), void* p){
+    the_thread = thread(f, p);
     pid_t pid = getpid();
     cout << ">> Started: thread " << the_thread.get_id() <<
         " pid " << pid << endl;
