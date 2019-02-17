@@ -30,8 +30,10 @@ void pubt(void *k){
         return;
     }
 
+    uint16_t cnt = 0;
     while(gecko::ok()){
-        zmq::message_t msg("hello",5);
+        string s = "hello " + to_string(cnt++);
+        zmq::message_t msg(s.c_str(), s.size());
         p->pub(msg);
         rate.sleep();
     }
@@ -55,7 +57,10 @@ void subt(void *k){
 
     while(gecko::ok()){
         zmq::message_t m = s->recv_nb();
-        if (m.size() > 0) gecko::log(gecko::DEBUG, "got message\n");
+        if (m.size() > 0) {
+            string cs(reinterpret_cast<const char*>(m.data()), m.size());
+            gecko::log(gecko::DEBUG, "got message: " + cs + "\n");
+        }
         r.sleep();
     }
 

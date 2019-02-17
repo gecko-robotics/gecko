@@ -39,7 +39,7 @@ string zmqTCP(const string& addr){
     endpt += addr;
     endpt += ":*";  // get next available port
     // endpt += port;
-    printf("%s\n", endpt.c_str());
+    printf("zmqTCP: %s\n", endpt.c_str());
     return endpt;
 }
 
@@ -49,7 +49,7 @@ string zmqUDS(const string& file){
     // stringstream ss;
     string endpt = "ipc://";
     endpt += file;
-    printf("%s\n", endpt.c_str());
+    printf("zmqUDS: %s\n", endpt.c_str());
     return endpt;
 }
 
@@ -207,7 +207,8 @@ Subscriber::Subscriber(string addr, bool bind): zmqBase(ZMQ_SUB)
 
 zmq::message_t Subscriber::recv(int flags){
     zmq::message_t msg;
-    if(check()) sock.recv(&msg, flags);
+    // if(check()) sock.recv(&msg, flags);
+    sock.recv(&msg, flags);
     return msg;
 }
 

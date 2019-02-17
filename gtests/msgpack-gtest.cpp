@@ -78,6 +78,7 @@ TEST(msgpack, twist_st) {
     zmq::message_t msg = buffer.pack(a);
     c = buffer.unpack(msg);
     ASSERT_EQ(a,c);
+    ASSERT_EQ(a.timestamp,c.timestamp);
 }
 
 TEST(msgpack, pose_st) {
@@ -91,4 +92,18 @@ TEST(msgpack, pose_st) {
     zmq::message_t msg = buffer.pack(a);
     c = buffer.unpack(msg);
     ASSERT_EQ(a,c);
+    ASSERT_EQ(a.timestamp,c.timestamp);
+}
+
+TEST(msgpack, imu_t) {
+    vec_t v(1,1,1);
+    imu_t a(v,v,v), b(v,v,v), c;
+    ASSERT_EQ(a,b);
+    ASSERT_FALSE(a == c);
+
+    Transport<imu_t> buffer;
+    zmq::message_t msg = buffer.pack(a);
+    c = buffer.unpack(msg);
+    ASSERT_EQ(a,c);
+    ASSERT_EQ(a.timestamp,c.timestamp);
 }

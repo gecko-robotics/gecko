@@ -77,17 +77,23 @@ public:
     MSGPACK_DEFINE(angle, range);
 };
 
-class Lidar: public base_t, public msg_t {
+class lidar_st: public base_t, public msg_t {
 public:
-    Lidar(): base_t(GLIDAR) {}
+    lidar_st(): base_t(GLIDAR) {}
     std::vector<LidarPt> scan;
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), scan);
 };
 
-class Image: public base_t, public msg_t {
+[[deprecated]]
+typedef  lidar_st Lidar;
+
+class image_st: public base_t, public msg_t {
 public:
-    Image(): base_t(GIMAGE) {}
+    image_st(): base_t(GIMAGE) {}
     // std::vector<LidarPt> scan;
     int width, height, depth;
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), width, height, depth);
 };
+
+[[deprecated]]
+typedef  image_st Image;

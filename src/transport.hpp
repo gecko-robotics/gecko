@@ -91,6 +91,6 @@ class Request: public zmqBase {
 public:
     Request(std::string);
     zmq::message_t get(zmq::message_t&,int flags=0);
-    zmq::message_t get_nb(zmq::message_t& req){return get(req, ZMQ_DONTWAIT);}
+    inline zmq::message_t get_nb(zmq::message_t& req){return get(req, ZMQ_DONTWAIT);}
 protected:
 };
