@@ -16,7 +16,7 @@ void pubt(){
 
     Rate rate(2);
 
-    Publisher *p = gecko::advertise("local", "bob2");
+    Publisher *p = gecko::pubBindTCP("local", "bob2");
     if (p == nullptr) return;
 
     while(gecko::ok()){
@@ -32,7 +32,7 @@ void pubt(){
 
 void subt(){
     gecko::init();
-    Subscriber *s = gecko::subscribe("local", "bob2");
+    Subscriber *s = gecko::subConnectTCP("local", "bob2");
     if (s == nullptr) return;
     Rate r(10);
 
@@ -57,13 +57,10 @@ int main(){
     //     (char*)("12345")
     // };
 
-    // system("../../pycore/pycore.py");
-
-
     thread t1(pubt); t1.detach();
     thread t2(subt); t2.detach();
 
-    while(gecko::ok());
+    gecko::wait();
 
     return 0;
 }

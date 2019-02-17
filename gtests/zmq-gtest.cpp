@@ -5,7 +5,7 @@
 using namespace std;
 
 
-TEST(zmqTCP, CStrEqual) {
-    EXPECT_STREQ("tcp://1.2.3.4:*", zmqTCP("1.2.3.4").c_str());
-    // EXPECT_STREQ("tcp://1.2.3.4:12345", zmqTCP("1.2.3.4", "12345").c_str());
+TEST(zmq, endpoint) {
+    EXPECT_TRUE("tcp://1.2.3.4:*" == zzmqTCP("1.2.3.4").endpoint);
+    EXPECT_TRUE("ipc://file" == zzmqUDS("file").endpoint);
 }

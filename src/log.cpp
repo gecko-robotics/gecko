@@ -1,14 +1,48 @@
 #include "log.hpp"
 #include <string>
-#include <vector>
-#include <sstream>
-#include <map>
+// #include <vector>
+// #include <sstream>
+#include <iostream>
+// #include <map>
 #include "color.hpp"
 
 using namespace std;
 
 
 // Logg::Logger(){}
+
+Logger::Logger(): publisher(nullptr){
+    type = Logger::STDOUT;
+}
+
+Logger::Logger(std::string key, std::string topic, bool tcp){
+    if (tcp){
+        type = Logger::TCP;
+        publisher = gecko::pubConnectTCP(key, topic);
+    }
+    else {
+        type = Logger::UDS;
+        publisher = gecko::pubConnectUDS(key, topic);
+    }
+
+    if (publisher == nullptr){
+        ColorPrint cp;
+        string msg = cp.color(
+            ColorPrint::Color::Red,
+            "** Logger::Logger couldn't connect to " + key + " " + topic
+        );
+        cout << msg << endl;
+    }
+}
+
+// Logger::Logger(std::string file){
+//     type = Logger::UDS;
+//     publisher = gecko::pubConnectUDS(key, topic);
+//     if (publisher == nullptr){
+//         ColorPrint cp;
+//         cout << cp.color("** Logger::Logger couldn't connect to " + file) << endl;
+//     }
+// }
 
 
 void Logger::logerror(const std::string& s) const {
@@ -35,11 +69,22 @@ void Logger::logdebug(const std::string& s) const {
 
 
 void Logger::log(const std::string& s) const {
-    printf("%s", s.c_str());
+    if (type == Logger::STDOUT) printf("%s", s.c_str());
+    // if (type & Logger::TCP){
+    //     zmq::message_t msg((void*)s.c_str(), s.size());
+    //     publisher->pub(msg);
+    // }
+    // else if (type & Logger::UDS) {
+    //     publisher->pub(s);
+    // }
+    else if (type == Logger::TCP || type == Logger::UDS){
+        zmq::message_t msg((void*)s.c_str(), s.size());
+        publisher->pub(msg);
+    }
 }
 
 
-void LogPub::log(const std::string& s) const {
-    printf("logpub\n");
-    printf("%s", s.c_str());
-}
+// void LogPub::log(const std::string& s) const {
+//     printf("logpub\n");
+//     printf("%s", s.c_str());
+// }

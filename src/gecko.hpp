@@ -12,6 +12,8 @@
 #include "color.hpp"       // ColorPrint
 #include "log.hpp"         // logging, local and remote
 #include "signals.hpp"
+#include "msocket.hpp"
+#include "ascii.hpp"
 
 // msgpack stuff
 #include <msgpack.hpp>

@@ -109,6 +109,7 @@ public:
 class Twist: public base_t {
 public:
     Twist(): base_t(GTWIST) {}
+    Twist(vec_t a, vec_t b): base_t(GTWIST),linear(a), angular(b) {}
     vec_t linear, angular;
     bool operator==(const Twist& v) const {
         if((linear == v.linear) && (angular == v.angular) && (type == v.type)) return true;
@@ -117,15 +118,24 @@ public:
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), linear, angular);
 };
 
+typedef Twist twist_t;
+
 class Wrench: public base_t {
+public:
     Wrench(): base_t(GWRENCH) {}
+    Wrench(vec_t a, vec_t b): base_t(GWRENCH), force(a), torque(b) {}
+
     vec_t force, torque;
+
     bool operator==(const Wrench& v) const {
         if((force == v.force) && (torque == v.torque) && (type == v.type)) return true;
         return false;
     }
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), force, torque);
 };
+
+
+typedef Wrench wrench_t;
 
 class Pose: public base_t {
 public:
@@ -147,6 +157,8 @@ public:
     }
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), position, orientation);
 };
+
+typedef Pose pose_t;
 
 // class LidarPt {
 // public:

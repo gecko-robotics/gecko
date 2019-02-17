@@ -1,9 +1,10 @@
 
 #include "geckocpp.hpp"
 #include <thread>
-#include <pwd.h>  // geteuid,getpwuid
+#include <pwd.h>        // geteuid,getpwuid
 #include <sys/types.h>  // umask
-#include <sys/stat.h>  // umask
+#include <sys/stat.h>   // umask
+#include <unistd.h>     // getpid
 #include <iostream>
 #include "log.hpp"
 #include "signals.hpp"
@@ -203,19 +204,19 @@ void gecko::init(string mc, int port){
 //     return nullptr;
 // }
 
-Publisher* gecko::advertise(string key, string topic, bool bind){
-    Publisher *p = nullptr;
-    if (bind) p = binder<Publisher,zzmqTCP>(key,topic,host_addr);
-    else p = connecter<Publisher>(key,topic);
-    return p;
-}
-
-Subscriber* gecko::subscribe(string key, string topic, bool bind){
-    Subscriber *s = nullptr;
-    if (bind) s = binder<Subscriber,zzmqTCP>(key,topic,host_addr);
-    else s = connecter<Subscriber>(key,topic);
-    return s;
-}
+// Publisher* gecko::advertise(string key, string topic, bool bind){
+//     Publisher *p = nullptr;
+//     if (bind) p = binder<Publisher,zzmqTCP>(key,topic,host_addr);
+//     else p = connecter<Publisher>(key,topic);
+//     return p;
+// }
+//
+// Subscriber* gecko::subscribe(string key, string topic, bool bind){
+//     Subscriber *s = nullptr;
+//     if (bind) s = binder<Subscriber,zzmqTCP>(key,topic,host_addr);
+//     else s = connecter<Subscriber>(key,topic);
+//     return s;
+// }
 
 
 // Subscriber* gecko::subBind(string key, string topic, bool tcp){
@@ -250,7 +251,7 @@ Subscriber* gecko::subConnectTCP(string key, string topic){
     return connecter<Subscriber>(key, topic);
 }
 
-Subscriber* gecko::subConnectUDS(string key, string topic, string file){
+Subscriber* gecko::subConnectUDS(string key, string topic){
     return connecter<Subscriber>(key, topic);
 }
 
@@ -266,7 +267,7 @@ Publisher* gecko::pubConnectTCP(string key, string topic){
     return connecter<Publisher>(key, topic);
 }
 
-Publisher* gecko::pubConnectUDS(string key, string topic, string file){
+Publisher* gecko::pubConnectUDS(string key, string topic){
     return connecter<Publisher>(key, topic);
 }
 
