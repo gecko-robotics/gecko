@@ -106,28 +106,29 @@ public:
 //     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), accel, gyro, mag);
 // };
 //
-class Twist: public base_t {
+class twist_t: public base_t {
 public:
-    Twist(): base_t(GTWIST) {}
-    Twist(vec_t a, vec_t b): base_t(GTWIST),linear(a), angular(b) {}
+    twist_t(): base_t(GTWIST) {}
+    twist_t(vec_t a, vec_t b): base_t(GTWIST),linear(a), angular(b) {}
     vec_t linear, angular;
-    bool operator==(const Twist& v) const {
+    bool operator==(const twist_t& v) const {
         if((linear == v.linear) && (angular == v.angular) && (type == v.type)) return true;
         return false;
     }
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), linear, angular);
 };
 
-typedef Twist twist_t;
+[[deprecated]]
+typedef twist_t Twist;
 
-class Wrench: public base_t {
+class wrench_t: public base_t {
 public:
-    Wrench(): base_t(GWRENCH) {}
-    Wrench(vec_t a, vec_t b): base_t(GWRENCH), force(a), torque(b) {}
+    wrench_t(): base_t(GWRENCH) {}
+    wrench_t(vec_t a, vec_t b): base_t(GWRENCH), force(a), torque(b) {}
 
     vec_t force, torque;
 
-    bool operator==(const Wrench& v) const {
+    bool operator==(const wrench_t& v) const {
         if((force == v.force) && (torque == v.torque) && (type == v.type)) return true;
         return false;
     }
@@ -135,30 +136,32 @@ public:
 };
 
 
-typedef Wrench wrench_t;
+[[deprecated]]
+typedef wrench_t Wrench;
 
-class Pose: public base_t {
+class pose_t: public base_t {
 public:
-    Pose(): base_t(GPOSE) {}
-    Pose(vec_t p, quaternion_t q): base_t(GPOSE), position(p), orientation(q) {}
-    Pose(const Pose& p): base_t(GPOSE), position(p.position), orientation(p.orientation) {}
+    pose_t(): base_t(GPOSE) {}
+    pose_t(vec_t p, quaternion_t q): base_t(GPOSE), position(p), orientation(q) {}
+    pose_t(const pose_t& p): base_t(GPOSE), position(p.position), orientation(p.orientation) {}
     vec_t position;
     quaternion_t orientation;
 
-    bool operator==(const Pose& v) const {
+    bool operator==(const pose_t& v) const {
         if((position == v.position) && (orientation == v.orientation) && (type == v.type)) return true;
         return false;
     }
 
     void print() const {
-        printf("Pose\n");
+        printf("pose_t\n");
         position.print();
         orientation.print();
     }
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), position, orientation);
 };
 
-typedef Pose pose_t;
+[[deprecated]]
+typedef pose_t Pose;
 
 // class LidarPt {
 // public:

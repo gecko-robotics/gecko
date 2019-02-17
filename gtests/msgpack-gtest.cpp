@@ -67,3 +67,28 @@ TEST(msgpack, wrench_t) {
     c = buffer.unpack(msg);
     ASSERT_EQ(a,c);
 }
+
+TEST(msgpack, twist_st) {
+    vec_t v(1,1,1);
+    twist_st a(v,v), b(v,v), c;
+    ASSERT_EQ(a,b);
+    ASSERT_FALSE(a == c);
+
+    Transport<twist_st> buffer;
+    zmq::message_t msg = buffer.pack(a);
+    c = buffer.unpack(msg);
+    ASSERT_EQ(a,c);
+}
+
+TEST(msgpack, pose_st) {
+    vec_t v(1,1,1);
+    quaternion_t q(1,0,0,0);
+    pose_st a(v,q), b(v,q), c;
+    ASSERT_EQ(a,b);
+    ASSERT_FALSE(a == c);
+
+    Transport<pose_st> buffer;
+    zmq::message_t msg = buffer.pack(a);
+    c = buffer.unpack(msg);
+    ASSERT_EQ(a,c);
+}

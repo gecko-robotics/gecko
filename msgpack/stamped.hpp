@@ -22,7 +22,7 @@ class imu_t: public base_t, public msg_t  {
 public:
     imu_t(): base_t(GIMU) {}
     imu_t(const imu_t& i): base_t(GIMU), msg_t(i.timestamp), accel(i.accel), gyro(i.gyro), mag(i.mag) {}
-    imu_t(vec_t a, vec_t g, vec_t m): base_t(GIMU), accel(a), gyro(g), mag(m) {}
+    imu_t(const vec_t& a, const vec_t& g, const vec_t& m): base_t(GIMU), accel(a), gyro(g), mag(m) {}
     vec_t accel, gyro, mag;
 
     void print() const {
@@ -40,22 +40,31 @@ public:
     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), accel, gyro, mag);
 };
 
-class TwistStamped: public base_t, public msg_t {
+class twist_st: public twist_t, public msg_t {
 public:
-    TwistStamped(): base_t(GTWIST) {}
-    vec_t linear, angular;
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), linear, angular);
+    twist_st() {}
+    twist_st(const vec_t& l, const vec_t& a): twist_t(l,a) {}
+    // bool operator==(const twist_st& v) const {
+    //     if((linear == v.linear) && (angular == v.angular) && (type == v.type)) return true;
+    //     return false;
+    // }
+    // vec_t linear, angular;
+    // MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), linear, angular);
+    MSGPACK_DEFINE(MSGPACK_BASE(twist_t), MSGPACK_BASE(msg_t));
 };
 
-class PoseStamped: public Pose, public msg_t {
+class pose_st: public pose_t, public msg_t {
 public:
-    PoseStamped() {}
-    PoseStamped(vec_t p, quaternion_t q): Pose(p, q) {}
-    PoseStamped(const PoseStamped& p): Pose(p.position, p.orientation), msg_t(p.timestamp) {}
+    pose_st() {}
+    pose_st(vec_t p, quaternion_t q): Pose(p, q) {}
+    pose_st(const pose_st& p): Pose(p.position, p.orientation), msg_t(p.timestamp) {}
 
-    void print() const {printf("PoseStamped [%f]\n", timestamp);}
-    MSGPACK_DEFINE(MSGPACK_BASE(Pose), MSGPACK_BASE(msg_t));
+    void print() const {printf("pose_st [%f]\n", timestamp);}
+    MSGPACK_DEFINE(MSGPACK_BASE(pose_t), MSGPACK_BASE(msg_t));
 };
+
+[[deprecated]]
+typedef  pose_st PoseStamped;
 
 class LidarPt {
 public:
