@@ -87,7 +87,10 @@ class BeaconCoreServer(BeaconBase):
         self.exit = True
 
     def print(self):
-        print('\nKnown Services', '-'*40)
+        print(" ")
+        print("="*40)
+        print(" Listening on: {}:{}".format(self.mcast_addr, self.mcast_port))
+        print('Known Services', '-'*40)
         for k,v in self.services.items():
             print(" * {}: {}".format(k,v))
         print('\nPerformance', '-'*40)
