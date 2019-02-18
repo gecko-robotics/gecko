@@ -1,13 +1,7 @@
 #pragma once
 
 #include "gecko.hpp"
-// #include <iostream>
-// #include <sstream>
-// #include <thread>
-// #include <mutex>
 #include <string>
-// #include <stdio.h>
-// #include "color.hpp"
 
 class Logger {
 public:
