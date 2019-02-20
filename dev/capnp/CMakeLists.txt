@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.10)
+project(test)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+find_package(CapnProto CONFIG REQUIRED)
+if(CapnProto_FOUND)
+    message(STATUS ">> ${PROJECT_NAME} <<")
+    message(STATUS "CapnProto found: ${CapnProto_VERSION}")
+    message(STATUS "include: ${CAPNP_INCLUDE_DIRS}")
+    message(STATUS "lib: ${CAPNP_LIBRARIES}")
+endif()
+
+file(GLOB MSGS *.capnp)
+capnp_generate_cpp(MSGS_SRCS MSGS_HDRS ${MSGS})
+add_executable(${PROJECT_NAME} main.cpp ${MSGS_SRCS})
+target_link_libraries(${PROJECT_NAME}  CapnProto::capnp)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

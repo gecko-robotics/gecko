@@ -39,6 +39,10 @@ something found *in* the message sent
     - right now my core is written python ... i want to convert it c++ eventually
 - pub/sub and req/rep working
 - need to sort out `Node` and `gecko` classes, they sort of do the same thing
+- currently use msgpack, looking at others like capnp
+    - currently have to rewrite the message format for c++ *and* rewrite for
+    python ... sucks
+- https://conan.io/ ???
 
 ## Multicast Messages
 
