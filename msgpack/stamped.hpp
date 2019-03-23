@@ -37,7 +37,8 @@ public:
         return false;
     }
 
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), accel, gyro, mag);
+    // MSGPACK_DEFINE(accel, gyro, mag, MSGPACK_BASE(msg_t));
+    MSGPACK_DEFINE(accel, gyro, mag, timestamp);
 };
 
 class twist_st: public twist_t, public msg_t {
@@ -49,8 +50,8 @@ public:
     //     return false;
     // }
     // vec_t linear, angular;
-    // MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), linear, angular);
-    MSGPACK_DEFINE(MSGPACK_BASE(twist_t), MSGPACK_BASE(msg_t));
+    MSGPACK_DEFINE(linear, angular, timestamp);
+    // MSGPACK_DEFINE(MSGPACK_BASE(twist_t), MSGPACK_BASE(msg_t));
 };
 
 class pose_st: public pose_t, public msg_t {
@@ -60,7 +61,7 @@ public:
     pose_st(const pose_st& p): Pose(p.position, p.orientation), msg_t(p.timestamp) {}
 
     void print() const {printf("pose_st [%f]\n", timestamp);}
-    MSGPACK_DEFINE(MSGPACK_BASE(pose_t), MSGPACK_BASE(msg_t));
+    MSGPACK_DEFINE(MSGPACK_BASE(pose_t), timestamp);
 };
 
 [[deprecated]]
@@ -81,7 +82,7 @@ class lidar_st: public base_t, public msg_t {
 public:
     lidar_st(): base_t(GLIDAR) {}
     std::vector<LidarPt> scan;
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), scan);
+    MSGPACK_DEFINE(scan, timestamp);
 };
 
 [[deprecated]]
@@ -92,7 +93,7 @@ public:
     image_st(): base_t(GIMAGE) {}
     // std::vector<LidarPt> scan;
     int width, height, depth;
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), width, height, depth);
+    MSGPACK_DEFINE(width, height, depth, timestamp);
 };
 
 [[deprecated]]

@@ -50,7 +50,8 @@ public:
     }
 
     double x,y,z;
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t),x,y,z);
+    // MSGPACK_DEFINE(MSGPACK_BASE(base_t),x,y,z);
+    MSGPACK_DEFINE(x,y,z);
 };
 
 typedef vec_t point_t;
@@ -68,7 +69,7 @@ public:
     void print() const {
         printf(" [%f %f %f %f]\n",w,x,y,z);
     }
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), w,x,y,z);
+    MSGPACK_DEFINE(w,x,y,z);
 };
 
 // class msg_t {
@@ -103,7 +104,7 @@ public:
 //         return false;
 //     }
 //
-//     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), accel, gyro, mag);
+//     MSGPACK_DEFINE(MSGPACK_BASE(msg_t), accel, gyro, mag);
 // };
 //
 class twist_t: public base_t {
@@ -115,7 +116,7 @@ public:
         if((linear == v.linear) && (angular == v.angular) && (type == v.type)) return true;
         return false;
     }
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), linear, angular);
+    MSGPACK_DEFINE(linear, angular);
 };
 
 [[deprecated]]
@@ -132,7 +133,7 @@ public:
         if((force == v.force) && (torque == v.torque) && (type == v.type)) return true;
         return false;
     }
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), force, torque);
+    MSGPACK_DEFINE(force, torque);
 };
 
 
@@ -157,7 +158,7 @@ public:
         position.print();
         orientation.print();
     }
-    MSGPACK_DEFINE(MSGPACK_BASE(base_t), position, orientation);
+    MSGPACK_DEFINE(position, orientation);
 };
 
 [[deprecated]]
@@ -177,5 +178,5 @@ typedef pose_t Pose;
 // public:
 //     Lidar(): base_t(GLIDAR) {}
 //     std::vector<LidarPt> scan;
-//     MSGPACK_DEFINE(MSGPACK_BASE(base_t), MSGPACK_BASE(msg_t), scan);
+//     MSGPACK_DEFINE(MSGPACK_BASE(msg_t), scan);
 // };
