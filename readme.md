@@ -33,6 +33,27 @@ something found *in* the message sent
     - Periodically (~3 sec) broadcasts performance [TBD]
     - Interface to message logging [TBD]
 
+# macOS
+
+```
+brew install msgpack
+```
+
+# Linux (Ubuntu)
+
+The `apt` package is old, so to use the current one and compile
+it for C++17 and install it to `~/.local` (to not polute my system
+libraries), I do:
+
+```
+git clone https://github.com/msgpack/msgpack-c.git
+cd msgpack-c
+mkdir build
+cd build
+cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=/home/kevin/.local ..
+make install
+```
+
 # Status
 
 - multicast works (sort of)
