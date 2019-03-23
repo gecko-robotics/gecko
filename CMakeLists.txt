@@ -12,29 +12,53 @@ message(STATUS "-------------------------------------")
 
 # set path for FindXXX.cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
+set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
 list(APPEND ALL_LIBS "")
+
+message(STATUS $ENV{HOME})
 
 # Add local -----------------------------------------------------
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
+include_directories($ENV{HOME}/.local/include)
+link_directories($ENV{HOME}/.local/lib)
+
+# find_package(msgpack REQUIRED)
+# message(STATUS ">> MsgPack Found: ${msgpack_VERSION}")
+
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
 # Get msgpack -----------------------------------------------------
-pkg_check_modules(MessagePack REQUIRED msgpack)
-if(MessagePack_FOUND)
-    include_directories(${MessagePack_INCLUDE_DIR})
-    message(STATUS ">> MsgPack Found: ${MessagePack_VERSION}")
+if(APPLE)
+  pkg_check_modules(MessagePack REQUIRED msgpack)
+  if(MessagePack_FOUND)
+      include_directories(${MessagePack_INCLUDE_DIR})
+      message(STATUS ">> MsgPack Found: ${MessagePack_VERSION}")
 
-    list(APPEND ALL_LIBS ${ALL_LIBS} ${MessagePack_LIBRARIES})
+      list(APPEND ALL_LIBS ${ALL_LIBS} ${MessagePack_LIBRARIES})
 
-    # this is a template library, so no cpp
-    include_directories(msgpack)
+      # this is a template library, so no cpp
+      include_directories(msgpack)
 
-else()
-    message(WARNING "\n<<--- Could not find MsgPack --->>\n")
+  else()
+      message(WARNING "\n<<--- Could not find MsgPack --->>\n")
+  endif()
+elseif(UNIX)
+  find_package(msgpack REQUIRED)
+  if(msgpack_FOUND)
+      include_directories(${msgpack_INCLUDE_DIR})
+      message(STATUS ">> MsgPack Found: ${msgpack_VERSION}")
+
+      list(APPEND ALL_LIBS ${ALL_LIBS} ${msgpack_LIBRARIES})
+
+      # this is a template library, so no cpp
+      include_directories(msgpack)
+
+  else()
+      message(WARNING "\n<<--- Could not find MsgPack --->>\n")
+  endif()
 endif()
 
 # Get zlib -----------------------------------------------------
@@ -88,7 +112,7 @@ list(APPEND tests
     tests/zmq-test.cpp
     tests/time-test.cpp
     tests/ip-test.cpp
-    tests/proc-test.cpp
+    # tests/proc-test.cpp
     tests/node-test.cpp
     tests/node-2-test.cpp
     tests/node-3-test.cpp
@@ -118,15 +142,15 @@ endforeach()
 
 list(APPEND msgpktests
     tests/msgpack-test.cpp
-    tests/msgpack-2-test.cpp
+    # tests/msgpack-2-test.cpp
     # tests/msgpack-3-test.cpp
     tests/msgpack-4-test.cpp
     tests/msgpack-5-test.cpp
     tests/msgpack-6-test.cpp
     tests/msgpack-7-test.cpp
     tests/msgpack-8-test.cpp
-    tests/msgpack-zlib-test.cpp
-    tests/zlib-test.cpp
+    # tests/msgpack-zlib-test.cpp
+    # tests/zlib-test.cpp
     # tests/multicast-test.cpp
     # tests/multicast-2-test.cpp
 )

@@ -1,5 +1,6 @@
 #include "node.hpp"
 #include <thread>
+#include <string.h>  // strdup
 #include <iostream>
 #include <pwd.h>        // geteuid,getpwuid
 #include <sys/types.h>  // umask, getpid

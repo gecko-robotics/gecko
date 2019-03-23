@@ -1,6 +1,7 @@
 
 #include "geckocpp.hpp"
 #include <thread>
+#include <mutex>
 #include <pwd.h>        // geteuid,getpwuid
 #include <sys/types.h>  // umask
 #include <sys/stat.h>   // umask
@@ -11,7 +12,7 @@
 
 
 using namespace std;
-
+// using std::mutex;
 
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
