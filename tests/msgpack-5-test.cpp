@@ -27,13 +27,13 @@ int main(){
     cout << "main message_t size: " << m.size() << endl;
     cout << "main addr: " << &m << endl;
 
-    vector<imu_t> resp;
-    buffer.unpack(m, resp);
-
-    for (const imu_t& i: resp) {
-        i.print();
-        assert(a == i);
-    }
+    // vector<imu_t> resp;
+    // buffer.unpack(m, resp);
+    //
+    // for (const imu_t& i: resp) {
+    //     i.print();
+    //     assert(a == i);
+    // }
 
     return 0;
 }
