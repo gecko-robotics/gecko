@@ -7,6 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 message(STATUS "-------------------------------------")
 message(STATUS "  Project: ${PROJECT_NAME}")
+message(STATUS "  C++ ${CMAKE_CXX_STANDARD}")
 message(STATUS "-------------------------------------")
 
 # set path for FindXXX.cmake
