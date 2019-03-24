@@ -1,0 +1,12 @@
+message(STATUS "Gecko Tools ----------------------")
+list(APPEND tools
+    logserver/logserver.cpp
+    echo/echo.cpp
+)
+
+foreach(src ${tools})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+    add_executable(${name} ${src})
+    target_link_libraries(${name} ${ALL_LIBS})
+endforeach()
