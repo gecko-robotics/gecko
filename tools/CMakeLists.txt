@@ -9,4 +9,6 @@ foreach(src ${tools})
     message(STATUS " -> ${name}")
     add_executable(${name} ${src})
     target_link_libraries(${name} ${ALL_LIBS})
+
+    install(TARGETS ${name} DESTINATION bin)
 endforeach()

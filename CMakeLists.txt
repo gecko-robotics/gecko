@@ -154,9 +154,11 @@ add_subdirectory(msgpack)
 add_subdirectory(tools)
 
 # Install ----------
-# cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+# You can redefine at build time:
+#   cmake .. -DCMAKE_INSTALL_PREFIX=/home/kevin/.local
+# To create debian package, run: make package
 #
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 file(GLOB HEADERS src/*.hpp)
-install(FILES ${HEADERS} DESTINATION include)
+install(FILES ${HEADERS} DESTINATION include/gecko)
