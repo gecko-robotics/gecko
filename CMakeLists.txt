@@ -162,3 +162,5 @@ install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 file(GLOB HEADERS src/*.hpp)
 install(FILES ${HEADERS} DESTINATION include/gecko)
+file(GLOB MPHEADERS msgpack/*.hpp)
+install(FILES ${MPHEADERS} DESTINATION include/gecko/msgpack)
