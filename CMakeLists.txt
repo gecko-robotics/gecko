@@ -152,3 +152,11 @@ add_subdirectory(tests)
 add_subdirectory(gtests)
 add_subdirectory(msgpack)
 add_subdirectory(tools)
+
+# Install ----------
+# cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+#
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+file(GLOB HEADERS src/*.hpp)
+install(FILES ${HEADERS} DESTINATION include)
