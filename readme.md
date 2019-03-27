@@ -5,8 +5,8 @@ This library uses:
 - [ZeroMQ](https://zeromq.org) for sending an receiving messages, it uses:
     - Subscribe/publish
     - Request/reply
-- [Msgpack]() for serialization of messages
-- [zlib]() for compression of serialized messages (**TBD**)
+- [Msgpack](https://msgpack.org/index.html) for serialization of messages
+- [zlib](https://www.zlib.net/) for compression of serialized messages (**TBD**)
 - C++17 syntax
 
 ## ROS Influence
