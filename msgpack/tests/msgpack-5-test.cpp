@@ -26,6 +26,7 @@ int main(){
 
     cout << "main message_t size: " << m.size() << endl;
     cout << "main addr: " << &m << endl;
+    cout << "message: " << m << endl;
 
     // vector<imu_t> resp;
     // buffer.unpack(m, resp);
