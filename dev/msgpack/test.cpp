@@ -7,6 +7,7 @@
 #include <iostream>
 #include "zmq.hpp"
 #include "zmq_addon.hpp"
+#include "gecko.hpp"
 
 using namespace std;
 
@@ -127,8 +128,53 @@ msg MsgPack<msg>::unpack(const zmq::message_t& zm){
 }
 
 
+// void sub()
+// {
+//     reqrep_t t = {"hi", "hello",12345};
+//     reqrep_t t2 = {"hi2"};
+//     cout << t.topic << t.endpoint << endl;
+//     cout << t2.topic << t2.endpoint << endl;
+//     // string endpt("tcp://127.0.0.1:12900");
+//     string endpt("ipc:///tmp/0");
+//     Subscriber s(endpt);
+//     MsgPack<imu_t> buffer;
+//
+//     double last = 0;
+//     while (true)
+//     {
+//         zmq::message_t msg = s.recv();
+//         imu_t m = buffer.unpack(msg);
+//         cout << "time diff: " << m.timestamp - last << endl;
+//         last = m.timestamp;
+//     }
+// }
+
+void pub()
+{
+    // string endpt("tcp://127.0.0.1:12900");
+    string endpt("ipc:///tmp/0");
+    Publisher p(endpt);
+
+    MsgPack<imu_t> buffer;
+
+    while (true)
+    {
+        vec_t a(1,2,3);
+        imu_t b(a,a,a);  // new timestamp
+        zmq::message_t msg = buffer.pack(b);
+
+        p.pub(msg);
+
+        std::cout << "pub" << std::endl;
+        sleep(1);
+        // usleep(100000);
+    }
+}
+
+
 
 int main(){
+    pub();
     // printf("hello\n");
     //
     // vec_t a(1,-2,3.3), b(1,-2,3.3), c(3,3,3);
@@ -139,17 +185,17 @@ int main(){
     // c = buffer.unpack(msg);
     // assert(a == c);
 
-    vec_t v(1000,-1,0.0001);
-    imu_t a(v,v,v), b(v,v,v), c;
-
-    MsgPack<imu_t> buffer;
-    zmq::message_t msg = buffer.pack(a);
-    c = buffer.unpack(msg);
-    assert(a == c);
-    assert(a.timestamp == c.timestamp);
-
-    a.print();
-    c.print();
+    // vec_t v(1000,-1,0.0001);
+    // imu_t a(v,v,v), b(v,v,v), c;
+    //
+    // MsgPack<imu_t> buffer;
+    // zmq::message_t msg = buffer.pack(a);
+    // c = buffer.unpack(msg);
+    // assert(a == c);
+    // assert(a.timestamp == c.timestamp);
+    //
+    // a.print();
+    // c.print();
 
     // string s = "hello";
     // MsgPack<std::string> b2;

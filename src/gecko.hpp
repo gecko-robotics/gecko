@@ -14,10 +14,11 @@
 #include "signals.hpp"
 #include "msocket.hpp"
 #include "ascii.hpp"
+#include <unistd.h>        // sleep, usleep
 
 // msgpack stuff
-#include <msgpack.hpp>
-#include "msgs.hpp"  // includes all message headers
+// #include <msgpack.hpp>
+// #include "msgs.hpp"  // includes all message headers
 
 // copy header from here
 // https://github.com/zeromq/cppzmq
