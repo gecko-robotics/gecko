@@ -15,6 +15,10 @@ class mpPublisher {
 public:
 
     mpPublisher(Publisher *p): pub(p) {};
+    ~mpPublisher(){
+        if (pub == nullptr) return;
+        pub->close();
+    }
 
     void publish(const T& msg){
         zmq::message_t m = buffer.pack(msg);
@@ -31,6 +35,10 @@ class mpSubscriber {
 public:
 
     mpSubscriber(Subscriber *s): sub(s) {};
+    ~mpSubscriber(){
+        if (sub == nullptr) return;
+        sub->close();
+    }
 
     T recv(){
         zmq::message_t m = sub->recv();

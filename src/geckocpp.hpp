@@ -8,17 +8,9 @@ namespace gecko {
 
     // functions ---------------------------------
     void init(std::string mc={"224.3.29.110"}, int port=11311);
-
-    // [[deprecated("Use *bind* or *connect* functions")]]
-    // Publisher* advertise(std::string key, std::string topic, bool bind=true);
-    //
-    // [[deprecated("Use *bind* or *connect* functions")]]
-    // Subscriber* subscribe(std::string key, std::string topic, bool bind=false);
-
-    // void wait();  // value?
     bool ok();  // still running? true/false
     inline bool is_shutdown(){return !ok();} // stopping? true/false
-    void shutdown(); // shutdown gecko
+    // void shutdown(); // shutdown gecko
 
     Subscriber* subBindTCP(std::string key, std::string topic);
     Subscriber* subBindUDS(std::string key, std::string topic, std::string file);

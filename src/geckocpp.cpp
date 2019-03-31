@@ -26,7 +26,7 @@ namespace gecko {
     static int mc_port = 11311;
     // Time time;
     Logger logger;
-    static SigCapture sig;
+    static SigCapture sig; // this should be in init ... not global activation
 
 //
 // template<typename T, typename EP>
@@ -117,13 +117,15 @@ bool gecko::ok(){
     return sig.ok;
 }
 
-void gecko::shutdown(){
-    sig.ok = false;
-}
+// void gecko::shutdown(){
+//     sig.ok = false;
+// }
 
 void gecko::init(string mc, int port){
     lock_guard<mutex> guard(g_mutex);
     if (initialized) return;
+
+    sig.on();
 
     mc_addr = mc;
     mc_port = port;
@@ -140,111 +142,6 @@ void gecko::init(string mc, int port){
     // printf(" key: %s\n", key.c_str());
     printf("\n");
 }
-
-// Publisher* gecko::advertise(string key, string topic, bool bind){
-//     string addr = zmqTCP(host_addr);  // bind to next available port
-//     Publisher *p = new Publisher(addr, true);
-//     int retry = 5;
-//
-//     SSocket ss;
-//     ss.init(mc_addr, mc_port);
-//
-//     Ascii a;
-//     pid_t pid = getpid();
-//     ascii_t tmp = {key,topic,to_string(pid),p->endpoint};
-//     string msg = a.pack(tmp);
-//
-//     for (int i=0; i<retry; i++){
-//         ss.send(msg);
-//         printf("pub send\n");
-//         string ans = ss.recv(900);
-//
-//         if(!ans.empty()){
-//             ascii_t t = a.unpack(ans);
-//             if(t.size() == 4){
-//                 if (t.back() == "ok") {
-//                     string topic = t[1];
-//                     printf(">> PUB[%s]: %s\n",
-//                         topic.c_str(),
-//                         t.back().c_str());
-//                     return p;
-//                 }
-//                 // else cout << "** pub t.back() " << t.back() << endl;
-//             }
-//         }
-//     }
-//     delete p;
-//     return nullptr;
-// }
-
-// Subscriber* gecko::subscribe(string key, string topic, bool bind){
-//     SSocket ss;
-//     ss.init(mc_addr, mc_port);
-//     int retry = 5;
-//
-//     Ascii a;
-//     pid_t pid = getpid();
-//     ascii_t tmp = {key,topic, to_string(pid)};
-//     string msg = a.pack(tmp);
-//
-//     for (int i=0; i<retry; i++){
-//         ss.send(msg);
-//         printf("sub send\n");
-//         string ans = ss.recv();
-//         // cout << "sub ans " << ans << ' ' << ans.size() << endl;
-//
-//         if(!ans.empty()){
-//             ascii_t t = a.unpack(ans);
-//             if(t.size() == 3){
-//                 // cout << "t.back() " << t.back() << endl;
-//                 if (t[0] == key && t[1] == topic) {
-//                     string endpt = t[2];
-//                     printf(">> SUB[%s]: %s\n",topic.c_str(), endpt.c_str());
-//
-//                     return new Subscriber(endpt, false);
-//                 }
-//                 // else cout << "** invalid ans " << ans << endl;
-//             }
-//         }
-//     }
-//
-//     return nullptr;
-// }
-
-// Publisher* gecko::advertise(string key, string topic, bool bind){
-//     Publisher *p = nullptr;
-//     if (bind) p = binder<Publisher,zzmqTCP>(key,topic,host_addr);
-//     else p = connecter<Publisher>(key,topic);
-//     return p;
-// }
-//
-// Subscriber* gecko::subscribe(string key, string topic, bool bind){
-//     Subscriber *s = nullptr;
-//     if (bind) s = binder<Subscriber,zzmqTCP>(key,topic,host_addr);
-//     else s = connecter<Subscriber>(key,topic);
-//     return s;
-// }
-
-
-// Subscriber* gecko::subBind(string key, string topic, bool tcp){
-//     Subscriber* s;
-//     if (tcp) s = binder<Subscriber,zzmqTCP>(key, topic, host_addr);
-//     else s = binder<Subscriber,zzmqUDS>(key, topic, host_addr);
-// }
-
-// Subscriber* gecko::subTCP(string key, string topic, bool bind){
-//     Subscriber *s = nullptr;
-//     if (bind) s = binder<Subscriber,zzmqTCP>(key,topic,host_addr);
-//     else s = connecter<Subscriber>(key,topic);
-//     return s;
-// }
-//
-// Subscriber* gecko::subUDS(string key, string topic, bool bind){
-//     Subscriber *s = nullptr;
-//     if (bind) s = binder<Subscriber,zzmqUDS>(key,topic,host_addr);
-//     else s = connecter<Subscriber>(key,topic);
-//     return s;
-// }
 
 Subscriber* gecko::subBindTCP(string key, string topic){
     return binder<Subscriber>(key, topic, host_addr, zmqTCP);
@@ -294,16 +191,3 @@ void gecko::log(int level, const std::string& s){
         break;
     }
 }
-
-// void gecko::wait(){
-//     while(sig.ok) {sleep(1);}
-// }
-
-// void gecko::wait(uint16_t sec){
-//     for (int i=sec; i>0; i--) {sleep(1);}
-//     ok = false;
-// }
-
-// std::thread::id gecko::getId(){
-//     return the_thread.get_id();
-// }

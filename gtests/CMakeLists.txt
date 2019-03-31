@@ -39,7 +39,8 @@ list(APPEND gtests
     example-gtest.cpp
     zmq-gtest.cpp
     ascii-gtest.cpp
-    msgpack-gtest.cpp
+    msgpack-msgs-gtest.cpp
+    msgpack-adaptor-gtest.cpp
 )
 
 message(STATUS "gTests ----------------------")

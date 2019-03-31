@@ -30,14 +30,24 @@ using namespace std;
 bool SigCapture::ok = true;
 
 SigCapture::SigCapture(){
+    // struct sigaction sigIntHandler;
+    // sigIntHandler.sa_handler = SigCapture::my_handler;
+    // sigemptyset(&sigIntHandler.sa_mask);
+    // sigIntHandler.sa_flags = 0;
+    //
+    // sigaction(SIGINT, &sigIntHandler, NULL);
+
+    // sigaction(SIGTERM, &sigIntHandler, NULL);  // value?
+    // printf(">> setup signal handler\n");
+}
+
+void SigCapture::on(){
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = SigCapture::my_handler;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
 
     sigaction(SIGINT, &sigIntHandler, NULL);
-    // sigaction(SIGTERM, &sigIntHandler, NULL);  // value?
-    // printf(">> setup signal handler\n");
 }
 
 void SigCapture::my_handler(int s){
