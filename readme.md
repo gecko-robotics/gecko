@@ -125,7 +125,7 @@ a UDS endpoint.
 Message formats are pulled from ROS. There are both common messages and time
 stamped messages.
 
-### Common (t suffix)
+### Common Message Types (\_t suffix)
 
 - vec_t: 3D vector
 - quaternion_t: 4D quaternion
@@ -133,7 +133,7 @@ stamped messages.
 - pose_t: robot orientation (quaternion) and postion (vector)
 - wrench_t:
 
-### Time Stamped Messages (st suffix)
+### Time Stamped Messages (\_st suffix)
 
 - imu_st: IMU measurement (acceleration, angular velocity, magnetometer)
 - lidar_st: lidar measurements, an array of (angle [deg], range [m])
