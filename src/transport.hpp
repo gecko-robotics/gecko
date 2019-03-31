@@ -2,31 +2,12 @@
 
 #include <stdint.h>
 #include <string>
-// #include <array>
-// #include <iostream>
 #include "zmq.hpp"
-// #include "time.hpp"
 
-// std::string zmqTCP(std::string addr, std::string port={"*"});
-std::string zmqTCP(const std::string& addr);
-std::string zmqUDS(const std::string& file);
+std::string zmqTCP(const std::string& addr, uint16_t port); // specific port
+std::string zmqTCP(const std::string& addr); // get random port number
+std::string zmqUDS(const std::string& file); // UDS file, must be on same machine
 
-// class zzmqTCP {
-// public:
-//     zzmqTCP(const std::string& addr){
-//         endpoint = "tcp://" + addr + ":*";
-//     }
-//     std::string endpoint;
-// };
-//
-//
-// class zzmqUDS {
-// public:
-//     zzmqUDS(const std::string& file){
-//         endpoint = "ipc://" + file;
-//     }
-//     std::string endpoint;
-// };
 
 // Returns the type of zmq connection as a colored string
 // Useful for debugging

@@ -15,10 +15,10 @@ using namespace std;
 
 int main(){
     vec_t b(1,2,3), c(4,5,6), d(-1,-2,-3);
-    imu_t a(b,c,d);
+    imu_st a(b,c,d);
     a.print();
 
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
     // buffer.compression_level = Z_BEST_SPEED;  // default
     // buffer.compression_level = Z_BEST_COMPRESSION;
     // buffer.compression_level = Z_DEFAULT_COMPRESSION;
@@ -28,10 +28,10 @@ int main(){
     cout << "main addr: " << &m << endl;
     cout << "message: " << m << endl;
 
-    // vector<imu_t> resp;
+    // vector<imu_st> resp;
     // buffer.unpack(m, resp);
     //
-    // for (const imu_t& i: resp) {
+    // for (const imu_st& i: resp) {
     //     i.print();
     //     assert(a == i);
     // }

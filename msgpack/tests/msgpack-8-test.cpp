@@ -34,13 +34,13 @@ void sub()
     // string endpt("tcp://127.0.0.1:12900");
     string endpt("ipc:///tmp/0");
     Subscriber s(endpt);
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
 
     double last = 0;
     while (true)
     {
         zmq::message_t msg = s.recv();
-        imu_t m = buffer.unpack(msg);
+        imu_st m = buffer.unpack(msg);
         cout << "time diff: " << m.timestamp - last << endl;
         last = m.timestamp;
     }
@@ -52,12 +52,12 @@ void pub()
     string endpt("ipc:///tmp/0");
     Publisher p(endpt);
 
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
 
     while (true)
     {
         vec_t a(1,2,3);
-        imu_t b(a,a,a);  // new timestamp
+        imu_st b(a,a,a);  // new timestamp
         zmq::message_t msg = buffer.pack(b);
 
         p.pub(msg);

@@ -9,24 +9,54 @@ using namespace std;
 
 TEST(zmq, endpoint) {
     EXPECT_TRUE("tcp://1.2.3.4:*" == zmqTCP("1.2.3.4"));
+    EXPECT_TRUE("tcp://1.2.3.4:9000" == zmqTCP("1.2.3.4",9000));
     EXPECT_TRUE("ipc://file" == zmqUDS("file"));
 }
 
-TEST(zmq, pubsub) {
+TEST(zmq, pubsubstring) {
     // string uds = "ipc://test_uds_file";
-    string uds = zmqUDS("test_uds");
-    MsgPack<imu_t> buffer;
+    string uds = zmqUDS("/tmp/test_uds");
+    // MsgPack<imu_t> buffer;
+
+    // Subscriber s(uds, false);
+    Publisher p(uds, true);
+    Subscriber s(uds, false);
+
+    string str = "helloworld";
+    zmq::message_t msg(static_cast<void*>(str.data()), str.size());
+    zmq::message_t msgsave(static_cast<void*>(str.data()), str.size());
+
+    EXPECT_EQ(msgsave, msg);
+
+    p.pub(msg);
+
+    // gecko::sleep(1);
+    sleep(1);
+
+    zmq::message_t ans = s.recv_nb();
+    // cout << "ans " << ans << endl;
+    EXPECT_EQ(msgsave.size(), ans.size());
+    EXPECT_EQ(msgsave, ans);
+
+    string ans2(reinterpret_cast<const char*>(ans.data()), ans.size());
+    EXPECT_TRUE(str == ans2);
+}
+
+TEST(zmq, pubsubmsgs) {
+    // string uds = "ipc://test_uds_file";
+    string uds = zmqUDS("/tmp/test_uds");
+    MsgPack<imu_st> buffer;
 
     // Subscriber s(uds, false);
     Publisher p(uds, true);
     Subscriber s(uds, false);
 
     vec_t a(1,2,3);
-    imu_t b(a,a,a);
+    imu_st b(a,a,a);
     // b.print();
 
     zmq::message_t msg = buffer.pack(b);
-    zmq::message_t msgsave = buffer.pack(b);
+    zmq::message_t msgsave = buffer.pack(b); // msg is destroyed after sending
 
     EXPECT_EQ(msgsave, msg);
 
@@ -41,7 +71,7 @@ TEST(zmq, pubsub) {
     EXPECT_EQ(msgsave, ans);
 
     if(ans.size() > 0){
-        imu_t c = buffer.unpack(ans);
+        imu_st c = buffer.unpack(ans);
         EXPECT_EQ(b,c);
     }
     // else EXPECT_TRUE(false) << "*** No message received ***";

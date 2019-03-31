@@ -1,3 +1,8 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #pragma once
 
 // These are the headers a user would access. Others are for internal
@@ -15,10 +20,6 @@
 #include "msocket.hpp"
 #include "ascii.hpp"
 #include <unistd.h>        // sleep, usleep
-
-// msgpack stuff
-// #include <msgpack.hpp>
-// #include "msgs.hpp"  // includes all message headers
 
 // copy header from here
 // https://github.com/zeromq/cppzmq

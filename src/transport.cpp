@@ -26,30 +26,28 @@ using namespace std;
 //     // }
 // };
 
+string zmqTCP(const string& addr, uint16_t port){
+    string endpt = "tcp://";
+    endpt += addr;
+    endpt += ":";
+    endpt += to_string(port);
+    // printf("zmqTCP: %s\n", endpt.c_str());
+    return endpt;
+}
+
 // string zmqTCP(string addr, string port){
 string zmqTCP(const string& addr){
-    // return fmtstr("tcp://%s:%s", addr.c_str(), port.c_str());
-    // return std::string("tcp://") + addr + std::string(":") + port;
-    // stringstream ss;
-    // ss << "tcp://" << addr << ":" << port;
-    // printf("%s\n", ss.str().c_str());
-    // return ss.str();
-
     string endpt = "tcp://";
     endpt += addr;
     endpt += ":*";  // get next available port
-    // endpt += port;
-    printf("zmqTCP: %s\n", endpt.c_str());
+    // printf("zmqTCP: %s\n", endpt.c_str());
     return endpt;
 }
 
 string zmqUDS(const string& file){
-    // return fmtstr("tcp://%s:%s", addr.c_str(), port.c_str());
-    // return std::string("tcp://") + addr + std::string(":") + port;
-    // stringstream ss;
     string endpt = "ipc://";
     endpt += file;
-    printf("zmqUDS: %s\n", endpt.c_str());
+    // printf("zmqUDS: %s\n", endpt.c_str());
     return endpt;
 }
 

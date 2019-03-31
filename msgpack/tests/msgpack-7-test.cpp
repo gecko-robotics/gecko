@@ -32,7 +32,7 @@ void sub()
     const std::string tag = "";  // subscribe to all
     socket.setsockopt(ZMQ_SUBSCRIBE, tag.c_str(), tag.size());
 
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
 
     double last = 0;
 
@@ -40,7 +40,7 @@ void sub()
     {
         zmq::message_t msg;
         socket.recv(&msg);
-        imu_t m = buffer.unpack(msg);
+        imu_st m = buffer.unpack(msg);
         // m.print();
         cout << "time diff: " << m.timestamp - last << endl;
         last = m.timestamp;
@@ -54,12 +54,12 @@ void pub()
     zmq::socket_t socket(context, ZMQ_PUB);
     socket.bind("tcp://127.0.0.1:12900");
 
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
 
     while (true)
     {
         vec_t a(1,2,3);
-        imu_t b(a,a,a);  // new timestamp
+        imu_st b(a,a,a);  // new timestamp
         zmq::message_t msg = buffer.pack(b);
 
         socket.send(msg);

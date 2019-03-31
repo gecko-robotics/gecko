@@ -24,12 +24,12 @@ int pub(){
     Publisher *p = gecko::pubBindTCP("local", "bob2");
     if (p == nullptr) return 1;
 
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
     vec_t a(1,2,3);
 
     while(gecko::ok()){
         // zmq::message_t msg("hello",5);
-        imu_t v(a,a,a);
+        imu_st v(a,a,a);
         zmq::message_t msg = buffer.pack(v);
         // cout << msg << endl;
         // gecko::log(gecko::DEBUG, "debug level\n");
@@ -46,12 +46,12 @@ int sub(){
     Subscriber *s = gecko::subConnectTCP("local", "bob2");
     if (s == nullptr) return 1;
     Rate r(10);
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
 
     while(gecko::ok()){
         zmq::message_t m = s->recv_nb();
         if (m.size() > 0) {
-            imu_t v = buffer.unpack(m);
+            imu_st v = buffer.unpack(m);
             // gecko::log(gecko::DEBUG, "got message\n");
             cout << m << endl;
             v.print();

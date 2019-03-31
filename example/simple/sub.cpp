@@ -1,3 +1,9 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
+
 #include <iostream>  // cout endl
 #include <stdio.h>   // printf
 #include <unistd.h>  // usleep

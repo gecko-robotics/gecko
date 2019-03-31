@@ -96,13 +96,13 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a.timestamp,c.timestamp);
 // }
 //
-TEST(msgpack, imu_t) {
+TEST(msgpack, imu_st) {
     vec_t v(0.000001,1000,-1);
-    imu_t a(v,v,v), b(v,v,v), c;
+    imu_st a(v,v,v), b(v,v,v), c;
     ASSERT_EQ(a,b);
     ASSERT_FALSE(a == c);
 
-    MsgPack<imu_t> buffer;
+    MsgPack<imu_st> buffer;
     zmq::message_t msg = buffer.pack(a);
     c = buffer.unpack(msg);
     ASSERT_EQ(a,c);
