@@ -67,6 +67,11 @@ make install
 
 ## Multicast Messages
 
+Multicast is used to talk with `geckocore` and pass information between. The
+advantage is you do not have to know the IP/Port address of a given core. You
+use a `key` (ex: `dalek`, `local`, `bob`, `whatever`) that only that core will
+respond too. You can thus make it robot centric, or whatever you want centric.
+
 ```
 sub: key|topic|pid
 => sub: key|topic|endpt
@@ -83,3 +88,24 @@ only one node can bind to an endpt
 bind: key|topic|pid|endpt
 => bind: key|topic|endpt|ok
 ```
+
+# API
+
+## Gecko C++
+
+Ros has `advertise` and `subscribe` functions, `zmq` provides a little more flexibility
+so `gecko` has deviated from that:
+
+- `gecko::pubBindTCP(key, topic)`: returns a publisher that binds to local system
+and informs `geckocore` (using key) of the the topic it publishes from ip/port
+- `gecko::subConnectTCP(key, topic)`: returns a subscriber that talks to `geckocore`
+to get the ip/port publishing the topic
+- `gecko::pubBindUDS(key, topic)`: variation
+- `gecko::pubConnectTCP(key, topic)`: variation
+- `gecko::pubConnectUDS(key, topic)`: variation
+- `gecko::subBindUDS(key, topic)`: variation
+- `gecko::subBindTCP(key, topic)`: variation
+- `gecko::subConnectUDS(key, topic)`: variation
+
+With `zmq`, a publisher and subscriber can both bind or connect to a TCP or
+a UDS endpoint. 
