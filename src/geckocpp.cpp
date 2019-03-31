@@ -28,10 +28,16 @@ namespace gecko {
     Logger logger;
     static SigCapture sig;
 
+//
+// template<typename T, typename EP>
+// T* binder(string key, string topic, string path){
 
-template<typename T, typename EP>
-T* binder(string key, string topic, string path){
-    string addr = EP(path).endpoint;
+
+template<typename T>
+T* binder(string key, string topic, string path, string(*EP)(const string&)){
+
+    // string addr = EP(path).endpoint;
+    string addr = EP(path);
     // if (file.empty()) addr = zmqTCP(host_addr);  // bind to next available port
     // else addr = zmqUDS(file);
     // string addr = zmqTCP(host_addr);  // bind to next available port
@@ -241,11 +247,11 @@ void gecko::init(string mc, int port){
 // }
 
 Subscriber* gecko::subBindTCP(string key, string topic){
-    return binder<Subscriber,zzmqTCP>(key, topic, host_addr);
+    return binder<Subscriber>(key, topic, host_addr, zmqTCP);
 }
 
 Subscriber* gecko::subBindUDS(string key, string topic, string file){
-    return binder<Subscriber,zzmqUDS>(key, topic, file);
+    return binder<Subscriber>(key, topic, file, zmqUDS);
 }
 
 Subscriber* gecko::subConnectTCP(string key, string topic){
@@ -257,11 +263,11 @@ Subscriber* gecko::subConnectUDS(string key, string topic){
 }
 
 Publisher* gecko::pubBindTCP(string key, string topic){
-    return binder<Publisher,zzmqTCP>(key, topic, host_addr);
+    return binder<Publisher>(key, topic, host_addr, zmqTCP);
 }
 
 Publisher* gecko::pubBindUDS(string key, string topic, string file){
-    return binder<Publisher,zzmqUDS>(key, topic, file);
+    return binder<Publisher>(key, topic, file, zmqUDS);
 }
 
 Publisher* gecko::pubConnectTCP(string key, string topic){

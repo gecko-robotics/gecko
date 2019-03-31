@@ -85,12 +85,11 @@ public:
     double timestamp;
     int type;
 
-    // void print() const {
-    //     printf("IMU [%f]\n", timestamp);
-    //     accel.print();
-    //     gyro.print();
-    //     mag.print();
-    // }
+    void print() const {
+        printf("LIDAR [%f]\n", timestamp);
+        for(const auto p: data) printf(" (%.2f, %.2f)",p.angle, p.range);
+        printf("\n");
+    }
     //
     // bool operator==(const imu_t& v) const {
     //     if((accel == v.accel) && (gyro == v.gyro) && (mag == v.mag) && (type == v.type)) return true;
@@ -293,11 +292,31 @@ void pub_lidar()
     }
 }
 
+void sub_lidar()
+{
+    // string endpt("tcp://127.0.0.1:12900");
+    // string endpt("ipc:///tmp/0");
+    string endpt = zmqUDS("/tmp/0");
+    Subscriber s(endpt);
+
+    MsgPack<lidar_t> buffer;
+
+    while (gecko::ok())
+    {
+        zmq::message_t msg = s.recv();
+        lidar_t m = buffer.unpack(msg);
+        m.print();
+        // cout << "time diff: " << m.timestamp - last << endl;
+        // last = m.timestamp;
+    }
+}
+
 int main(){
     // pub();
     // sub();
 
-    pub_lidar();
+    // pub_lidar();
+    sub_lidar();
 
     // printf("hello\n");
     //

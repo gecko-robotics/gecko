@@ -8,13 +8,13 @@ using namespace std;
 
 
 TEST(zmq, endpoint) {
-    EXPECT_TRUE("tcp://1.2.3.4:*" == zzmqTCP("1.2.3.4").endpoint);
-    EXPECT_TRUE("ipc://file" == zzmqUDS("file").endpoint);
+    EXPECT_TRUE("tcp://1.2.3.4:*" == zmqTCP("1.2.3.4"));
+    EXPECT_TRUE("ipc://file" == zmqUDS("file"));
 }
 
 TEST(zmq, pubsub) {
     // string uds = "ipc://test_uds_file";
-    string uds = zzmqUDS("test_uds").endpoint;
+    string uds = zmqUDS("test_uds");
     Transport<imu_t> buffer;
 
     // Subscriber s(uds, false);

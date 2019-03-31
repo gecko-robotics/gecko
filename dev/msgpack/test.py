@@ -67,6 +67,26 @@ def subscriber(**kwargs):
 
     print('sub bye ...')
 
+def publisher_lidar(**kwargs):
+    geckopy.init_node(**kwargs)
+    rate = geckopy.Rate(2)
+
+    topic = kwargs.get('topic')
+    p = Pub()
+    p.bind(uds)
+
+    while not geckopy.is_shutdown():
+        a = vec_t(1,2,3)
+        g = vec_t(4,5,6)
+        m = vec_t(7,8,9)
+        msg = lidar_st(((1,2),(3.4,5.6)))
+
+        p.publish(msg)
+
+        geckopy.logdebug('>> published msg')
+        rate.sleep()
+    print('pub bye ...')
+
 
 def subscriber_lidar(**kwargs):
     geckopy.init_node(**kwargs)
@@ -117,7 +137,8 @@ if __name__ == '__main__':
 
     # subscriber(**args)
     # publisher(**args)
-    subscriber_lidar(**args)
+    # subscriber_lidar(**args)
+    publisher_lidar(**args)
 
     #
     # p = GeckoSimpleProcess()
