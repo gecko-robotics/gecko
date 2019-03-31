@@ -295,9 +295,9 @@ void gecko::log(int level, const std::string& s){
     }
 }
 
-void gecko::wait(){
-    while(sig.ok) {sleep(1);}
-}
+// void gecko::wait(){
+//     while(sig.ok) {sleep(1);}
+// }
 
 // void gecko::wait(uint16_t sec){
 //     for (int i=sec; i>0; i--) {sleep(1);}

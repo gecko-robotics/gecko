@@ -60,7 +60,8 @@ int main(){
     thread t1(pubt); t1.detach();
     thread t2(subt); t2.detach();
 
-    gecko::wait();
+    // gecko::wait();
+    sleep(1);
 
     return 0;
 }

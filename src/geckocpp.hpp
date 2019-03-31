@@ -15,10 +15,10 @@ namespace gecko {
     // [[deprecated("Use *bind* or *connect* functions")]]
     // Subscriber* subscribe(std::string key, std::string topic, bool bind=false);
 
-    void wait();
-    bool ok();
-    inline bool is_shutdown(){return !ok();}
-    void shutdown();
+    // void wait();  // value?
+    bool ok();  // still running? true/false
+    inline bool is_shutdown(){return !ok();} // stopping? true/false
+    void shutdown(); // shutdown gecko
 
     Subscriber* subBindTCP(std::string key, std::string topic);
     Subscriber* subBindUDS(std::string key, std::string topic, std::string file);

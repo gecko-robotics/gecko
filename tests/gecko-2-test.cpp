@@ -74,7 +74,8 @@ int main(){
     Node p; p.run(pubt, (void*)tmp);
     Node s; s.run(subt);
 
-    gecko::wait();
+    // gecko::wait();
+    sleep(1);
 
     return 0;
 }
