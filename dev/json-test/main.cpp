@@ -7,14 +7,20 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <array>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 using namespace std;
 
 
-int main(){
+class pt {
+public:
+    pt(const double a, const double r){angle=a;range=r;}
+    double angle, range;
+};
 
+int main(){
     json j = {
       {"pi", 3.141},
       {"happy", true},
@@ -31,6 +37,7 @@ int main(){
     };
 
     vector<double> pts = {1,2,3,4.5,6.789};
+    // vector<pt> pts = {{1,1}, {2,2}, {3,3}, {4,4}, {5,5}};
     j["pts"] = pts;
     j["bob"] = 3.456;
 

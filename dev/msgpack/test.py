@@ -8,39 +8,37 @@
 
 from pygecko.multiprocessing import geckopy
 from pygecko.transport import zmqUDS, Sub, Pub
+from pygecko.messages import vec_t, imu_st, lidar_st
 import time
 
 
-def chew_up_cpu(interval):
-    # chew up some cpu
-    start = time.time()
-    while (time.time() - start) < interval: 5*5
+# def chew_up_cpu(interval):
+#     # chew up some cpu
+#     start = time.time()
+#     while (time.time() - start) < interval: 5*5
 
 
 uds = zmqUDS("/tmp/0")
 
-# def publisher(**kwargs):
-#     geckopy.init_node(**kwargs)
-#     rate = geckopy.Rate(2)
-#
-#     p = geckopy.pubBinderTCP(
-#         kwargs.get('key'),
-#         kwargs.get('topic')
-#
-#     )
-#     if p is None:
-#         raise Exception("publisher is None")
-#
-#     start = time.time()
-#     cnt = 0
-#     while not geckopy.is_shutdown():
-#         msg = {'time': time.time() - start}
-#         p.publish(msg)  # topic msg
-#
-#         geckopy.logdebug('[{}] published msg'.format(cnt))
-#         cnt += 1
-#         rate.sleep()
-#     print('pub bye ...')
+def publisher(**kwargs):
+    geckopy.init_node(**kwargs)
+    rate = geckopy.Rate(2)
+
+    topic = kwargs.get('topic')
+    p = Pub()
+    p.bind(uds)
+
+    while not geckopy.is_shutdown():
+        a = vec_t(1,2,3)
+        g = vec_t(4,5,6)
+        m = vec_t(7,8,9)
+        msg = imu_st(a,g,m)
+
+        p.publish(msg)
+
+        geckopy.logdebug('>> published msg')
+        rate.sleep()
+    print('pub bye ...')
 
 def subscriber(**kwargs):
     geckopy.init_node(**kwargs)
@@ -58,9 +56,41 @@ def subscriber(**kwargs):
     while not geckopy.is_shutdown():
         msg = s.recv_nb()
         if msg:
+            print('='*50)
             geckopy.loginfo("{}: {}".format(topic,msg))
+            print('-'*50)
+            geckopy.loginfo("{}: {}".format(topic,msg.linear_accel))
+            geckopy.loginfo("{}: {}".format(topic,msg.angular_vel))
         # chew_up_cpu(.1)
-        print(">> {}".format(msg))
+        # print(">> {}".format(msg))
+        rate.sleep()
+
+    print('sub bye ...')
+
+
+def subscriber_lidar(**kwargs):
+    geckopy.init_node(**kwargs)
+    rate = geckopy.Rate(2)
+
+    topic = kwargs.get('topic')
+    # c = Callback(topic)
+    s = Sub()
+    s.topics = kwargs.get('topics')
+    s.connect(uds)
+
+    if s is None:
+        raise Exception("subscriber is None")
+
+    while not geckopy.is_shutdown():
+        msg = s.recv_nb()
+        if msg:
+            print('='*50)
+            geckopy.loginfo("{}: {}".format(topic,msg))
+            print('-'*50)
+            # geckopy.loginfo("{}: {}".format(topic,msg.linear_accel))
+            # geckopy.loginfo("{}: {}".format(topic,msg.angular_vel))
+        # chew_up_cpu(.1)
+        # print(">> {}".format(msg))
         rate.sleep()
 
     print('sub bye ...')
@@ -85,7 +115,9 @@ if __name__ == '__main__':
         'topic': "bob"
     }
 
-    subscriber(**args)
+    # subscriber(**args)
+    # publisher(**args)
+    subscriber_lidar(**args)
 
     #
     # p = GeckoSimpleProcess()

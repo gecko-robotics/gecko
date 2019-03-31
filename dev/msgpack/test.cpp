@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <msgpack.hpp>
 #include <string>
+#include <vector>
+#include <array>
 #include <assert.h>
 #include <sstream>
 #include <iostream>
@@ -63,6 +65,41 @@ public:
     MSGPACK_DEFINE(accel, gyro, mag, timestamp);
 };
 
+class pt_t {
+public:
+    pt_t(){}
+    pt_t(const pt_t& p){angle=p.angle;range=p.range;}
+    pt_t(double a, double r){angle=a;range=r;}
+    double angle;
+    double range;
+
+    MSGPACK_DEFINE(angle, range);
+};
+
+class lidar_t  {
+public:
+    lidar_t(): type(20), timestamp(123.456) {}
+    // lidar_t(const imu_t& i): type(10), timestamp(i.timestamp), accel(i.accel), gyro(i.gyro), mag(i.mag) {}
+    // lidar_t(const vec_t& a, const vec_t& g, const vec_t& m): type(10), timestamp(123.456), accel(a), gyro(g), mag(m) {}
+    vector<pt_t> data;
+    double timestamp;
+    int type;
+
+    // void print() const {
+    //     printf("IMU [%f]\n", timestamp);
+    //     accel.print();
+    //     gyro.print();
+    //     mag.print();
+    // }
+    //
+    // bool operator==(const imu_t& v) const {
+    //     if((accel == v.accel) && (gyro == v.gyro) && (mag == v.mag) && (type == v.type)) return true;
+    //     return false;
+    // }
+
+    MSGPACK_DEFINE(data, timestamp);
+};
+
 
 template<class msg>
 class MsgPack {
@@ -76,8 +113,40 @@ public:
 };
 
 
+
+
+// //-------------------
+//
+// msgpack::type::ext packVector(const vec_t& v){
+//     std::stringstream ss;
+//     msgpack::pack(ss, v);
+//     msgpack::type::ext e(v.type, ss.str().data(), ss.str().size());
+//     return e;
+// }
+//
+// // -----------------------
+
 template<class msg>
 zmq::message_t MsgPack<msg>::pack(const msg& m){
+
+    // if (m.type == 10){
+    //     msgpack::type::ext a = packVector(m.accel);
+    //     msgpack::type::ext g = packVector(m.gyro);
+    //     msgpack::type::ext ma = packVector(m.mag);
+    //
+    //     std::stringstream ss;
+    //     msgpack::pack(ss,a);
+    //     msgpack::pack(ss,g);
+    //     msgpack::pack(ss,ma);
+    //
+    //     msgpack::type::ext e(m.type, ss.str().data(), ss.str().size());
+    //
+    //     std::stringstream sss;
+    //     msgpack::pack(sss, e);
+    //
+    //     zmq::message_t z(static_cast<void*>(sss.str().data()), sss.str().size());
+    //     return z;
+    // }
     std::stringstream ssmsg;
     msgpack::pack(ssmsg, m);
 
@@ -107,24 +176,28 @@ msg MsgPack<msg>::unpack(const zmq::message_t& zm){
     // std::string cs(reinterpret_cast<const char*>(zm.data()), zm.size());
     // std::stringstream ss(cs);
 
-    msg message;
+    msg m;
     try {
         // msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size());
         msgpack::object_handle oh = msgpack::unpack(reinterpret_cast<const char*>(zm.data()), zm.size());
         msgpack::type::ext ext = oh.get().as<msgpack::type::ext>();
-        cout<<"ext type: "<<int(ext.type())<<endl;
+        cout<<" ext type: "<<int(ext.type())<<endl;
+        // cout << " > data: " << "  size: " << int(ext.size()) << "  d:" << double(ext.data()[0]) << endl;
 
         msgpack::object_handle oh2 = msgpack::unpack(ext.data(), ext.size());
+        // cout << oh2 << endl;
+
         msgpack::object obj = oh2.get();
-        obj.convert(message);
-        // cout << ">> e3: " << e3 << endl;
-        message.accel.print();
-        // printf("e final: %d\n",e.type);
+        cout << obj << endl;
+
+        // msg m;
+        obj.convert(m);
+        m.print();
     }
     catch (const std::exception &e){
         std::cout << "*** " << e.what() << " ***" << std::endl;
     }
-    return message;
+    return m;
 }
 
 
@@ -149,15 +222,36 @@ msg MsgPack<msg>::unpack(const zmq::message_t& zm){
 //     }
 // }
 
-void pub()
+void sub()
 {
     // string endpt("tcp://127.0.0.1:12900");
-    string endpt("ipc:///tmp/0");
-    Publisher p(endpt);
+    // string endpt("ipc:///tmp/0");
+    string endpt = zmqUDS("/tmp/0");
+    Subscriber s(endpt);
 
     MsgPack<imu_t> buffer;
 
-    while (true)
+    while (gecko::ok())
+    {
+        zmq::message_t msg = s.recv();
+        imu_t m = buffer.unpack(msg);
+        m.print();
+        // cout << "time diff: " << m.timestamp - last << endl;
+        // last = m.timestamp;
+    }
+}
+
+void pub()
+{
+    // string endpt("tcp://127.0.0.1:12900");
+    // string endpt("ipc:///tmp/0");
+    string endpt = zmqUDS("/tmp/0");
+    Publisher p(endpt);
+    Rate rate(1);
+
+    MsgPack<imu_t> buffer;
+
+    while (gecko::ok())
     {
         vec_t a(1,2,3);
         imu_t b(a,a,a);  // new timestamp
@@ -166,15 +260,45 @@ void pub()
         p.pub(msg);
 
         std::cout << "pub" << std::endl;
-        sleep(1);
+        // sleep(1);
         // usleep(100000);
+        rate.sleep();
     }
 }
 
+void pub_lidar()
+{
+    // string endpt("tcp://127.0.0.1:12900");
+    // string endpt("ipc:///tmp/0");
+    string endpt = zmqUDS("/tmp/0");
+    Publisher p(endpt);
+    Rate rate(1);
 
+    MsgPack<lidar_t> buffer;
+
+    while (gecko::ok())
+    {
+        lidar_t l;
+        l.data.push_back(pt_t(1.234, 45.67));
+        l.data.push_back(pt_t(1.234, 45.67));
+        l.data.push_back(pt_t(1.234, 45.67));
+        zmq::message_t msg = buffer.pack(l);
+
+        std::cout << "pub: " << msg << std::endl;
+
+        p.pub(msg);
+        // sleep(1);
+        // usleep(100000);
+        rate.sleep();
+    }
+}
 
 int main(){
-    pub();
+    // pub();
+    // sub();
+
+    pub_lidar();
+
     // printf("hello\n");
     //
     // vec_t a(1,-2,3.3), b(1,-2,3.3), c(3,3,3);

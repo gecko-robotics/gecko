@@ -17,6 +17,7 @@ namespace gecko {
 
     void wait();
     bool ok();
+    inline bool is_shutdown(){return !ok();}
     void shutdown();
 
     Subscriber* subBindTCP(std::string key, std::string topic);
