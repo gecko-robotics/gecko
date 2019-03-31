@@ -129,3 +129,74 @@ stamped messages.
 
 - imu_st: IMU measurement (acceleration, angular velocity, magnetometer)
 - lidar_st: lidar measurements, an array of (angle [deg], range [m])
+
+# Examples
+
+## Subscriber
+
+```cpp
+#include <msgpack.hpp>
+#include <string>
+#include "zmq.hpp"
+#include "gecko.hpp"
+
+using namespace std;
+
+void sub()
+{
+    string endpt = zmqUDS("/tmp/0");
+    Subscriber s(endpt);
+
+    MsgPack<imu_t> buffer;
+
+    while (gecko::ok())
+    {
+        zmq::message_t msg = s.recv();
+        imu_t m = buffer.unpack(msg);
+        // do something with it ...
+    }
+}
+
+int main(){
+    sub();
+    return 0;
+}
+```
+
+## Publisher
+
+```cpp
+#include <msgpack.hpp>
+#include <string>
+#include <iostream>
+#include "zmq.hpp"
+#include "gecko.hpp"
+
+using namespace std;
+
+void pub()
+{
+    string endpt = zmqUDS("/tmp/0");
+    Publisher p(endpt);
+    Rate rate(1);
+
+    MsgPack<imu_t> buffer;
+
+    while (gecko::ok())
+    {
+        vec_t a(1,2,3);
+        imu_t b(a,a,a);  // create new timestamp
+        zmq::message_t msg = buffer.pack(b);
+
+        p.pub(msg);
+
+        cout << "pub" << endl;
+        rate.sleep();
+    }
+}
+
+int main(){
+    pub();
+    return 0;
+}
+```
