@@ -89,9 +89,19 @@ bind: key|topic|pid|endpt
 => bind: key|topic|endpt|ok
 ```
 
-# API
+# Gecko C++ API
 
-## Gecko C++
+## `gecko`
+
+Many of these ideas are pulled from ROS
+
+- `gecko::init()` setups the system
+- `gecko::Rate(hz)` returns a rate object
+- returns publisher/subscriber (see variations below)
+- `gecko::is_shuttingdown()` or `gecko::ok()` returns the process status (true/false)
+- `gecko::log(level, string)` prints log info
+
+## Publisher and Subscriber
 
 Ros has `advertise` and `subscribe` functions, `zmq` provides a little more flexibility
 so `gecko` has deviated from that:
@@ -108,4 +118,22 @@ to get the ip/port publishing the topic
 - `gecko::subConnectUDS(key, topic)`: variation
 
 With `zmq`, a publisher and subscriber can both bind or connect to a TCP or
-a UDS endpoint. 
+a UDS endpoint.
+
+## Messages
+
+Message formats are pulled from ROS. There are both common messages and time
+stamped messages.
+
+### Common (t suffix)
+
+- vec_t: 3D vector
+- quaternion_t: 4D quaternion
+- twist_t:
+- pose_t: robot orientation (quaternion) and postion (vector)
+- wrench_t:
+
+### Time Stamped Messages (st suffix)
+
+- imu_st: IMU measurement (acceleration, angular velocity, magnetometer)
+- lidar_st: lidar measurements, an array of (angle [deg], range [m])
