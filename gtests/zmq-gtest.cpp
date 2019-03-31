@@ -15,7 +15,7 @@ TEST(zmq, endpoint) {
 TEST(zmq, pubsub) {
     // string uds = "ipc://test_uds_file";
     string uds = zmqUDS("test_uds");
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
 
     // Subscriber s(uds, false);
     Publisher p(uds, true);
@@ -50,7 +50,7 @@ TEST(zmq, pubsub) {
 // TEST(zmq, subpub) {
 //     // string uds = "ipc://test_uds_file";
 //     string uds = zzmqUDS("test_uds").endpoint;
-//     Transport<imu_t> buffer;
+//     MsgPack<imu_t> buffer;
 //
 //     // Subscriber s(uds, false);
 //     Publisher p(uds, false);

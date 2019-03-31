@@ -9,6 +9,7 @@ list(APPEND msgpktests
     tests/msgpack-7-test.cpp
     tests/msgpack-8-test.cpp
     # tests/msgpack-9-test.cpp
+    tests/msgpack-10-test.cpp
     # tests/msgpack-zlib-test.cpp
     # tests/zlib-test.cpp
     # tests/multicast-test.cpp

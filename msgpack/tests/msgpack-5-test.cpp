@@ -7,8 +7,8 @@
 #include "msgs.hpp"
 #include "zmq.hpp"
 #include "serialization.hpp"
-// #include "transport.cpp"
-// #include "transport-impl.cpp"
+// #include "MsgPack.cpp"
+// #include "MsgPack-impl.cpp"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ int main(){
     imu_t a(b,c,d);
     a.print();
 
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
     // buffer.compression_level = Z_BEST_SPEED;  // default
     // buffer.compression_level = Z_BEST_COMPRESSION;
     // buffer.compression_level = Z_DEFAULT_COMPRESSION;

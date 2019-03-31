@@ -26,7 +26,7 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a,b);
 //     ASSERT_FALSE(a == c);
 //
-//     Transport<quaternion_t> buffer;
+//     MsgPack<quaternion_t> buffer;
 //     zmq::message_t msg = buffer.pack(a);
 //     c = buffer.unpack(msg);
 //     ASSERT_EQ(a,c);
@@ -38,7 +38,7 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a,b);
 //     ASSERT_FALSE(a == c);
 //
-//     Transport<twist_t> buffer;
+//     MsgPack<twist_t> buffer;
 //     zmq::message_t msg = buffer.pack(a);
 //     c = buffer.unpack(msg);
 //     ASSERT_EQ(a,c);
@@ -51,7 +51,7 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a,b);
 //     ASSERT_FALSE(a == c);
 //
-//     Transport<pose_t> buffer;
+//     MsgPack<pose_t> buffer;
 //     zmq::message_t msg = buffer.pack(a);
 //     c = buffer.unpack(msg);
 //     ASSERT_EQ(a,c);
@@ -63,7 +63,7 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a,b);
 //     ASSERT_FALSE(a == c);
 //
-//     Transport<wrench_t> buffer;
+//     MsgPack<wrench_t> buffer;
 //     zmq::message_t msg = buffer.pack(a);
 //     c = buffer.unpack(msg);
 //     ASSERT_EQ(a,c);
@@ -75,7 +75,7 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a,b);
 //     ASSERT_FALSE(a == c);
 //
-//     Transport<twist_st> buffer;
+//     MsgPack<twist_st> buffer;
 //     zmq::message_t msg = buffer.pack(a);
 //     c = buffer.unpack(msg);
 //     ASSERT_EQ(a,c);
@@ -89,7 +89,7 @@ TEST(msgpack, vec_t) {
 //     ASSERT_EQ(a,b);
 //     ASSERT_FALSE(a == c);
 //
-//     Transport<pose_st> buffer;
+//     MsgPack<pose_st> buffer;
 //     zmq::message_t msg = buffer.pack(a);
 //     c = buffer.unpack(msg);
 //     ASSERT_EQ(a,c);
@@ -102,7 +102,7 @@ TEST(msgpack, imu_t) {
     ASSERT_EQ(a,b);
     ASSERT_FALSE(a == c);
 
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
     zmq::message_t msg = buffer.pack(a);
     c = buffer.unpack(msg);
     ASSERT_EQ(a,c);

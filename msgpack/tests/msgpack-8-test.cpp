@@ -34,7 +34,7 @@ void sub()
     // string endpt("tcp://127.0.0.1:12900");
     string endpt("ipc:///tmp/0");
     Subscriber s(endpt);
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
 
     double last = 0;
     while (true)
@@ -52,7 +52,7 @@ void pub()
     string endpt("ipc:///tmp/0");
     Publisher p(endpt);
 
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
 
     while (true)
     {

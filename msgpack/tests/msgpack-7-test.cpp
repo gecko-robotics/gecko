@@ -32,7 +32,7 @@ void sub()
     const std::string tag = "";  // subscribe to all
     socket.setsockopt(ZMQ_SUBSCRIBE, tag.c_str(), tag.size());
 
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
 
     double last = 0;
 
@@ -54,7 +54,7 @@ void pub()
     zmq::socket_t socket(context, ZMQ_PUB);
     socket.bind("tcp://127.0.0.1:12900");
 
-    Transport<imu_t> buffer;
+    MsgPack<imu_t> buffer;
 
     while (true)
     {

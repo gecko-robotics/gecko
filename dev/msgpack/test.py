@@ -58,9 +58,9 @@ def subscriber(**kwargs):
         if msg:
             print('='*50)
             geckopy.loginfo("{}: {}".format(topic,msg))
-            print('-'*50)
-            geckopy.loginfo("{}: {}".format(topic,msg.linear_accel))
-            geckopy.loginfo("{}: {}".format(topic,msg.angular_vel))
+            # print('-'*50)
+            # geckopy.loginfo("{}: {}".format(topic,msg.linear_accel))
+            # geckopy.loginfo("{}: {}".format(topic,msg.angular_vel))
         # chew_up_cpu(.1)
         # print(">> {}".format(msg))
         rate.sleep()
@@ -135,10 +135,10 @@ if __name__ == '__main__':
         'topic': "bob"
     }
 
-    # subscriber(**args)
+    subscriber(**args)
     # publisher(**args)
     # subscriber_lidar(**args)
-    publisher_lidar(**args)
+    # publisher_lidar(**args)
 
     #
     # p = GeckoSimpleProcess()
