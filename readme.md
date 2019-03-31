@@ -27,16 +27,12 @@ you could swap it out for Google's `protobuf`.
 - When a message is published on a topic, the topic name is not published too.
 This is because, *really*, topics are deconflicted by port number and not
 something found *in* the message sent
-- `Gecko`
-    - `subscribe`: Finds publisher for subscribers
-    - `advertise`: Broadcasts endpoint for topics
-    - Periodically (~3 sec) broadcasts performance [TBD]
-    - Interface to message logging [TBD]
+
 
 # macOS
 
 ```
-brew install msgpack
+brew install msgpack zeromq
 ```
 
 # Linux (Ubuntu)
@@ -60,10 +56,6 @@ make install
     - right now my core is written python ... i want to convert it c++ eventually
 - pub/sub and req/rep working
 - need to sort out `Node` and `gecko` classes, they sort of do the same thing
-- currently use msgpack, looking at others like capnp
-    - currently have to rewrite the message format for c++ *and* rewrite for
-    python ... sucks
-- https://conan.io/ ???
 
 ## Multicast Messages
 
