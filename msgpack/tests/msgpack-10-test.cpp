@@ -12,7 +12,8 @@ using namespace std;
 
 int main(){
     Rate rate(1);
-    Publisher *p = new Publisher(zmqUDS("/tmp/0")); // gecko::pubBindUDS()
+    Publisher *p = new Publisher();
+    p->bind(zmqUDS("/tmp/0"));
     mpPublisher<vec_t> pub(p);
 
     while(gecko::ok()) {

@@ -41,7 +41,8 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     // if (file.empty()) addr = zmqTCP(host_addr);  // bind to next available port
     // else addr = zmqUDS(file);
     // string addr = zmqTCP(host_addr);  // bind to next available port
-    T *p = new T(addr, true);
+    T *p = new T();
+    p->bind(addr);
     int retry = 5;
 
     SSocket ss;
@@ -100,7 +101,9 @@ T* connecter(string key, string topic){
                     string endpt = t[2];
                     printf(">> CONNECTOR[%s]: %s\n",topic.c_str(), endpt.c_str());
 
-                    return new T(endpt, false);
+                    T *p = new T();
+                    p->connect(endpt);
+                    return p;
                 }
                 // else cout << "** invalid ans " << ans << endl;
             }
@@ -117,9 +120,9 @@ bool gecko::ok(){
     return sig.ok;
 }
 
-// void gecko::shutdown(){
-//     sig.ok = false;
-// }
+void gecko::shutdown(){
+    sig.ok = false;
+}
 
 void gecko::init(string mc, int port){
     lock_guard<mutex> guard(g_mutex);

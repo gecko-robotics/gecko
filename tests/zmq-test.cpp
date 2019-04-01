@@ -30,7 +30,8 @@ void server(int t){
     // msgpack::pack(sbuf, vec);
 
     //  Prepare our context and publisher
-    Publisher pub("tcp://0.0.0.0:5556");
+    Publisher pub;
+    pub.bind("tcp://0.0.0.0:5556");
 
     //  Initialize random number generator
     uint16_t count = 0;
@@ -57,7 +58,8 @@ void server(int t){
 
 
 void client(int t){
-    Subscriber sub("tcp://localhost:5556", "33");
+    Subscriber sub("33");
+    sub.connect("tcp://localhost:5556");
 
     uint16_t count, topic;
     for (int i = 0; i < 100; i++) {

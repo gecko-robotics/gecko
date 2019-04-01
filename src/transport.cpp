@@ -79,7 +79,8 @@ const char* zmqType::c_str(){
 
 
 zmq::context_t zmqBase::gContext(1);
-zmqBase::zmqBase(int t): type(t), sock(gContext, t), bind(false) {}
+
+zmqBase::zmqBase(int t): type(t), sock(gContext, t), bound(false) {}
 
 /*
 typedef struct
@@ -140,10 +141,21 @@ void zmqBase::close(){
     // any pending sends will block the context destructor
     zmqType z(type);
     printf(">> %s killing (ZMQ_LINGER): %s\n",z.c_str(), endpoint.c_str());
-    if(bind) sock.unbind(endpoint);
+    if(bound) sock.unbind(endpoint);
     int msec = 5;
     sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));
     sock.close();
+}
+
+void zmqBase::bind(const std::string& addr){
+    bound = true;
+    sock.bind(addr);
+    setEndPt();
+}
+
+void zmqBase::connect(const std::string& addr){
+    sock.connect(addr);
+    setEndPt();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -155,22 +167,22 @@ Will bind or connect to an address (tcp://x.x.x.x:*, where * can be replacced
 with a port number if desired)
 https://stackoverflow.com/questions/16699890/connect-to-first-free-port-with-tcp-using-0mq
 */
-Publisher::Publisher(string addr, bool bind): zmqBase(ZMQ_PUB)
-{
-    if (bind) {
-        this->bind = true;
-        // https://github.com/pi-hole/FTL/blob/master/socket.c#L63
-        // setsockopt(int option_, const void *optval_, size_t optvallen_)
-        // sock.setsockopt(SO_REUSEADDR, &(int){ 1 }, sizeof(int));
-        sock.bind(addr);
-    }
-    else sock.connect(addr);
+// Publisher::Publisher(string addr, bool bind): zmqBase(ZMQ_PUB)
+// {
+//     if (bind) {
+//         this->bind = true;
+//         // https://github.com/pi-hole/FTL/blob/master/socket.c#L63
+//         // setsockopt(int option_, const void *optval_, size_t optvallen_)
+//         // sock.setsockopt(SO_REUSEADDR, &(int){ 1 }, sizeof(int));
+//         sock.bind(addr);
+//     }
+//     else sock.connect(addr);
+//
+//     setEndPt();
+//     printf(">> Publisher[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
+// }
 
-    setEndPt();
-    printf(">> Publisher[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
-}
-
-void Publisher::pub(zmq::message_t& msg){
+void Publisher::publish(zmq::message_t& msg){
     sock.send(msg);
 }
 
@@ -178,30 +190,31 @@ void Publisher::pub(zmq::message_t& msg){
 
 Subscriber::Subscriber(): zmqBase(ZMQ_SUB), callback(nullptr) {}
 
-Subscriber::Subscriber(string addr, string topic, bool bind): zmqBase(ZMQ_SUB)
+// Subscriber::Subscriber(string addr, string topic, bool bind): zmqBase(ZMQ_SUB)
+Subscriber::Subscriber(const string& topic): zmqBase(ZMQ_SUB)
 {
-    if (bind) {
-        this->bind = true;
-        sock.bind(addr);
-    }
-    else sock.connect(addr);
+    // if (bind) {
+    //     this->bind = true;
+    //     sock.bind(addr);
+    // }
+    // else sock.connect(addr);
 
     sock.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());
     // callback = nullptr;
-    setEndPt();
-    printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
+    // setEndPt();
+    // printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
 }
 
-Subscriber::Subscriber(string addr, bool bind): zmqBase(ZMQ_SUB)
-{
-    if (bind) sock.bind(addr);
-    else sock.connect(addr);
-
-    sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    // callback = nullptr;
-    setEndPt();
-    printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
-}
+// Subscriber::Subscriber(string addr, bool bind): zmqBase(ZMQ_SUB)
+// {
+//     if (bind) sock.bind(addr);
+//     else sock.connect(addr);
+//
+//     sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+//     // callback = nullptr;
+//     setEndPt();
+//     printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
+// }
 
 zmq::message_t Subscriber::recv(int flags){
     zmq::message_t msg;

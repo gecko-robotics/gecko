@@ -19,8 +19,11 @@ TEST(zmq, pubsubstring) {
     // MsgPack<imu_t> buffer;
 
     // Subscriber s(uds, false);
-    Publisher p(uds, true);
-    Subscriber s(uds, false);
+    Publisher p;
+    p.bind(uds);
+
+    Subscriber s("");
+    s.connect(uds);
 
     string str = "helloworld";
     zmq::message_t msg(static_cast<void*>(str.data()), str.size());
@@ -29,17 +32,14 @@ TEST(zmq, pubsubstring) {
     EXPECT_EQ(msgsave, msg);
 
     p.pub(msg);
-
-    // gecko::sleep(1);
     sleep(1);
 
     zmq::message_t ans = s.recv_nb();
-    // cout << "ans " << ans << endl;
     EXPECT_EQ(msgsave.size(), ans.size());
     EXPECT_EQ(msgsave, ans);
 
-    string ans2(reinterpret_cast<const char*>(ans.data()), ans.size());
-    EXPECT_TRUE(str == ans2);
+    string str2(reinterpret_cast<const char*>(ans.data()), ans.size());
+    EXPECT_TRUE(str == str2);
 }
 
 TEST(zmq, pubsubmsgs) {
@@ -48,8 +48,11 @@ TEST(zmq, pubsubmsgs) {
     MsgPack<imu_st> buffer;
 
     // Subscriber s(uds, false);
-    Publisher p(uds, true);
-    Subscriber s(uds, false);
+    Publisher p;
+    p.bind(uds);
+
+    Subscriber s("");
+    s.connect(uds);
 
     vec_t a(1,2,3);
     imu_st b(a,a,a);

@@ -11,11 +11,13 @@ TEST(msgpack, msg_adaptor) {
 
     vec_t a(1,-2,3.3);
 
-    Publisher *p = new Publisher(uds);
+    Publisher *p = new Publisher();
+    p->bind(uds);
     mpPublisher<vec_t> pub(p);
     pub.publish(a);
 
-    Subscriber *s = new Subscriber(uds);
+    Subscriber *s = new Subscriber("");
+    s->connect(uds);
     mpSubscriber<vec_t> sub(s);
     vec_t b = sub.recv_nb();
 
