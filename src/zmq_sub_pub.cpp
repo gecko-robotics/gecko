@@ -47,6 +47,7 @@ Subscriber::Subscriber(const string& topic): zmqBase(ZMQ_SUB)
     // else sock.connect(addr);
 
     sock.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());
+
     // callback = nullptr;
     // setEndPt();
     // printf(">> Subscriber[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
@@ -71,6 +72,6 @@ zmq::message_t Subscriber::recv(int flags){
 }
 
 
-void Subscriber::setCallback(void(*cb)(zmq::message_t&)){
-    callback = cb;
-}
+// void Subscriber::setCallback(void(*cb)(zmq::message_t&)){
+//     callback = cb;
+// }

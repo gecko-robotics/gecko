@@ -11,6 +11,7 @@ std::string zmqUDS(const std::string& file); // UDS file, must be on same machin
 
 // Returns the type of zmq connection as a colored string
 // Useful for debugging
+// FIXME: embed in zmqBase???
 class zmqType {
 public:
     zmqType(int i): type(i) {}

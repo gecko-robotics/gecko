@@ -77,6 +77,8 @@ const char* zmqType::c_str(){
     return to_string().c_str();
 }
 
+////////////////////////////////////////////////////////
+
 
 zmq::context_t zmqBase::gContext(1);
 
@@ -151,11 +153,21 @@ void zmqBase::bind(const std::string& addr){
     bound = true;
     sock.bind(addr);
     setEndPt();
+
+    printf(">> %s[BIND] %s\n",
+        type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        endpoint.c_str()
+    );
 }
 
 void zmqBase::connect(const std::string& addr){
     sock.connect(addr);
     setEndPt();
+
+    printf(">> %s[CONNECT] %s\n",
+        type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        endpoint.c_str()
+    );
 }
 
 ///////////////////////////////////////////////////////////////
