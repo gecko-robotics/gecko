@@ -8,6 +8,8 @@
 #include <msgs.hpp>
 #include <zmq.hpp>
 #include <transport.hpp>
+#include "zmq_sub_pub.hpp"
+#include "zmq_rep_req.hpp"
 
 
 template<class T>

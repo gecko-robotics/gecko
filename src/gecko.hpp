@@ -11,6 +11,10 @@
 #include "time.hpp"        // rate
 #include "node.hpp"        // threads
 #include "transport.hpp"   // pub-sub
+
+#include "zmq_sub_pub.hpp"
+#include "zmq_rep_req.hpp"
+
 #include "helpers.hpp"     // tcp://x.x.x.x:port
 #include "network.hpp"     // ip hostname
 #include "exceptions.hpp"  // NotImplemented

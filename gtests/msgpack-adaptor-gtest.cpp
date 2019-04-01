@@ -16,7 +16,7 @@ TEST(msgpack, msg_adaptor) {
     mpPublisher<vec_t> pub(p);
     pub.publish(a);
 
-    Subscriber *s = new Subscriber("");
+    Subscriber *s = new Subscriber();
     s->connect(uds);
     mpSubscriber<vec_t> sub(s);
     vec_t b = sub.recv_nb();

@@ -60,6 +60,6 @@ void SigCapture::shutdown(){
     ok = false;
 }
 
-bool SigCapture::isOk(){
-    return ok;
-}
+// bool SigCapture::isOk(){
+//     return ok;
+// }

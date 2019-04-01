@@ -20,9 +20,12 @@ high_resolution_clock– It provides the smallest possible tick period. It is
 using namespace std;
 
 int main (){
-    double start = gecko::now();
-    printf(">> Start %f\n", start);
+    // double start = gecko::now();
+    Clock clock;
+    clock.start();
+    // printf(">> Start %f\n", start);
     gecko::sleep(3);
+    double duration = clock.stop();
 
-    cout << ">> sleep for 3 sec: " << gecko::from_time(start) << endl;
+    cout << ">> sleep for 3 sec: " << duration << endl;
 }

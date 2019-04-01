@@ -15,12 +15,12 @@ using namespace std;
 //     return time;
 // }
 
-double gecko::now(){
-    auto now_ms = time_point_cast<microseconds>(system_clock::now());
-    auto epic = now_ms.time_since_epoch();
-    double time = (double)epic.count();
-    return time/1E6;
-}
+// double gecko::now(){
+//     auto now_ms = time_point_cast<microseconds>(system_clock::now());
+//     auto epic = now_ms.time_since_epoch();
+//     double time = (double)epic.count();
+//     return time/1E6;
+// }
 
 // double Time::now(){
 //     auto now_ms = time_point_cast<microseconds>(system_clock::now());
@@ -48,6 +48,24 @@ double gecko::now(){
 // void Time::sleep(int sec){
 //     this_thread::sleep_for(chrono::seconds(sec));
 // }
+
+/////////////////////////////////////////////////////////////////////
+Clock::Clock(): hack(0.0) {}
+
+void Clock::start(){
+    hack = now();
+}
+
+double Clock::stop(){
+    return now() - hack;
+}
+
+double Clock::now(){
+    auto now_ms = time_point_cast<microseconds>(system_clock::now());
+    auto epic = now_ms.time_since_epoch();
+    double time = (double)epic.count();
+    return time/1E6;
+}
 
 //////////////////////////////////////////////////////////////////////
 

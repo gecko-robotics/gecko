@@ -8,7 +8,7 @@ public:
     // bool ok(){return ok;}
     void on(); // turn on
     void shutdown();
-    bool isOk();
+    // bool isOk();
 
 // protected:
     static bool ok;

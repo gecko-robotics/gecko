@@ -2,6 +2,8 @@
 
 #include <string>
 #include "transport.hpp"  // pub/sub
+#include "zmq_sub_pub.hpp"
+// #include "zmq_rep_req.hpp"
 
 
 namespace gecko {

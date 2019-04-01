@@ -48,13 +48,25 @@ int main()
 
 namespace gecko {
 
-double now();
-inline double from_time(double datumn){ return now() - datumn; }
+// double now();
+// inline double from_time(double datumn){ return now() - datumn; }
 inline void msleep(int msec){ std::this_thread::sleep_for(std::chrono::milliseconds(msec)); }
 inline void usleep(int usec){ std::this_thread::sleep_for(std::chrono::microseconds(usec)); }
 inline void  sleep(int  sec){ std::this_thread::sleep_for(std::chrono::seconds(sec)); }
 
 }
+
+class Clock {
+public:
+    Clock();
+    void start();
+    double stop();
+
+protected:
+    double now();
+
+    double hack;
+};
 
 
 class Rate {
