@@ -49,19 +49,19 @@ public:
         sub->close();
     }
 
-    T recv(){
+    bool recv(T& msg){
         zmq::message_t m = sub->recv();
-        T msg = buffer.unpack(m);
-        return msg;
+        msg = buffer.unpack(m);
+        return true;
     }
 
-    T recv_nb(){
+    bool recv_nb(T& msg){
         zmq::message_t m = sub->recv_nb();
 
-        if (m.size() == 0) return T();
+        if (m.size() == 0) return false;
 
-        T msg = buffer.unpack(m);
-        return msg;
+        msg = buffer.unpack(m);
+        return true;
     }
 
 protected:

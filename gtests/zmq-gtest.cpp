@@ -34,9 +34,9 @@ TEST(zmq, pubsubstring) {
     while (ans.size() == 0){
         zmq::message_t mm(static_cast<void*>(str.data()), str.size());
         p.publish(mm);
-        sleep(1);
+        gecko::msleep(100);
         ans = s.recv_nb();
-        cout << ans << endl;
+        // cout << ans << endl;
     }
 
     EXPECT_EQ(msgsave.size(), ans.size());
@@ -71,9 +71,9 @@ TEST(zmq, pubsubmsgs) {
     while (ans.size() == 0){
         zmq::message_t mm = buffer.pack(b);
         p.publish(mm);
-        sleep(1);
+        gecko::msleep(100);
         ans = s.recv_nb();
-        cout << ans << endl;
+        // cout << ans << endl;
     }
 
     EXPECT_EQ(msgsave, ans);

@@ -14,15 +14,25 @@ TEST(msgpack, msg_adaptor) {
     Publisher *p = new Publisher();
     p->bind(uds);
     mpPublisher<vec_t> pub(p);
-    pub.publish(a);
+    // pub.publish(a);
 
     Subscriber *s = new Subscriber();
     s->connect(uds);
     mpSubscriber<vec_t> sub(s);
-    vec_t b = sub.recv_nb();
+    // vec_t b = sub.recv_nb();
 
-    a.print();
-    b.print();
+    // we always loose the first message due to subscription time
+    vec_t b;
+    bool ok = false;
+    while (!ok){
+        pub.publish(a);
+        gecko::msleep(100);
+        ok = sub.recv_nb(b);
+        // cout << ans << endl;
+    }
+
+    // a.print();
+    // b.print();
 
     ASSERT_TRUE(a == b);
 }
