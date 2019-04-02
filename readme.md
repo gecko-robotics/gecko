@@ -145,7 +145,8 @@ using namespace std;
 void sub()
 {
     string endpt = zmqUDS("/tmp/0");
-    Subscriber s(endpt);
+    Subscriber s;
+    s.connect(endpt);
 
     MsgPack<imu_t> buffer;
 
@@ -177,7 +178,8 @@ using namespace std;
 void pub()
 {
     string endpt = zmqUDS("/tmp/0");
-    Publisher p(endpt);
+    Publisher p;
+    p.bind(endpt);
     Rate rate(1);
 
     MsgPack<imu_t> buffer;
