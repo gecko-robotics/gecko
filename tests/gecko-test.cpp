@@ -23,7 +23,7 @@ void pubt(){
         zmq::message_t msg("hello",5);
         // cout << msg << endl;
         // gecko::log(gecko::DEBUG, "debug level\n");
-        p->pub(msg);
+        p->publish(msg);
         rate.sleep();
     }
 

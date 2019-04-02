@@ -46,7 +46,7 @@ Subscriber::Subscriber(const string& topic): zmqBase(ZMQ_SUB)
     // }
     // else sock.connect(addr);
 
-    sock.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());
+    // sock.setsockopt(ZMQ_SUBSCRIBE, topic.c_str(), topic.length());
 
     // callback = nullptr;
     // setEndPt();

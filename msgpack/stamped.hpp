@@ -1,3 +1,8 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #pragma once
 
 #include "msgs.hpp"
@@ -34,7 +39,8 @@ public:
     }
 
     bool operator==(const imu_st& v) const {
-        if((accel == v.accel) && (gyro == v.gyro) && (mag == v.mag) && (type == v.type)) return true;
+        if((accel == v.accel) && (gyro == v.gyro) && (mag == v.mag) && (type == v.type) && (timestamp == v.timestamp)) return true;
+        // if((accel == v.accel) && (gyro == v.gyro) && (mag == v.mag) && (type == v.type)) return true;
         return false;
     }
 
@@ -58,8 +64,8 @@ public:
 class pose_st: public pose_t, public msg_st {
 public:
     pose_st() {}
-    pose_st(vec_t p, quaternion_t q): Pose(p, q) {}
-    pose_st(const pose_st& p): Pose(p.position, p.orientation), msg_st(p.timestamp) {}
+    pose_st(const vec_t& p, const quaternion_t& q): pose_t(p, q) {}
+    pose_st(const pose_st& p): pose_t(p.position, p.orientation), msg_st(p.timestamp) {}
 
     void print() const {printf("pose_st [%f]\n", timestamp);}
     MSGPACK_DEFINE(MSGPACK_BASE(pose_t), timestamp);

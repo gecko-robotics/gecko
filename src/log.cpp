@@ -79,7 +79,7 @@ void Logger::log(const std::string& s) const {
     // }
     else if (type == Logger::TCP || type == Logger::UDS){
         zmq::message_t msg((void*)s.c_str(), s.size());
-        publisher->pub(msg);
+        publisher->publish(msg);
     }
 }
 

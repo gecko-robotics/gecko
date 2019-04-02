@@ -135,8 +135,8 @@ if __name__ == '__main__':
         'topic': "bob"
     }
 
-    subscriber(**args)
-    # publisher(**args)
+    # subscriber(**args)
+    publisher(**args)
     # subscriber_lidar(**args)
     # publisher_lidar(**args)
 

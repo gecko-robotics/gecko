@@ -1,3 +1,8 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #pragma once
 
 #include <stdint.h>
@@ -32,6 +37,7 @@ public:
     void connect(const std::string& addr);
 
     static zmq::context_t gContext;  // zmq context
+    // zmq::context_t gContext;  // zmq context
     zmq::socket_t sock;
     std::string endpoint;  // tcp://x.x.x.x:port
     bool bound;  // was socket bound or connected?

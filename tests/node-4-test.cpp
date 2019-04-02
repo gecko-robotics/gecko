@@ -33,7 +33,7 @@ int pub(){
         zmq::message_t msg = buffer.pack(v);
         // cout << msg << endl;
         // gecko::log(gecko::DEBUG, "debug level\n");
-        p->pub(msg);
+        p->publish(msg);
         printf(">> msg sent\n");
         rate.sleep();
     }

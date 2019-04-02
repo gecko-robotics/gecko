@@ -16,14 +16,9 @@ TEST(zmq, endpoint) {
 TEST(zmq, pubsubstring) {
     // string uds = "ipc://test_uds_file";
     string uds = zmqUDS("/tmp/test_uds");
-    // MsgPack<imu_t> buffer;
 
-    // Subscriber s(uds, false);
     Publisher p;
     p.bind(uds);
-
-    Subscriber s("");
-    s.connect(uds);
 
     string str = "helloworld";
     zmq::message_t msg(static_cast<void*>(str.data()), str.size());
@@ -31,10 +26,19 @@ TEST(zmq, pubsubstring) {
 
     EXPECT_EQ(msgsave, msg);
 
-    p.pub(msg);
-    sleep(1);
+    Subscriber s;
+    s.connect(uds);
 
-    zmq::message_t ans = s.recv_nb();
+    // we always loose the first message due to subscription time
+    zmq::message_t ans;
+    while (ans.size() == 0){
+        zmq::message_t mm(static_cast<void*>(str.data()), str.size());
+        p.publish(mm);
+        sleep(1);
+        ans = s.recv_nb();
+        cout << ans << endl;
+    }
+
     EXPECT_EQ(msgsave.size(), ans.size());
     EXPECT_EQ(msgsave, ans);
 
@@ -51,26 +55,27 @@ TEST(zmq, pubsubmsgs) {
     Publisher p;
     p.bind(uds);
 
-    Subscriber s("");
-    s.connect(uds);
-
     vec_t a(1,2,3);
     imu_st b(a,a,a);
-    // b.print();
 
     zmq::message_t msg = buffer.pack(b);
     zmq::message_t msgsave = buffer.pack(b); // msg is destroyed after sending
 
     EXPECT_EQ(msgsave, msg);
 
-    // zmq::message_t msg("hello", 5);
-    // cout << "msg " << msg << endl;
-    p.pub(msg);
+    Subscriber s;
+    s.connect(uds);
 
-    gecko::sleep(1);
+    // we always loose the first message due to subscription time
+    zmq::message_t ans;
+    while (ans.size() == 0){
+        zmq::message_t mm = buffer.pack(b);
+        p.publish(mm);
+        sleep(1);
+        ans = s.recv_nb();
+        cout << ans << endl;
+    }
 
-    zmq::message_t ans = s.recv_nb();
-    // cout << "ans " << ans << endl;
     EXPECT_EQ(msgsave, ans);
 
     if(ans.size() > 0){

@@ -15,8 +15,12 @@
 #include "gecko.hpp"
 // #include <msgpack.hpp>
 
-using std::cout;
-using std::endl;
+using namespace std;
+// using std::cout;
+// using std::endl;
+
+// string path = zmqTCP("tcp://localhost", 5556);
+string path = zmqUDS("/tmp/0");
 
 void server(int t){
 
@@ -31,7 +35,7 @@ void server(int t){
 
     //  Prepare our context and publisher
     Publisher pub;
-    pub.bind("tcp://0.0.0.0:5556");
+    pub.bind(path);
 
     //  Initialize random number generator
     uint16_t count = 0;
@@ -39,15 +43,16 @@ void server(int t){
         //  Send message to all subscribers
         zmq::message_t message(20);
         snprintf ((char *) message.data(), 20 , "%s %d", "33", count);
-        pub.pub(message);
+        pub.publish(message);
 
         zmq::message_t m1((void*)"33", 2);
-        pub.pub(m1);
+        pub.publish(m1);
+        
         zmq::message_t m2((void*)"test", 4);
-        pub.pub(m2);
+        pub.publish(m2);
 
         snprintf ((char *) message.data(), 20 , "hello %d", count);
-        pub.pub(message);
+        pub.publish(message);
 
         count++;
 
@@ -58,8 +63,8 @@ void server(int t){
 
 
 void client(int t){
-    Subscriber sub("33");
-    sub.connect("tcp://localhost:5556");
+    Subscriber sub;
+    sub.connect(path);
 
     uint16_t count, topic;
     for (int i = 0; i < 100; i++) {

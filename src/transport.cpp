@@ -83,6 +83,7 @@ const char* zmqType::c_str(){
 zmq::context_t zmqBase::gContext(1);
 
 zmqBase::zmqBase(int t): type(t), sock(gContext, t), bound(false) {}
+// zmqBase::zmqBase(int t): type(t), sock(gContext, t), bound(false), gContext(1) {}
 
 /*
 typedef struct
@@ -152,6 +153,10 @@ void zmqBase::close(){
 void zmqBase::bind(const std::string& addr){
     bound = true;
     sock.bind(addr);
+
+    // since port determines topic, just subscribe to all
+    if (type == ZMQ_SUB) sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+
     setEndPt();
 
     printf(">> %s[BIND] %s\n",
@@ -161,7 +166,12 @@ void zmqBase::bind(const std::string& addr){
 }
 
 void zmqBase::connect(const std::string& addr){
+    bound = false;
     sock.connect(addr);
+
+    // since port determines topic, just subscribe to all
+    if (type == ZMQ_SUB) sock.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+
     setEndPt();
 
     printf(">> %s[CONNECT] %s\n",

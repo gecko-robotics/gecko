@@ -34,7 +34,7 @@ void pubt(void *k){
     while(gecko::ok()){
         string s = "hello " + to_string(cnt++);
         zmq::message_t msg(s.c_str(), s.size());
-        p->pub(msg);
+        p->publish(msg);
         rate.sleep();
     }
 

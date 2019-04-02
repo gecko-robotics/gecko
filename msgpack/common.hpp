@@ -1,3 +1,8 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #pragma once
 
 #include "msgs.hpp"
@@ -50,11 +55,8 @@ public:
     }
 
     double x,y,z;
-    // MSGPACK_DEFINE(MSGPACK_BASE(base_t),x,y,z);
     MSGPACK_DEFINE(x,y,z);
 };
-
-typedef vec_t point_t;
 
 class quaternion_t: public base_t {
 public:
@@ -119,8 +121,8 @@ public:
     MSGPACK_DEFINE(linear, angular);
 };
 
-[[deprecated]]
-typedef twist_t Twist;
+// [[deprecated]]
+// typedef twist_t Twist;
 
 class wrench_t: public base_t {
 public:
@@ -137,8 +139,8 @@ public:
 };
 
 
-[[deprecated]]
-typedef wrench_t Wrench;
+// [[deprecated]]
+// typedef wrench_t Wrench;
 
 class pose_t: public base_t {
 public:
@@ -160,23 +162,3 @@ public:
     }
     MSGPACK_DEFINE(position, orientation);
 };
-
-[[deprecated]]
-typedef pose_t Pose;
-
-// class LidarPt {
-// public:
-//     LidarPt(double a, double r){
-//         angle = a;
-//         range = r;
-//     }
-//     double angle, range;
-//     MSGPACK_DEFINE(angle, range);
-// };
-//
-// class Lidar: public base_t, public msg_t {
-// public:
-//     Lidar(): base_t(GLIDAR) {}
-//     std::vector<LidarPt> scan;
-//     MSGPACK_DEFINE(MSGPACK_BASE(msg_t), scan);
-// };

@@ -12,6 +12,9 @@
 #include "zmq_rep_req.hpp"
 
 
+/***
+ * Have publisher already bind/connect, this just wraps the publish
+ */
 template<class T>
 class mpPublisher {
 public:
@@ -24,7 +27,7 @@ public:
 
     void publish(const T& msg){
         zmq::message_t m = buffer.pack(msg);
-        pub->pub(m);
+        pub->publish(m);
     }
 
 protected:
@@ -32,6 +35,10 @@ protected:
     MsgPack<T> buffer;
 };
 
+
+/***
+ * Have subscriber already bind/connect, this just wraps the recv(_nb)
+ */
 template<class T>
 class mpSubscriber {
 public:

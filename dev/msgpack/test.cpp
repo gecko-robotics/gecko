@@ -226,7 +226,8 @@ void sub()
     // string endpt("tcp://127.0.0.1:12900");
     // string endpt("ipc:///tmp/0");
     string endpt = zmqUDS("/tmp/0");
-    Subscriber s(endpt);
+    Subscriber s;
+    s.connect(endpt);
 
     MsgPack<imu_t> buffer;
 
@@ -245,7 +246,8 @@ void pub()
     // string endpt("tcp://127.0.0.1:12900");
     // string endpt("ipc:///tmp/0");
     string endpt = zmqUDS("/tmp/0");
-    Publisher p(endpt);
+    Publisher p;
+    p.bind(endpt);
     Rate rate(1);
 
     MsgPack<imu_t> buffer;
@@ -256,7 +258,7 @@ void pub()
         imu_t b(a,a,a);  // new timestamp
         zmq::message_t msg = buffer.pack(b);
 
-        p.pub(msg);
+        p.publish(msg);
 
         std::cout << "pub" << std::endl;
         // sleep(1);
@@ -270,7 +272,8 @@ void pub_lidar()
     // string endpt("tcp://127.0.0.1:12900");
     // string endpt("ipc:///tmp/0");
     string endpt = zmqUDS("/tmp/0");
-    Publisher p(endpt);
+    Publisher p;
+    p.bind(endpt);
     Rate rate(1);
 
     MsgPack<lidar_t> buffer;
@@ -285,7 +288,7 @@ void pub_lidar()
 
         std::cout << "pub: " << msg << std::endl;
 
-        p.pub(msg);
+        p.publish(msg);
         // sleep(1);
         // usleep(100000);
         rate.sleep();
@@ -297,7 +300,8 @@ void sub_lidar()
     // string endpt("tcp://127.0.0.1:12900");
     // string endpt("ipc:///tmp/0");
     string endpt = zmqUDS("/tmp/0");
-    Subscriber s(endpt);
+    Subscriber s;
+    s.connect(endpt);
 
     MsgPack<lidar_t> buffer;
 
@@ -313,10 +317,10 @@ void sub_lidar()
 
 int main(){
     // pub();
-    // sub();
+    sub();
 
     // pub_lidar();
-    sub_lidar();
+    // sub_lidar();
 
     // printf("hello\n");
     //

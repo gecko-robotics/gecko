@@ -1,3 +1,8 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #pragma once
 
 #include <msgpack.hpp>
@@ -13,12 +18,8 @@
 template<class msg>
 class MsgPack {
 public:
-    // MsgPack() {}
-
     zmq::message_t pack(const msg& m);
-    // void pack_ext(const msg& m){}
     msg unpack(const zmq::message_t& zm);
-    // msg unpack(const std::stringstream& ss);
 };
 
 
@@ -53,23 +54,45 @@ msg MsgPack<msg>::unpack(const zmq::message_t& zm){
     // std::string cs(reinterpret_cast<const char*>(zm.data()), zm.size());
     // std::stringstream ss(cs);
 
-    msg message;
+    // msg message;
+    // try {
+    //     // msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size());
+    //     msgpack::object_handle oh = msgpack::unpack(reinterpret_cast<const char*>(zm.data()), zm.size());
+    //     msgpack::type::ext ext = oh.get().as<msgpack::type::ext>();
+    //
+    //     msgpack::object_handle oh2 = msgpack::unpack(ext.data(), ext.size());
+    //     msgpack::object obj = oh2.get();
+    //     obj.convert(message);
+    //     // cout << ">> e3: " << e3 << endl;
+    //     // e.print();
+    //     // printf("e final: %d\n",e.type);
+    // }
+    // catch (const std::exception &e){
+    //     std::cout << "*** " << e.what() << " ***" << std::endl;
+    // }
+    // return message;
+    msg m;
     try {
         // msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size());
         msgpack::object_handle oh = msgpack::unpack(reinterpret_cast<const char*>(zm.data()), zm.size());
         msgpack::type::ext ext = oh.get().as<msgpack::type::ext>();
+        // std::cout << " ext type: " << int(ext.type()) << std::endl;
+        // cout << " > data: " << "  size: " << int(ext.size()) << "  d:" << double(ext.data()[0]) << endl;
 
         msgpack::object_handle oh2 = msgpack::unpack(ext.data(), ext.size());
+        // cout << oh2 << endl;
+
         msgpack::object obj = oh2.get();
-        obj.convert(message);
-        // cout << ">> e3: " << e3 << endl;
-        // e.print();
-        // printf("e final: %d\n",e.type);
+        // std::cout << obj << std::endl;
+
+        // msg m;
+        obj.convert(m);
+        // m.print();
     }
     catch (const std::exception &e){
         std::cout << "*** " << e.what() << " ***" << std::endl;
     }
-    return message;
+    return m;
 }
 
 
