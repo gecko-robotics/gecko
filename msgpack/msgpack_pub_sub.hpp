@@ -5,11 +5,11 @@
 \**************************************************/
 #pragma once
 
-#include <msgs.hpp>
+#include <msgpack/msgs.hpp>
 #include <zmq.hpp>
-#include <transport.hpp>
-#include "zmq_sub_pub.hpp"
-#include "zmq_rep_req.hpp"
+#include <gecko/transport.hpp>
+#include "gecko/zmq_sub_pub.hpp"
+#include "gecko/zmq_rep_req.hpp"
 
 
 /***

@@ -1,10 +1,10 @@
-#include "log.hpp"
+#include "gecko/log.hpp"
+#include "gecko/color.hpp"
 #include <string>
 // #include <vector>
 // #include <sstream>
 #include <iostream>
 // #include <map>
-#include "color.hpp"
 
 using namespace std;
 

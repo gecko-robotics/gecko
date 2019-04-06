@@ -1,4 +1,4 @@
-#include "node.hpp"
+#include "gecko/node.hpp"
 #include <thread>
 #include <string.h>  // strdup
 #include <iostream>
@@ -19,7 +19,7 @@ Node::~Node(){
 
 void Node::run(void(*f)(void*), void* p){
     on(); // turn on sigcapture
-    
+
     the_thread = thread(f, p);
     pid_t pid = getpid();
     cout << ">> Started: thread " << the_thread.get_id() <<

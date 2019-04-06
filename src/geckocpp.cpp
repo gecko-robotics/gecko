@@ -1,5 +1,7 @@
 
-#include "geckocpp.hpp"
+#include "gecko/log.hpp"
+#include "gecko/signals.hpp"
+#include "gecko/geckocpp.hpp"
 #include <thread>
 #include <mutex>
 #include <pwd.h>        // geteuid,getpwuid
@@ -7,8 +9,6 @@
 #include <sys/stat.h>   // umask
 #include <unistd.h>     // getpid
 #include <iostream>
-#include "log.hpp"
-#include "signals.hpp"
 
 
 using namespace std;

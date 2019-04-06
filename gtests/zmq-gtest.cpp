@@ -1,6 +1,6 @@
 #include <gtest/gtest.h> // googletest header file
-#include "gecko.hpp"
-#include "msgs.hpp"
+#include "gecko/gecko.hpp"
+#include "msgpack/msgs.hpp"
 #include <string>
 #include <iostream>
 

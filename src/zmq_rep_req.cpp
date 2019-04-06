@@ -1,7 +1,7 @@
-#include "zmq_rep_req.hpp"
+#include "gecko/zmq_rep_req.hpp"
+#include "gecko/time.hpp"
+#include "gecko/color.hpp"
 #include "zmq.hpp"
-#include "time.hpp"
-#include "color.hpp"
 #include <iostream>
 
 using namespace std;

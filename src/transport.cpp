@@ -1,7 +1,7 @@
-#include "transport.hpp"
+#include "gecko/transport.hpp"
 #include "zmq.hpp"
-#include "time.hpp"
-#include "color.hpp"
+#include "gecko/time.hpp"
+#include "gecko/color.hpp"
 #include <iostream>
 // #include <algorithm>  // erase
 

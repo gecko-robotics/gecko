@@ -1,19 +1,19 @@
 
 list(APPEND msgpktests
-    tests/msgpack-test.cpp
-    # tests/msgpack-2-test.cpp
-    # tests/msgpack-3-test.cpp
-    tests/msgpack-4-test.cpp
-    tests/msgpack-5-test.cpp
-    tests/msgpack-6-test.cpp
-    tests/msgpack-7-test.cpp
-    tests/msgpack-8-test.cpp
-    # tests/msgpack-9-test.cpp
-    tests/msgpack-10-test.cpp
-    # tests/msgpack-zlib-test.cpp
-    # tests/zlib-test.cpp
-    # tests/multicast-test.cpp
-    # tests/multicast-2-test.cpp
+    # tests/msgpack-test.cpp
+    # # tests/msgpack-2-test.cpp
+    # # tests/msgpack-3-test.cpp
+    # tests/msgpack-4-test.cpp
+    # tests/msgpack-5-test.cpp
+    # tests/msgpack-6-test.cpp
+    # tests/msgpack-7-test.cpp
+    # tests/msgpack-8-test.cpp
+    # # tests/msgpack-9-test.cpp
+    # tests/msgpack-10-test.cpp
+    # # tests/msgpack-zlib-test.cpp
+    # # tests/zlib-test.cpp
+    # # tests/multicast-test.cpp
+    # # tests/multicast-2-test.cpp
 )
 
 set(MSGPACK_ALL

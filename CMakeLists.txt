@@ -37,7 +37,8 @@ if(APPLE)
       list(APPEND ALL_LIBS ${ALL_LIBS} ${MessagePack_LIBRARIES})
 
       # this is a template library, so no cpp
-      include_directories(msgpack)
+      # include_directories(msgpack)
+      include_directories(.)
 
   else()
       message(WARNING "\n<<--- Could not find MsgPack --->>\n")
@@ -51,7 +52,8 @@ elseif(UNIX)
         list(APPEND ALL_LIBS ${msgpack_LIBRARIES})
 
         # this is a template library, so no cpp
-        include_directories(msgpack)
+        # include_directories(msgpack)
+        include_directories(.)
 
     else()
         message(WARNING "\n<<--- Could not find MsgPack --->>\n")
@@ -87,12 +89,14 @@ if(libzmq_FOUND)
     # add_compile_definitions(ZMQ_BUILD_DRAFT_API)
     # add_compile_definitions(ZMQ_CPP11)
     include_directories(${libzmq_INCLUDE_DIRS})
+    # message(STATUS "zmq: ${libzmq_INCLUDE_DIRS}")
     # list(APPEND ALL_LIBS ${ALL_LIBS} ${libzmq_LIBRARIES})
     list(APPEND ALL_LIBS ${libzmq_LIBRARIES})
 
     # ZeroMQ CPP ------------------------------------------------------
     # https://github.com/zeromq/cppzmq
     include_directories(zmq)
+    # include_directories(/usr/include)
 else()
     message(WARNING "*** Could not find ZeroMQ ***")
 endif()
@@ -128,11 +132,11 @@ else()
     endif()
     # set(CPACK_SOURCE_GENERATOR "TGZ")
 endif()
-SET(CPACK_PACKAGING_INSTALL_PREFIX "/tmp")
+SET(CPACK_PACKAGING_INSTALL_PREFIX "/home/kevin/.local")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "msgpack")
+# set(CPACK_DEBIAN_PACKAGE_DEPENDS "msgpack")
 set(CPACK_PACKAGE_DESCRIPTION "test")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "test")
 set(CPACK_PACKAGE_CONTACT "Kevin Walchko")
@@ -148,7 +152,7 @@ include(CPack)
 
 
 # Tests --------------------------------------------------------------
-add_subdirectory(tests)
+# add_subdirectory(tests)
 add_subdirectory(gtests)
 add_subdirectory(msgpack)
 add_subdirectory(tools)
@@ -160,7 +164,8 @@ add_subdirectory(tools)
 #
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
-file(GLOB HEADERS src/*.hpp)
+file(GLOB HEADERS src/gecko/*.hpp)
 install(FILES ${HEADERS} DESTINATION include/gecko)
 file(GLOB MPHEADERS msgpack/*.hpp)
 install(FILES ${MPHEADERS} DESTINATION include/gecko/msgpack)
+install(FILES zmq/zmq.hpp zmq/zmq_addon.hpp DESTINATION include/gecko/zmq)

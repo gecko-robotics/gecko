@@ -1,7 +1,8 @@
 message(STATUS "Gecko Tools ----------------------")
 list(APPEND tools
-    logserver/logserver.cpp
-    echo/echo.cpp
+    logserver/gecko-logserver.cpp
+    echo/gecko-echo.cpp
+    bag/gecko-bag.cpp
 )
 
 foreach(src ${tools})

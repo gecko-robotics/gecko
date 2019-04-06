@@ -1,7 +1,7 @@
-#include "zmq_sub_pub.hpp"
+#include "gecko/zmq_sub_pub.hpp"
+#include "gecko/time.hpp"
+#include "gecko/color.hpp"
 #include "zmq.hpp"
-#include "time.hpp"
-#include "color.hpp"
 #include <iostream>
 
 
