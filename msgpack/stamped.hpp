@@ -71,6 +71,48 @@ public:
     MSGPACK_DEFINE(MSGPACK_BASE(pose_t), timestamp);
 };
 
+class odometry_st: public base_t, public msg_st {
+public:
+    odometry_st(): base_t(GODOM) {}
+    odometry_st(const pose_t& p, const twist_t& t): base_t(GODOM), pose(p), twist(t) {}
+    odometry_st(const odometry_st& o): base_t(GODOM), pose(o.pose), twist(o.twist), msg_st(o.timestamp) {}
+
+    void print() const {printf("odometry_st [%f]\n", timestamp);}
+
+    bool operator==(const odometry_st& o) const {
+        if(pose == o.pose && twist == o.twist) return true;
+        return false;
+    }
+
+    pose_t pose;
+    twist_t twist;
+    MSGPACK_DEFINE(pose, twist, timestamp);
+};
+
+class occupancygrid_st: public base_t, public msg_st {
+public:
+    occupancygrid_st(): base_t(GOCC) {}
+    occupancygrid_st(const uint8_t w, const uint8_t h): base_t(GOCC), height(h), width(w) {}
+    occupancygrid_st(const occupancygrid_st& g): base_t(GOCC), width(g.width), height(g.height), cells(g.cells), msg_st(g.timestamp) {}
+
+    void print() const {printf("occupancygrid_st [%f]\n", timestamp);}
+
+    bool operator==(const occupancygrid_st& o) const {
+        if(width == o.width && height == o.height && resolution == o.resolution && cells.size() == o.cells.size()) {
+            for(int i=0; i < cells.size(); i++)
+                if (cells[i] != o.cells[i]) return false;
+            return true;
+        }
+        return false;
+    }
+
+    uint32_t width, height;  // cells
+    std::vector<uint8_t> cells;  // cells
+    double resolution; // map resolution [m/cell]
+
+    MSGPACK_DEFINE(width, height, resolution, cells, timestamp);
+};
+
 class pt_t {
 public:
     pt_t(){}
@@ -79,12 +121,17 @@ public:
     double angle;
     double range;
 
+    bool operator==(const pt_t& p) const {
+        if(angle == p.angle && range == p.range) return true;
+        return false;
+    }
+
     MSGPACK_DEFINE(angle, range);
 };
 
 class lidar_st: public base_t, public msg_st  {
 public:
-    lidar_st(): base_t(20) {}
+    lidar_st(): base_t(GLIDAR) {}
     // lidar_t(const imu_t& i): type(10), timestamp(i.timestamp), accel(i.accel), gyro(i.gyro), mag(i.mag) {}
     // lidar_t(const vec_t& a, const vec_t& g, const vec_t& m): type(10), timestamp(123.456), accel(a), gyro(g), mag(m) {}
     std::vector<pt_t> data;

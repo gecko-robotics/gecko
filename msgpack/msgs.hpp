@@ -18,8 +18,10 @@ enum GeckoMsgs {
     GJOYSTICK  = 4,
     GTWIST     = 5,
     GIMU       = 10,
-    GLIDAR     = 11,
-    GIMAGE     = 12
+    GLIDAR     = 20,
+    GIMAGE     = 12,
+    GOCC       = 13,
+    GODOM      = 14
 };
 
 /**
