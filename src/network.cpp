@@ -24,8 +24,14 @@ HostInfo::HostInfo(){
     if (err == -1) cout << "hostname error" << endl;
     hostname = hostbuffer;
 
+    // see if .local is in hostname
+    if (hostname.find(".local") == string::npos) hostname += ".local";
+
+    // printf(">> %s\n", hostname.c_str());
+
     // To retrieve host information
-    host_entry = gethostbyname(hostbuffer);
+    // host_entry = gethostbyname(hostbuffer);
+    host_entry = gethostbyname(hostname.c_str());
     if (host_entry == NULL) cout << "gethostbyname() error" << endl;
 
     // To convert an Internet network

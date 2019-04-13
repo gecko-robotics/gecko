@@ -80,14 +80,15 @@
 //     if (addr.empty()) cout << "IP address error" << endl;
 // }
 
-#include "network.hpp"
+#include "gecko/network.hpp"
 #include <iostream>
 
 using namespace std;
 
 
 int main(){
-    HostInfo h = HostInfo();
+    HostInfo h;
+    // double h;
     cout << h.hostname << " [" << h.address << "]" << endl;
     return 0;
 }

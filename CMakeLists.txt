@@ -152,7 +152,7 @@ include(CPack)
 
 
 # Tests --------------------------------------------------------------
-# add_subdirectory(tests)
+add_subdirectory(tests)
 add_subdirectory(gtests)
 add_subdirectory(msgpack)
 add_subdirectory(tools)

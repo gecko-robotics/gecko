@@ -11,6 +11,8 @@ PLEASE NOTE: these two functions are superseded by getaddrinfo() and
 getnameinfo()! In particular, gethostbyname() doesn't work well with IPv6.
 */
 #include <string>
+#include <stdio.h>
+
 
 class HostInfo {
 public:
