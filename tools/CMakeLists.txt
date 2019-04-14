@@ -2,7 +2,7 @@ message(STATUS "Gecko Tools ----------------------")
 list(APPEND tools
     logserver/gecko-logserver.cpp
     echo/gecko-echo.cpp
-    bag/gecko-bag.cpp
+    # bag/gecko-bag.cpp
 )
 
 foreach(src ${tools})

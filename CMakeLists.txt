@@ -18,69 +18,26 @@ list(APPEND ALL_LIBS "")
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
-if (NOT APPLE)
-    set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
-    include_directories($ENV{HOME}/.local/include)
-    link_directories($ENV{HOME}/.local/lib)
-endif()
+# if (NOT APPLE)
+#     set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
+#     include_directories($ENV{HOME}/.local/include)
+#     link_directories($ENV{HOME}/.local/lib)
+# endif()
 
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
-# Get msgpack -----------------------------------------------------
-# if(APPLE)
-#   pkg_check_modules(MessagePack REQUIRED msgpack)
-#   if(MessagePack_FOUND)
-#       include_directories(${MessagePack_INCLUDE_DIR})
-#       message(STATUS ">> MsgPack Found: ${MessagePack_VERSION}")
-#       message(STATUS ">> MsgPack: ${MessagePack_LIBRARIES}  ${MessagePack_INCLUDE_DIR}")
-#       list(APPEND ALL_LIBS ${ALL_LIBS} ${MessagePack_LIBRARIES})
-#
-#       # this is a template library, so no cpp
-#       # include_directories(msgpack)
-#       include_directories(.)
-#
-#   else()
-#       message(WARNING "\n<<--- Could not find MsgPack --->>\n")
-#   endif()
-# elseif(UNIX)
-#     find_package(msgpack REQUIRED)
-#     if(msgpack_FOUND)
-#         include_directories(${msgpack_INCLUDE_DIR})
-#         message(STATUS ">> MsgPack Found: ${msgpack_VERSION}")
-#         message(STATUS ">> MsgPack: ${msgpack_LIBS}  ${msgpack_INCLUDE_DIR}")
-#         list(APPEND ALL_LIBS ${msgpack_LIBRARIES})
-#
-#         # this is a template library, so no cpp
-#         # include_directories(msgpack)
-#         include_directories(.)
-#
-#     else()
-#         message(WARNING "\n<<--- Could not find MsgPack --->>\n")
-#     endif()
-# endif()
-
-# Get zlib -----------------------------------------------------
-# find_package(ZLIB)
-# if(ZLIB_FOUND)
-#     message(STATUS ">> zlib Found: ${ZLIB_VERSION_STRING}")
-#     message(STATUS ">> zlib Found: ${ZLIB_LIBRARIES}")
-#     list(APPEND ALL_LIBS ${ZLIB_LIBRARIES})
-# else()
-#     message(WARNING "\n<<--- Could not find zlib --->>\n")
-# endif()
-#
-# # Threads ---------------------------------------------------------
-# find_package(Threads REQUIRED)
-# if(Threads_FOUND)
-#     message(STATUS ">> Threads found")
-#     if(CMAKE_USE_PTHREADS_INIT)
-#         message(STATUS " -> Using pthreads")
-#     endif()
-#     list(APPEND ALL_LIBS ${CMAKE_THREAD_LIBS_INIT})
-# else()
-#     message(WARNING "*** Could not find Threads ***")
-# endif()
+# Threads ---------------------------------------------------------
+find_package(Threads REQUIRED)
+if(Threads_FOUND)
+    message(STATUS ">> Threads found")
+    if(CMAKE_USE_PTHREADS_INIT)
+        message(STATUS " -> Using pthreads")
+    endif()
+    list(APPEND ALL_LIBS ${CMAKE_THREAD_LIBS_INIT})
+else()
+    message(WARNING "*** Could not find Threads ***")
+endif()
 
 # ZeroMQ ----------------------------------------------------------
 pkg_check_modules(libzmq REQUIRED libzmq)
@@ -126,6 +83,8 @@ else()
             set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
         elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
             set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+        elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "armhf")  # RPi
+            set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "armhf")
         endif()
         set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Me <support@example.com>")
         set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
@@ -154,7 +113,6 @@ include(CPack)
 # Tests --------------------------------------------------------------
 add_subdirectory(tests)
 add_subdirectory(gtests)
-# add_subdirectory(msgpack)
 add_subdirectory(tools)
 
 # Install ----------
@@ -166,6 +124,4 @@ install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 file(GLOB HEADERS src/gecko/*.hpp)
 install(FILES ${HEADERS} DESTINATION include/gecko)
-file(GLOB MPHEADERS msgpack/*.hpp)
-install(FILES ${MPHEADERS} DESTINATION include/gecko/msgpack)
 install(FILES zmq/zmq.hpp zmq/zmq_addon.hpp DESTINATION include/gecko/zmq)
