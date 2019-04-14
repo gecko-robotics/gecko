@@ -1,6 +1,6 @@
 #include <gtest/gtest.h> // googletest header file
 #include "gecko/gecko.hpp"
-#include "msgpack/msgs.hpp"
+// #include "msgpack/msgs.hpp"
 #include <string>
 #include <iostream>
 
@@ -46,44 +46,44 @@ TEST(zmq, pubsubstring) {
     EXPECT_TRUE(str == str2);
 }
 
-TEST(zmq, pubsubmsgs) {
-    // string uds = "ipc://test_uds_file";
-    string uds = zmqUDS("/tmp/test_uds");
-    MsgPack<imu_st> buffer;
-
-    // Subscriber s(uds, false);
-    Publisher p;
-    p.bind(uds);
-
-    vec_t a(1,2,3);
-    imu_st b(a,a,a);
-
-    zmq::message_t msg = buffer.pack(b);
-    zmq::message_t msgsave = buffer.pack(b); // msg is destroyed after sending
-
-    EXPECT_EQ(msgsave, msg);
-
-    Subscriber s;
-    s.connect(uds);
-
-    // we always loose the first message due to subscription time
-    zmq::message_t ans;
-    while (ans.size() == 0){
-        zmq::message_t mm = buffer.pack(b);
-        p.publish(mm);
-        gecko::msleep(100);
-        ans = s.recv_nb();
-        // cout << ans << endl;
-    }
-
-    EXPECT_EQ(msgsave, ans);
-
-    if(ans.size() > 0){
-        imu_st c = buffer.unpack(ans);
-        EXPECT_EQ(b,c);
-    }
-    // else EXPECT_TRUE(false) << "*** No message received ***";
-}
+// TEST(zmq, pubsubmsgs) {
+//     // string uds = "ipc://test_uds_file";
+//     string uds = zmqUDS("/tmp/test_uds");
+//     MsgPack<imu_st> buffer;
+//
+//     // Subscriber s(uds, false);
+//     Publisher p;
+//     p.bind(uds);
+//
+//     vec_t a(1,2,3);
+//     imu_st b(a,a,a);
+//
+//     zmq::message_t msg = buffer.pack(b);
+//     zmq::message_t msgsave = buffer.pack(b); // msg is destroyed after sending
+//
+//     EXPECT_EQ(msgsave, msg);
+//
+//     Subscriber s;
+//     s.connect(uds);
+//
+//     // we always loose the first message due to subscription time
+//     zmq::message_t ans;
+//     while (ans.size() == 0){
+//         zmq::message_t mm = buffer.pack(b);
+//         p.publish(mm);
+//         gecko::msleep(100);
+//         ans = s.recv_nb();
+//         // cout << ans << endl;
+//     }
+//
+//     EXPECT_EQ(msgsave, ans);
+//
+//     if(ans.size() > 0){
+//         imu_st c = buffer.unpack(ans);
+//         EXPECT_EQ(b,c);
+//     }
+//     // else EXPECT_TRUE(false) << "*** No message received ***";
+// }
 
 // TEST(zmq, subpub) {
 //     // string uds = "ipc://test_uds_file";
