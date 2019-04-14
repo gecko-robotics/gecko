@@ -15,8 +15,8 @@ message(STATUS "-------------------------------------")
 list(APPEND ALL_LIBS "")
 
 # Add local -----------------------------------------------------
-include_directories(/usr/local/include)
-link_directories(/usr/local/lib)
+# include_directories(/usr/local/include)
+# link_directories(/usr/local/lib)
 
 # if (NOT APPLE)
 #     set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
