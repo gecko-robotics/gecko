@@ -5,8 +5,6 @@ This library uses:
 - [ZeroMQ](https://zeromq.org) for sending an receiving messages, it uses:
     - Subscribe/publish
     - Request/reply
-- [Msgpack](https://msgpack.org/index.html) for serialization of messages
-- [zlib](https://www.zlib.net/) for compression of serialized messages (**TBD**)
 - C++17 syntax
 
 ## ROS Influence
@@ -32,7 +30,7 @@ something found *in* the message sent
 # macOS
 
 ```
-brew install msgpack zeromq
+brew install zeromq
 ```
 
 # Linux (Ubuntu)
@@ -132,13 +130,17 @@ stamped messages.
 
 # Examples
 
+The examples below create a simple pub/sub service. Note, they use `msgpack` for
+data serialization. That is not part of this library. Please build/install `gecko-msgpack`
+to use this.
+
 ## Subscriber
 
 ```cpp
-#include <msgpack.hpp>
 #include <string>
-#include "zmq.hpp"
-#include "gecko.hpp"
+#include <gecko/gecko.hpp>
+#include <gecko/msgpack/msgs.hpp>
+#include <msgpack/msgpack_pub_sub.hpp>
 
 using namespace std;
 
@@ -167,11 +169,11 @@ int main(){
 ## Publisher
 
 ```cpp
-#include <msgpack.hpp>
 #include <string>
 #include <iostream>
-#include "zmq.hpp"
-#include "gecko.hpp"
+#include <gecko/gecko.hpp>
+#include <gecko/msgpack/msgs.hpp>
+#include <msgpack/msgpack_pub_sub.hpp>
 
 using namespace std;
 
@@ -202,3 +204,25 @@ int main(){
     return 0;
 }
 ```
+
+# MIT License
+
+**Copyright (c) 2019 Kevin J. Walchko**
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
