@@ -18,11 +18,14 @@ list(APPEND ALL_LIBS "")
 # include_directories(/usr/local/include)
 # link_directories(/usr/local/lib)
 
-# if (NOT APPLE)
+if (NOT APPLE)
 #     set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
 #     include_directories($ENV{HOME}/.local/include)
 #     link_directories($ENV{HOME}/.local/lib)
-# endif()
+else()
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
+endif()
 
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
