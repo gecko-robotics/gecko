@@ -1,3 +1,9 @@
+```
+watch -n 1 'ps -o pid,%mem,%cpu,comm -p 36879'
+```
+
+https://www.boost.org/doc/libs/1_64_0/doc/html/boost_process/tutorial.html
+
 
 ```cpp
 string hn = boost::asio::ip::host_name();
