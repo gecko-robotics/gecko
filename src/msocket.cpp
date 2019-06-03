@@ -66,7 +66,7 @@ std::string SSocket::recv(long msec){
     struct sockaddr_in from_addr;
     std::string msg;
 
-    if(ready(1000)) // check to see if data is waiting using select()
+    if(ready(msec)) // check to see if data is waiting using select()
     {
         /* clear the receive buffers & structs */
         memset(recv_str, 0, sizeof(recv_str));
@@ -86,7 +86,7 @@ std::string SSocket::recv(long msec){
         // printf("%s\n", recv_str);
         msg = recv_str;
     }
-    else printf("** no joy **\n");
+    // else printf("** no joy **\n");
 
     return msg;
 }
