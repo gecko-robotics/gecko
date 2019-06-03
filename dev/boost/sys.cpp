@@ -35,7 +35,7 @@ int PS::get(int pid){
     string line;
     bp::ipstream output;
     // boost::filesystem::path cmd = bp::search_path("ls");
-    string cmd = "/bin/ps";
+    // string cmd = "/bin/ps";
     bp::child p("/bin/ps -o pid,%mem,%cpu -p " + std::to_string(pid), bp::std_out > output);
 
     // PID %MEM %CPU

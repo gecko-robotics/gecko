@@ -9,16 +9,20 @@ include_directories(/usr/local/include)
 
 set(Boost_DEBUG OFF)
 
-find_package(Boost 1.65.1 COMPONENTS system  REQUIRED)
+find_package(Boost COMPONENTS system program_options thread REQUIRED)
+# find_package(Boost COMPONENTS system REQUIRED)
 
-include_directories(${Boost_FILESYSTEM_HEADERS})
-message("boost: ${Boost_FILE_SYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_INCLUDE_DIRS}")
-message("Version: ${Boost_LIB_VERSION}")
+include_directories(${Boost_PROGRAM_OPTIONS_HEADERS})
+message("boost: ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_SYSTEM_LIBRARY}")
+message("Version: ${Boost_LIBRARIES}")
+message("headers: ${Boost_INCLUDE_DIRS}")
 
 add_executable(port port.cpp)
-target_link_libraries(port ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(port ${Boost_LIBRARIES})
 
+add_executable(sys2 sys2.cpp)
+# target_link_libraries(sys ${Boost_SYSTEM_LIBRARY})
+# target_link_libraries(sys ${Boost_LIBRARIES})
 
-add_executable(sys sys.cpp)
-target_link_libraries(sys ${Boost_SYSTEM_LIBRARY})
-# target_link_libraries(sys ${Boost_SYSTEM_LIBRARY} boost_file_system)
+add_executable(args args.cpp)
+target_link_libraries(args ${Boost_LIBRARIES})

@@ -6,7 +6,7 @@ list(APPEND tools
     core/geckocore.cpp
 )
 
-find_package(Boost COMPONENTS system  REQUIRED)
+find_package(Boost COMPONENTS system program_options REQUIRED)
 
 foreach(src ${tools})
     get_filename_component(name ${src} NAME_WE)
@@ -14,7 +14,7 @@ foreach(src ${tools})
     add_executable(${name} ${src})
 
     if (${name} STREQUAL "geckocore")
-        target_link_libraries(${name} ${ALL_LIBS} ${Boost_SYSTEM_LIBRARY})
+        target_link_libraries(${name} ${ALL_LIBS} ${Boost_LIBRARIES})
         # message("geckocore !!!!")
     else()
         # message(">> ${name} <<")
