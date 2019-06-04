@@ -21,9 +21,10 @@
 #include "gecko/color.hpp"       // ColorPrint
 #include "gecko/log.hpp"         // logging, local and remote
 #include "gecko/signals.hpp"
-#include "gecko/msocket.hpp"
-#include "gecko/ascii.hpp"
-#include "gecko/core.hpp"
+#include "gecko/msocket.hpp"  // beacon
+#include "gecko/ascii.hpp"  // ascii message parser 
+#include "gecko/db.hpp"    // database for core
+#include "gecko/core.hpp"  // geckocore/beaconcoreserver
 #include <unistd.h>        // sleep, usleep
 
 // copy header from here

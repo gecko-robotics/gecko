@@ -13,9 +13,11 @@ typedef std::vector<std::string> ascii_t;
 
 class Ascii {
 public:
+    Ascii(char separator='|'): sep(separator) {}
     ascii_t& unpack(const std::string& str);
-    std::string pack(ascii_t& v, char sep='|');
+    std::string pack(ascii_t& v);
 
 protected:
     ascii_t toks;
+    char sep;
 };
