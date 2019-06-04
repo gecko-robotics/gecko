@@ -23,6 +23,7 @@
 #include "gecko/signals.hpp"
 #include "gecko/msocket.hpp"
 #include "gecko/ascii.hpp"
+#include "gecko/core.hpp"
 #include <unistd.h>        // sleep, usleep
 
 // copy header from here

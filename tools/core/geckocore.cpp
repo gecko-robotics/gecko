@@ -61,111 +61,111 @@ Connections [8]
 
 using namespace std;
 
-// FIXME: move else where
-static string mc_addr = {"224.3.29.110"};
-static int mc_port = 11311;
+// // FIXME: move else where
+// static string mc_addr = {"224.3.29.110"};
+// static int mc_port = 11311;
 
-struct InvalidKey : public std::exception {
-    InvalidKey(const std::string &s): msg("Invalid Key: " + s) {}
-    InvalidKey(): msg("Invalid Key") {}
-    const char * what () const throw () {return msg.c_str();}
-protected:
-    std::string msg;
-};
-
-class DB {
-public:
-    DB(){}
-    std::tuple<std::string, std::string> get(const std::string& topic);
-    void push(const std::string& topic, const std::string& addr, const std::string& pid);
-    void pop(const std::string& topic);
-    int size(){ return db.size(); }
-    void print();
-
+// struct InvalidKey : public std::exception {
+//     InvalidKey(const std::string &s): msg("Invalid Key: " + s) {}
+//     InvalidKey(): msg("Invalid Key") {}
+//     const char * what () const throw () {return msg.c_str();}
 // protected:
-    // [topic, (addr, pid)]
-    map<std::string, std::tuple<std::string, std::string>> db;
-};
+//     std::string msg;
+// };
+//
+// class DB {
+// public:
+//     DB(){}
+//     std::tuple<std::string, std::string> get(const std::string& topic);
+//     void push(const std::string& topic, const std::string& addr, const std::string& pid);
+//     void pop(const std::string& topic);
+//     int size(){ return db.size(); }
+//     void print();
+//
+// // protected:
+//     // [topic, (addr, pid)]
+//     map<std::string, std::tuple<std::string, std::string>> db;
+// };
 
-void DB::print(){
-    printf("--------------------\n");
-    for (auto const& [key, val] : db) {
-        string addr;
-        string pid;
-        tie(addr, pid) = val;
-        printf(" > %-10s %-15s %-10s \n",key.c_str(),addr.c_str(),pid.c_str());
-    }
-}
+// void DB::print(){
+//     printf("--------------------\n");
+//     for (auto const& [key, val] : db) {
+//         string addr;
+//         string pid;
+//         tie(addr, pid) = val;
+//         printf(" > %-10s %-15s %-10s \n",key.c_str(),addr.c_str(),pid.c_str());
+//     }
+// }
+//
+// std::tuple<std::string, std::string> DB::get(const std::string& topic){
+//     map<string, tuple<string, string>>::iterator it;
+//     it = db.find(topic);
+//     if (it == db.end()) throw InvalidKey(topic);
+//     return it->second;
+// }
+//
+// void DB::pop(const std::string& topic){
+//     db.erase(topic);
+// }
+//
+// void DB::push(const std::string& topic, const std::string& addr, const std::string& pid){
+//     db[topic] = tuple(addr, pid);
+// }
 
-std::tuple<std::string, std::string> DB::get(const std::string& topic){
-    map<string, tuple<string, string>>::iterator it;
-    it = db.find(topic);
-    if (it == db.end()) throw InvalidKey(topic);
-    return it->second;
-}
-
-void DB::pop(const std::string& topic){
-    db.erase(topic);
-}
-
-void DB::push(const std::string& topic, const std::string& addr, const std::string& pid){
-    db[topic] = tuple(addr, pid);
-}
-
-class Core {
-public:
-    Core(std::string k): key(k), pid(getpid()) {}
-
-    void listen(){
-        printf("========================================\n");
-        printf(" Geckocore [%d]\n", pid);
-        printf("-------------\n");
-        printf(" Key: %s\n", key.c_str());
-        // printf(" Host IP: %s\n");
-        printf(" Listening on: %s:%d\n",mc_addr.c_str(), mc_port);
-        printf("-------------\n");
-
-        SSocket ss;
-        ss.init(mc_addr, mc_port);
-
-        Ascii a;
-        // pid_t pid = getpid();
-        // ascii_t tmp = {key,topic,to_string(pid),p->endpoint};
-        // string msg = a.pack(tmp);
-        while(true){
-            string ans = ss.recv(900);
-
-            if(!ans.empty()){
-                ascii_t t = a.unpack(ans);
-
-                cout << "Msg: ";
-                for (const auto& s: t) cout << s << " ";
-                cout << endl;
-            }
-        }
-    }
-
-    void print(){
-        printf("========================================\n");
-        printf(" Geckocore [%d]\n", pid);
-        printf("-------------\n");
-        printf(" Key: %s\n");
-        printf(" Host IP: %s\n");
-        printf(" Listening on: %s\n");
-        printf("-------------\n");
-        printf("Known Services [%d]\n");
-        printf("Binders [%d]\n");
-        printf("Connections [%d]\n");
-    }
-
-protected:
-    std::string key;
-    int pid;
-    DB db;
-};
+// class Core {
+// public:
+//     Core(std::string k): key(k), pid(getpid()) {}
+//
+//     void listen(){
+//         printf("========================================\n");
+//         printf(" Geckocore [%d]\n", pid);
+//         printf("-------------\n");
+//         printf(" Key: %s\n", key.c_str());
+//         // printf(" Host IP: %s\n");
+//         printf(" Listening on: %s:%d\n",mc_addr.c_str(), mc_port);
+//         printf("-------------\n");
+//
+//         SSocket ss;
+//         ss.init(mc_addr, mc_port);
+//
+//         Ascii a;
+//         // pid_t pid = getpid();
+//         // ascii_t tmp = {key,topic,to_string(pid),p->endpoint};
+//         // string msg = a.pack(tmp);
+//         while(true){
+//             string ans = ss.recv(900);
+//
+//             if(!ans.empty()){
+//                 ascii_t t = a.unpack(ans);
+//
+//                 cout << "Msg: ";
+//                 for (const auto& s: t) cout << s << " ";
+//                 cout << endl;
+//             }
+//         }
+//     }
+//
+//     void print(){
+//         printf("========================================\n");
+//         printf(" Geckocore [%d]\n", pid);
+//         printf("-------------\n");
+//         printf(" Key: %s\n");
+//         printf(" Host IP: %s\n");
+//         printf(" Listening on: %s\n");
+//         printf("-------------\n");
+//         printf("Known Services [%d]\n");
+//         printf("Binders [%d]\n");
+//         printf("Connections [%d]\n");
+//     }
+//
+// protected:
+//     std::string key;
+//     int pid;
+//     DB db;
+// };
 
 int main(){
-    Core core("local");
+    BeaconCoreServer core("local");
     core.listen();
 
     return 0;
