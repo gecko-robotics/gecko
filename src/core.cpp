@@ -11,47 +11,44 @@
 
 using namespace std;
 
-
-// void DB::print(){
-//     printf("--------------------\n");
-//     for (auto const& [key, val] : db) {
-//         string addr;
-//         string pid;
-//         tie(addr, pid) = val;
-//         printf(" > %-10s %-15s %-10s \n",key.c_str(),addr.c_str(),pid.c_str());
-//     }
-// }
-//
-// tuple<string, string> DB::get(const string& topic){
-//     map<string, tuple<string, string>>::iterator it;
-//     it = db.find(topic);
-//     if (it == db.end()) throw InvalidKey(topic);
-//     return it->second;
-// }
-//
-// void DB::pop(const string& topic){
-//     db.erase(topic);
-// }
-//
-// void DB::push(const string& topic, const string& addr, const string& pid){
-//     db[topic] = tuple(addr, pid);
-// }
-
 ///////////////////////////////////////////
 
 // FIXME: move else where
 static string mc_addr = {"224.3.29.110"};
 static int mc_port = 11311;
 
-BeaconCoreServer::BeaconCoreServer(const string& key, int ttl){}
+// FindTopic [3]: {key,topic,pid}
+// ReturnTopic [5]: {key,topic,pid,endpt/fail,ok/fail}
+// PublishTopic [4]: {key,topic,pid,endpt}
 
-void BeaconCoreServer::start(){}
+BeaconCoreServer::BeaconCoreServer(const string& key, int ttl):
+    exit(false), pid(getpid()) {
+}
 
-void BeaconCoreServer::stop(){}
+void BeaconCoreServer::start(){
+    // start thread
+}
 
-void BeaconCoreServer::handle_pub(){}
+void BeaconCoreServer::stop(){
+    exit = true;
+}
 
-void BeaconCoreServer::handle_sub(){}
+void BeaconCoreServer::handle_bind(std::vector<std::string>& data){
+    // PublishTopic [4]: {key,topic,pid,endpt}
+    if(data.size() == 4){
+        // {key,topic,pid,endpt/fail,ok/fail}
+        db.push(data[1], data[2], data[3])
+        data.push_back("ok");
+        
+    }
+}
+
+void BeaconCoreServer::handle_conn(std::vector<std::string>& data){
+    // FindTopic [3]: {key,topic,pid}
+    if (data.size() == 3){
+        // {key,topic,pid,endpt/fail,ok/fail}
+    }
+}
 
 void BeaconCoreServer::run(){}
 

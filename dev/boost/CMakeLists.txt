@@ -26,3 +26,6 @@ add_executable(sys2 sys2.cpp)
 
 add_executable(args args.cpp)
 target_link_libraries(args ${Boost_LIBRARIES})
+
+add_executable(hostname hostname.cpp)
+target_link_libraries(hostname ${Boost_LIBRARIES})

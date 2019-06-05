@@ -37,13 +37,13 @@ protected:
 // };
 
 
-class BeaconCoreServer {
+class BeaconCoreServer: public SigCapture {
 public:
     BeaconCoreServer(const std::string& key, int ttl=1);
     void start();
     void stop();
-    void handle_pub();
-    void handle_sub();
+    void handle_bind(std::vector<std::string>& data);
+    void handle_conn(std::vector<std::string>& data);
     void run();
     void listen();
     void print();
@@ -52,5 +52,8 @@ protected:
     std::string key;
     std::string host;
     int pid;
-    DB db;
+    DB bind, conn;  // [topic, (addr, pid)]
+    std::map<std::string, st
+    bool exit;
+
 };
