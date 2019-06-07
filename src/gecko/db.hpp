@@ -1,9 +1,21 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #pragma once
 
 #include <string>
 #include <map>
 #include <tuple>
 
+struct InvalidKey : public std::exception {
+    InvalidKey(const std::string &s): msg("Invalid Key: " + s) {}
+    InvalidKey(): msg("Invalid Key") {}
+    const char * what () const throw () {return msg.c_str();}
+protected:
+    std::string msg;
+};
 
 class DB {
 public:
