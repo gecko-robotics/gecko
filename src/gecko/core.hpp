@@ -52,8 +52,9 @@ protected:
     std::string key;
     std::string host;
     int pid;
-    DB bind, conn;  // [topic, (addr, pid)]
-    std::map<std::string, st
+    // DB bind, conn;  // [topic, (addr, pid)]
+    DBs services;  // [topic, endpt]
+    DBs bind, conn;
     bool exit;
 
 };

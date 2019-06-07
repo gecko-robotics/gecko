@@ -36,17 +36,29 @@ void BeaconCoreServer::stop(){
 void BeaconCoreServer::handle_bind(std::vector<std::string>& data){
     // PublishTopic [4]: {key,topic,pid,endpt}
     if(data.size() == 4){
+        string topic = data[1];
+        string pid = data[2];
+        string endpt = data[3];
         // {key,topic,pid,endpt/fail,ok/fail}
-        db.push(data[1], data[2], data[3])
+        services.push(topic, endpt);
+        bind.push(topic, pid);
         data.push_back("ok");
-        
+
+        printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
     }
 }
 
 void BeaconCoreServer::handle_conn(std::vector<std::string>& data){
     // FindTopic [3]: {key,topic,pid}
     if (data.size() == 3){
+        string topic = data[1];
+        string pid = data[2];
+        string endpt = services.get(topic);
+        conn.push(topic, pid);
+        services.push(topic, endpt);
+
         // {key,topic,pid,endpt/fail,ok/fail}
+        printf(">> CONN[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
     }
 }
 
