@@ -7,13 +7,9 @@
 // #include <boost/asio.hpp>
 #include <iostream>
 #include <string>
-#include <map>
-#include <unistd.h>     // getpid
-#include <stdlib.h>
-#include <tuple>
 // #include <map>
-// #include <string>
-#include <vector>
+// #include <unistd.h>     // getpid
+// #include <stdlib.h>
 #include <exception>
 
 /*
@@ -52,14 +48,22 @@ Connections [8]
 */
 
 
+using namespace std;
+
+int main(){
+    BeaconCoreServer core("local");
+    core.listen();
+
+    return 0;
+}
+
+
 // int getFreePort(void){
 //     boost::asio::ip::tcp::endpoint ep(boost::asio::ip::tcp::v4(), 0);
 //     boost::asio::io_service io_service;
 //     boost::asio::ip::tcp::socket socket(io_service, ep);
 //     return socket.local_endpoint().port();
 // }
-
-using namespace std;
 
 // // FIXME: move else where
 // static string mc_addr = {"224.3.29.110"};
@@ -163,10 +167,3 @@ using namespace std;
 //     int pid;
 //     DB db;
 // };
-
-int main(){
-    BeaconCoreServer core("local");
-    core.listen();
-
-    return 0;
-}

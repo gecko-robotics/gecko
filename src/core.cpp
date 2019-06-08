@@ -23,6 +23,10 @@ static int mc_port = 11311;
 
 BeaconCoreServer::BeaconCoreServer(const string& key, int ttl):
     exit(false), pid(getpid()) {
+    // HostInfo hi = HostInfo();
+    HostInfo hi;
+    this->key = hi.hostname;
+    host = hi.address;
 }
 
 void BeaconCoreServer::start(){
@@ -69,7 +73,7 @@ void BeaconCoreServer::listen(){
     printf(" Geckocore [%d]\n", pid);
     printf("-------------\n");
     printf(" Key: %s\n", key.c_str());
-    // printf(" Host IP: %s\n");
+    printf(" Host IP: %s\n", host.c_str());
     printf(" Listening on: %s:%d\n",mc_addr.c_str(), mc_port);
     printf("-------------\n");
 
