@@ -6,7 +6,8 @@ list(APPEND tools
     core/geckocore.cpp
 )
 
-find_package(Boost COMPONENTS system program_options REQUIRED)
+# find_package(Boost COMPONENTS system program_options REQUIRED)
+find_package(Boost COMPONENTS system REQUIRED)
 
 foreach(src ${tools})
     get_filename_component(name ${src} NAME_WE)

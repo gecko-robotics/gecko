@@ -16,23 +16,27 @@
 
 class BeaconCoreServer: public SigCapture {
 public:
-    BeaconCoreServer(const std::string& key, int ttl=1);
+    BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);
     void start();
     void stop();
     void handle_bind(std::vector<std::string>& data);
     void handle_conn(std::vector<std::string>& data);
     void run();
     void listen();
+    void printLoop();
     void print();
 
 protected:
     std::string key;
     std::string host;
+    std::string datum;
     int pid;
     // DB bind, conn;  // [topic, (addr, pid)]
     DBs services;  // [topic, endpt]
     DBs bind, conn;
     bool exit;
+    int delay;
+    SSocket ss;
 
 };
 

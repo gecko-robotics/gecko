@@ -50,6 +50,7 @@ int main()
 
 #include <chrono>
 #include <thread>  // sleep_for
+#include <string>
 
 namespace gecko {
 
@@ -60,6 +61,8 @@ inline void usleep(int usec){ std::this_thread::sleep_for(std::chrono::microseco
 inline void  sleep(int  sec){ std::this_thread::sleep_for(std::chrono::seconds(sec)); }
 
 }
+
+std::string time_date();
 
 class Clock {
 public:

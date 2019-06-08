@@ -13,24 +13,46 @@
 using namespace std;
 
 void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl){
-  /* create a socket for sending to the multicast address */
-  if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-    perror("socket() SOCK_DGRAM failed");
-    exit(1);
-  }
+    /* create a socket for sending to the multicast address */
+    if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+        perror("socket() SOCK_DGRAM failed");
+        exit(1);
+    }
 
-  /* set the TTL (time to live/hop count) for the send */
-  if ((setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL,
+    /* set the TTL (time to live/hop count) for the send */
+    if ((setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL,
        (void*) &mc_ttl, sizeof(mc_ttl))) < 0) {
-    perror("setsockopt() IP_MULTICAST_TTL failed");
-    exit(1);
-  }
+        perror("setsockopt() IP_MULTICAST_TTL failed");
+        exit(1);
+    }
 
-  /* construct a multicast address structure */
-  memset(&mc_addr, 0, sizeof(mc_addr));
-  mc_addr.sin_family      = AF_INET;
-  mc_addr.sin_addr.s_addr = inet_addr(mc_addr_str.c_str());
-  mc_addr.sin_port        = htons(mc_port);
+    /* construct a multicast address structure */
+    memset(&mc_addr, 0, sizeof(mc_addr));
+    mc_addr.sin_family      = AF_INET;
+    mc_addr.sin_addr.s_addr = inet_addr(mc_addr_str.c_str());
+    mc_addr.sin_port        = htons(mc_port);
+
+    // bind to all interfaces to receive address
+    struct sockaddr_in aaddr;
+    memset(&aaddr, 0, sizeof(aaddr));
+    aaddr.sin_family = AF_INET;
+    aaddr.sin_addr.s_addr = inet_addr("0.0.0.0"); // need to send response back
+    aaddr.sin_port = htons(mc_port);
+    if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
+        perror("Listener::listen() --> bind");
+        // return 1;
+    }
+
+    // use setsockopt() to request that the kernel join a multicast group
+    struct ip_mreq mreq;
+    string group = mc_addr_str;
+    mreq.imr_multiaddr.s_addr = inet_addr(group.c_str());
+    mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+    int err = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq));
+    if (err < 0){
+        perror("Listener::listen() --> setsockopt");
+        // return 1;
+    }
 }
 
 bool SSocket::ready(long msec){
@@ -58,35 +80,40 @@ bool SSocket::ready(long msec){
     return false;
 }
 
-std::string SSocket::recv(long msec){
+std::string SSocket::recv(){
     uint16_t recv_len = 0;
-    uint16_t MAX_LEN = 1024;
+    const uint16_t MAX_LEN = 1024;
     unsigned int from_len;
     char recv_str[1024];
     struct sockaddr_in from_addr;
     std::string msg;
 
-    if(ready(msec)) // check to see if data is waiting using select()
-    {
-        /* clear the receive buffers & structs */
-        memset(recv_str, 0, sizeof(recv_str));
-        from_len = sizeof(from_addr);
-        memset(&from_addr, 0, from_len);
+    /* clear the receive buffers & structs */
+    memset(recv_str, 0, sizeof(recv_str));
+    from_len = sizeof(from_addr);
+    memset(&from_addr, 0, from_len);
 
-        /* block waiting to receive a packet */
-        if ((recv_len = recvfrom(sock, recv_str, MAX_LEN, 0,
-             (struct sockaddr*)&from_addr, &from_len)) < 0) {
-          perror("recvfrom() failed");
-          exit(1);
-        }
-
-        /* output received string */
-        printf("Received %d bytes from %s\n", recv_len,
-               inet_ntoa(from_addr.sin_addr));
-        // printf("%s\n", recv_str);
-        msg = recv_str;
+    /* block waiting to receive a packet */
+    if ((recv_len = recvfrom(sock, recv_str, MAX_LEN, 0,
+         (struct sockaddr*)&from_addr, &from_len)) < 0) {
+      perror("recvfrom() failed");
+      exit(1);
     }
-    // else printf("** no joy **\n");
+
+    /* output received string */
+    printf("Received %d bytes from %s\n", recv_len,
+           inet_ntoa(from_addr.sin_addr));
+    // printf("%s\n", recv_str);
+    msg = recv_str;
+
+    return msg;
+}
+
+std::string SSocket::recv_nb(long msec){
+    std::string msg;
+
+    if(ready(msec))
+        msg = this->recv();
 
     return msg;
 }

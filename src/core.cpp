@@ -1,5 +1,5 @@
 #include <gecko/core.hpp>
-#include <string>
+#include <thread>
 #include <map>
 #include <unistd.h>     // getpid
 #include <stdlib.h>
@@ -21,16 +21,22 @@ static int mc_port = 11311;
 // ReturnTopic [5]: {key,topic,pid,endpt/fail,ok/fail}
 // PublishTopic [4]: {key,topic,pid,endpt}
 
-BeaconCoreServer::BeaconCoreServer(const string& key, int ttl):
-    exit(false), pid(getpid()) {
+BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
+    exit(false), pid(getpid()), delay(delay) {
     // HostInfo hi = HostInfo();
     HostInfo hi;
-    this->key = hi.hostname;
+
+    if (key.size() > 0) this->key = key;
+    else this->key = hi.hostname;
+
     host = hi.address;
+
+    datum = time_date();
 }
 
 void BeaconCoreServer::start(){
     // start thread
+    // thread(this->printLoop());
 }
 
 void BeaconCoreServer::stop(){
@@ -43,18 +49,29 @@ void BeaconCoreServer::handle_bind(std::vector<std::string>& data){
         string topic = data[1];
         string pid = data[2];
         string endpt = data[3];
+
+        if (endpt == "ok"){
+            // this is an echo
+            return;
+        }
         // {key,topic,pid,endpt/fail,ok/fail}
         services.push(topic, endpt);
         bind.push(topic, pid);
-        data.push_back("ok");
+        // data.push_back("ok");
+        data[3] = "ok";
 
         printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
+
+        Ascii a;
+        string msg = a.pack(data);
+        cout << "\n" << msg << "\n" << endl;
+        ss.send(msg);
     }
 }
 
 void BeaconCoreServer::handle_conn(std::vector<std::string>& data){
     // FindTopic [3]: {key,topic,pid}
-    if (data.size() == 3){
+    try {
         string topic = data[1];
         string pid = data[2];
         string endpt = services.get(topic);
@@ -63,29 +80,36 @@ void BeaconCoreServer::handle_conn(std::vector<std::string>& data){
 
         // {key,topic,pid,endpt/fail,ok/fail}
         printf(">> CONN[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
+        data.push_back(endpt);
+        data.push_back("ok");
+
+        Ascii a;
+        string msg = a.pack(data);
+        ss.send(msg);
+    }
+    catch (InvalidKey e){
+        printf("** Invalid Key **\n");
+        data.push_back("fail");
+
+        Ascii a;
+        string msg = a.pack(data);
+        // ss.send(msg);
     }
 }
 
 void BeaconCoreServer::run(){}
 
 void BeaconCoreServer::listen(){
-    printf("========================================\n");
-    printf(" Geckocore [%d]\n", pid);
-    printf("-------------\n");
-    printf(" Key: %s\n", key.c_str());
-    printf(" Host IP: %s\n", host.c_str());
-    printf(" Listening on: %s:%d\n",mc_addr.c_str(), mc_port);
-    printf("-------------\n");
-
-    SSocket ss;
+    // setup multicast
+    // SSocket ss;
     ss.init(mc_addr, mc_port);
 
+    // setup printing loop in another thread
+    // thread prnt(&BeaconCoreServer::printLoop, this);
+
     Ascii a;
-    // pid_t pid = getpid();
-    // ascii_t tmp = {key,topic,to_string(pid),p->endpoint};
-    // string msg = a.pack(tmp);
-    while(true){
-        string ans = ss.recv(900);
+    while(ok){
+        string ans = ss.recv_nb();
 
         if(!ans.empty()){
             ascii_t t = a.unpack(ans);
@@ -93,7 +117,18 @@ void BeaconCoreServer::listen(){
             cout << "Msg: ";
             for (const auto& s: t) cout << s << " ";
             cout << endl;
+
+            if (t.size() == 3) handle_conn(t);
+            else if (t.size() == 4) handle_bind(t);
         }
+        else cout << "** nothing **" << endl;
+    }
+}
+
+void BeaconCoreServer::printLoop(){
+    while(ok){
+        print();
+        sleep(delay);
     }
 }
 
@@ -101,11 +136,15 @@ void BeaconCoreServer::print(){
     printf("========================================\n");
     printf(" Geckocore [%d]\n", pid);
     printf("-------------\n");
+    printf(" Start: %s\n", datum.c_str());
     printf(" Key: %s\n", key.c_str());
     printf(" Host IP: %s\n", host.c_str());
     printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
     printf("-------------\n");
-    printf("Known Services [%d]\n", 1);
-    printf("Binders [%d]\n", 1);
-    printf("Connections [%d]\n", 1);
+    printf("Known Services [%d]\n", services.size());
+    services.print();
+    printf("Binders [%d]\n", bind.size());
+    bind.print();
+    printf("Connections [%d]\n", conn.size());
+    conn.print();
 }

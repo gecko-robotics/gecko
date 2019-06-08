@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <array>
+#include <memory>
 
 
 using namespace std;

@@ -3,6 +3,9 @@
 
 // #include <ctime>
 #include <thread>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
 
 using namespace std::chrono;
 using namespace std;
@@ -48,6 +51,25 @@ using namespace std;
 // void Time::sleep(int sec){
 //     this_thread::sleep_for(chrono::seconds(sec));
 // }
+
+
+string time_date(){
+    // time_t rawtime;
+    // struct tm * timeinfo;
+    // char buffer[80];
+    //
+    // time (&rawtime);
+    // timeinfo = localtime(&rawtime);
+    //
+    // strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
+    // std::string str(buffer);
+    time_t t = std::time(nullptr);
+    struct tm lt = *std::localtime(&t);
+
+    std::ostringstream oss;
+    oss << std::put_time(&lt, "%d-%m-%Y %H:%M:%S");
+    return oss.str();
+}
 
 /////////////////////////////////////////////////////////////////////
 Clock::Clock(): hack(0.0) {}

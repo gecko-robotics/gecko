@@ -6,6 +6,7 @@
 #include <unistd.h> // for sleep()
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>  // memset
 
 // C++
 #include <chrono>

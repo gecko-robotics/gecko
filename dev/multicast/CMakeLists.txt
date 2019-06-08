@@ -16,7 +16,7 @@ add_executable(ssdp main.cpp)
 target_link_libraries(ssdp beacon ${CMAKE_THREAD_LIBS_INIT})
 
 
-add_executable(test test.cpp)
+add_executable(mcast test.cpp)
 
 # include(tests/catch.cmake)
 #
