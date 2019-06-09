@@ -6,6 +6,7 @@
 #pragma once
 
 #include <map>
+#include <gecko/ascii.hpp>
 #include <gecko/gecko.hpp>
 #include <string>
 #include <tuple>
@@ -19,8 +20,8 @@ public:
     BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);
     void start();
     void stop();
-    void handle_bind(std::vector<std::string>& data);
-    void handle_conn(std::vector<std::string>& data);
+    std::string handle_bind(ascii_t& data);
+    std::string handle_conn(ascii_t& data);
     void run();
     void listen();
     void printLoop();
@@ -36,7 +37,7 @@ protected:
     DBs bind, conn;
     bool exit;
     int delay;
-    SSocket ss;
+    // SSocket ss;
 
 };
 

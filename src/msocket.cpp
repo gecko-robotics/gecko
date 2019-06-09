@@ -9,20 +9,43 @@
 #include <string.h>     /* for strlen() */
 #include <unistd.h>     /* for close() */
 #include <string>
+#include <iostream>
 
 using namespace std;
 
-void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl){
+void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool reuse){
     /* create a socket for sending to the multicast address */
-    if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        perror("socket() SOCK_DGRAM failed");
+    // if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+    if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+        perror("SSocket::init socket() SOCK_DGRAM failed");
         exit(1);
+    }
+
+    if (reuse) {
+        u_int yes = 1;
+        int err = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
+        if (err < 0){
+            perror("SSocket::init SO_REUSE failed");
+            // return 1;
+            exit(1);
+        }
     }
 
     /* set the TTL (time to live/hop count) for the send */
     if ((setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL,
        (void*) &mc_ttl, sizeof(mc_ttl))) < 0) {
-        perror("setsockopt() IP_MULTICAST_TTL failed");
+        perror("SSocket::init setsockopt() IP_MULTICAST_TTL failed");
+        exit(1);
+    }
+
+    //
+    // self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, 1)
+    // If you plan to have more than one process or user "listening",
+    // loopback must be enabled.
+    u_char one = 0;  // 0-disable  1-enable
+    if ((setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP,
+       (void*) &one, sizeof(one))) < 0) {
+        perror("SSocket::init setsockopt() IP_MULTICAST_TTL failed");
         exit(1);
     }
 
@@ -80,7 +103,7 @@ bool SSocket::ready(long msec){
     return false;
 }
 
-std::string SSocket::recv(){
+MsgAddr SSocket::recv(){
     uint16_t recv_len = 0;
     const uint16_t MAX_LEN = 1024;
     unsigned int from_len;
@@ -91,7 +114,7 @@ std::string SSocket::recv(){
     /* clear the receive buffers & structs */
     memset(recv_str, 0, sizeof(recv_str));
     from_len = sizeof(from_addr);
-    memset(&from_addr, 0, from_len);
+    memset(&from_addr, 0, sizeof(from_addr));
 
     /* block waiting to receive a packet */
     if ((recv_len = recvfrom(sock, recv_str, MAX_LEN, 0,
@@ -101,32 +124,47 @@ std::string SSocket::recv(){
     }
 
     /* output received string */
-    printf("Received %d bytes from %s\n", recv_len,
-           inet_ntoa(from_addr.sin_addr));
-    // printf("%s\n", recv_str);
+    printf("=> Received %d bytes from %s:%d\n",
+        recv_len,
+        inet_ntoa(from_addr.sin_addr),
+        ntohs(from_addr.sin_port));
+
     msg = recv_str;
+    // cout << msg << endl;
 
-    return msg;
+    return MsgAddr(msg, from_addr);
 }
 
-std::string SSocket::recv_nb(long msec){
-    std::string msg;
-
+MsgAddr SSocket::recv_nb(long msec){
     if(ready(msec))
-        msg = this->recv();
+        return this->recv();
 
-    return msg;
+    MsgAddr r;
+    return r;
 }
 
-bool SSocket::send(std::string msg){
+bool SSocket::send(const std::string& msg){
+    cout << "=> send: " << msg << " to " << inet_ntoa(mc_addr.sin_addr) << ":" << ntohs(mc_addr.sin_port) << endl;
     /* send string to multicast address */
     if ((sendto(sock, msg.c_str(), msg.size(), 0,
-         (struct sockaddr *) &mc_addr,
-         sizeof(mc_addr))) != msg.size()) {
-      perror("sendto() sent incorrect number of bytes");
-      // exit(1);
-      return false;
+            (struct sockaddr *) &mc_addr, sizeof(mc_addr))) != msg.size()) {
+        perror("sendto() sent incorrect number of bytes");
+        // exit(1);
+        return false;
     }
+    return true;
+}
+
+bool SSocket::send(const std::string& msg, struct sockaddr_in& addr){
+    cout << "=> send: " << msg << " to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;
+
+    if ((sendto(sock, msg.c_str(), msg.size(), 0,
+            (struct sockaddr *) &addr, sizeof(addr))) != msg.size()) {
+        perror("sendto() sent incorrect number of bytes");
+        // exit(1);
+        return false;
+    }
+
     // sleep(1);
     return true;
 }

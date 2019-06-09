@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
-typedef std::vector<std::string> ascii_t;
+// typedef std::vector<std::string> ascii_t;
+
+using ascii_t = std::vector<std::string>;
 
 class Ascii {
 public:

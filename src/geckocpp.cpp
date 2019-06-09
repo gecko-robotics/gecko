@@ -56,7 +56,10 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     for (int i=0; i<retry; i++){
         ss.send(msg);
         printf("binder send\n");
-        string ans = ss.recv_nb(900);
+
+        string ans;
+        struct sockaddr_in addr;
+        tie(ans, addr) = ss.recv();
 
         if(!ans.empty()){
             ascii_t t = a.unpack(ans);
@@ -90,7 +93,10 @@ T* connecter(string key, string topic){
     for (int i=0; i<retry; i++){
         ss.send(msg);
         printf("connect send\n");
-        string ans = ss.recv();
+
+        string ans;
+        struct sockaddr_in addr;
+        tie(ans, addr) = ss.recv();
         // cout << "sub ans " << ans << ' ' << ans.size() << endl;
 
         if(!ans.empty()){
