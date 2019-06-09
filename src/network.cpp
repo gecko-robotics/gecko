@@ -21,7 +21,7 @@ HostInfo::HostInfo(){
 
     // To retrieve hostname
     int err = gethostname(hostbuffer, sizeof(hostbuffer));
-    if (err == -1) cout << "hostname error" << endl;
+    if (err == -1) throw HostnameError(); //cout << "hostname error" << endl;
     hostname = hostbuffer;
 
     // see if .local is in hostname
@@ -32,12 +32,12 @@ HostInfo::HostInfo(){
     // To retrieve host information
     // host_entry = gethostbyname(hostbuffer);
     host_entry = gethostbyname(hostname.c_str());
-    if (host_entry == NULL) cout << "gethostbyname() error" << endl;
+    if (host_entry == NULL) thow HostnameError(); //cout << "gethostbyname() error" << endl;
 
     // To convert an Internet network
     // address into ASCII string
     address = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0]));
-    if (address.empty()) cout << "IP address error" << endl;
+    if (address.empty()) throw HostnameError(); //cout << "IP address error" << endl;
 }
 
 string HostInfo::cleanHostname(){

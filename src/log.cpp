@@ -8,9 +8,6 @@
 
 using namespace std;
 
-
-// Logg::Logger(){}
-
 Logger::Logger(): publisher(nullptr){
     type = Logger::STDOUT;
 }
@@ -35,14 +32,6 @@ Logger::Logger(std::string key, std::string topic, bool tcp){
     }
 }
 
-// Logger::Logger(std::string file){
-//     type = Logger::UDS;
-//     publisher = gecko::pubConnectUDS(key, topic);
-//     if (publisher == nullptr){
-//         ColorPrint cp;
-//         cout << cp.color("** Logger::Logger couldn't connect to " + file) << endl;
-//     }
-// }
 
 
 void Logger::logerror(const std::string& s) const {

@@ -9,6 +9,7 @@
 #include <string>
 #include "zmq.hpp"
 
+// helper functions to create TCP or UDS connections
 std::string zmqTCP(const std::string& addr, uint16_t port); // specific port
 std::string zmqTCP(const std::string& addr); // get random port number
 std::string zmqUDS(const std::string& file); // UDS file, must be on same machine

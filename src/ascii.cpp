@@ -6,7 +6,6 @@ using namespace std;
 
 ascii_t& Ascii::unpack(const string& str){
     toks.clear();
-    // char sep = '|';
     stringstream ss(str);
     string token;
     try{

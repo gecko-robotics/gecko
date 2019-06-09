@@ -15,13 +15,6 @@
 // https://rg3.name/201504241907.html
 
 
-// class MsgAddr {
-// public:
-//     MsgAddr(const std::string& m, const struct sockaddr_in& a): msg(m), addr(a) {}
-//     std::string msg;
-//     struct sockaddr_in addr;
-// };
-
 using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
 
 /*
@@ -37,11 +30,8 @@ public:
         bool reuse=false
     );
     bool ready(long msec=500);
-    // MsgAddr recv2();
     MsgAddr recv();
     MsgAddr recv_nb(long msec=500);
-    // std::string recv();
-    // std::string recv_nb(long msec=500);
     bool send(const std::string& msg); // remove?
     bool send(const std::string& msg, struct sockaddr_in& addr); // sendto?
 

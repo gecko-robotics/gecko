@@ -35,8 +35,8 @@ public:
     Publisher();
     // Publisher(std::string addr, bool bind=true);  // tcp://x.x.x.x:port
 
-    [[deprecated("use publish instead")]]
-    inline void pub(zmq::message_t& msg){publish(msg);}
+    // [[deprecated("use publish instead")]]
+    // inline void pub(zmq::message_t& msg){publish(msg);}
     void publish(zmq::message_t& msg);
 };
 

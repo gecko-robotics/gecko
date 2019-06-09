@@ -14,8 +14,7 @@
 using namespace std;
 
 void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool reuse){
-    /* create a socket for sending to the multicast address */
-    // if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+    // create a socket for sending to the multicast address
     if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
         perror("SSocket::init socket() SOCK_DGRAM failed");
         exit(1);
@@ -31,7 +30,7 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
         }
     }
 
-    /* set the TTL (time to live/hop count) for the send */
+    // set the TTL (time to live/hop count) for the send
     if ((setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL,
        (void*) &mc_ttl, sizeof(mc_ttl))) < 0) {
         perror("SSocket::init setsockopt() IP_MULTICAST_TTL failed");
@@ -49,7 +48,7 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
         exit(1);
     }
 
-    /* construct a multicast address structure */
+    // construct a multicast address structure
     memset(&mc_addr, 0, sizeof(mc_addr));
     mc_addr.sin_family      = AF_INET;
     mc_addr.sin_addr.s_addr = inet_addr(mc_addr_str.c_str());

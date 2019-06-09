@@ -11,58 +11,7 @@ using namespace std::chrono;
 using namespace std;
 
 
-// long Time::now(){
-//     auto now_ms = time_point_cast<milliseconds>(system_clock::now());
-//     auto epic = now_ms.time_since_epoch();
-//     long time = epic.count();
-//     return time;
-// }
-
-// double gecko::now(){
-//     auto now_ms = time_point_cast<microseconds>(system_clock::now());
-//     auto epic = now_ms.time_since_epoch();
-//     double time = (double)epic.count();
-//     return time/1E6;
-// }
-
-// double Time::now(){
-//     auto now_ms = time_point_cast<microseconds>(system_clock::now());
-//     auto epic = now_ms.time_since_epoch();
-//     double time = (double)epic.count();
-//     return time/1E6;
-// }
-//
-// double Time::get_time(){
-//     return now() - epic;
-// }
-
-// double Time::from_time(double datumn){
-//     return now() - datumn;
-// }
-
-// void Time::msleep(int msec){
-//     this_thread::sleep_for(chrono::milliseconds(msec));
-// }
-//
-// void Time::usleep(int usec){
-//     this_thread::sleep_for(chrono::microseconds(usec));
-// }
-//
-// void Time::sleep(int sec){
-//     this_thread::sleep_for(chrono::seconds(sec));
-// }
-
-
 string time_date(){
-    // time_t rawtime;
-    // struct tm * timeinfo;
-    // char buffer[80];
-    //
-    // time (&rawtime);
-    // timeinfo = localtime(&rawtime);
-    //
-    // strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
-    // std::string str(buffer);
     time_t t = std::time(nullptr);
     struct tm lt = *std::localtime(&t);
 
@@ -106,3 +55,45 @@ void Rate::sleep(void){
     }
     last_time = time_point_cast<milliseconds>(system_clock::now());
 }
+
+/////////////////////////////////////////////////////////////////////////
+// long Time::now(){
+//     auto now_ms = time_point_cast<milliseconds>(system_clock::now());
+//     auto epic = now_ms.time_since_epoch();
+//     long time = epic.count();
+//     return time;
+// }
+
+// double gecko::now(){
+//     auto now_ms = time_point_cast<microseconds>(system_clock::now());
+//     auto epic = now_ms.time_since_epoch();
+//     double time = (double)epic.count();
+//     return time/1E6;
+// }
+
+// double Time::now(){
+//     auto now_ms = time_point_cast<microseconds>(system_clock::now());
+//     auto epic = now_ms.time_since_epoch();
+//     double time = (double)epic.count();
+//     return time/1E6;
+// }
+//
+// double Time::get_time(){
+//     return now() - epic;
+// }
+
+// double Time::from_time(double datumn){
+//     return now() - datumn;
+// }
+
+// void Time::msleep(int msec){
+//     this_thread::sleep_for(chrono::milliseconds(msec));
+// }
+//
+// void Time::usleep(int usec){
+//     this_thread::sleep_for(chrono::microseconds(usec));
+// }
+//
+// void Time::sleep(int sec){
+//     this_thread::sleep_for(chrono::seconds(sec));
+// }

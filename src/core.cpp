@@ -41,11 +41,6 @@ BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     datum = time_date();
 }
 
-// void BeaconCoreServer::start(){
-//     // start thread
-//     // thread(this->printLoop());
-// }
-
 void BeaconCoreServer::stop(){
     ok = false;
 }
@@ -118,7 +113,6 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
     return msg;
 }
 
-// void BeaconCoreServer::run(){}
 
 void BeaconCoreServer::listen(bool print){
     // setup multicast
@@ -175,11 +169,5 @@ void BeaconCoreServer::print(){
     printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
     printf(" CPU: %s   Memory: %s\n", ps.cpu.c_str(), ps.mem.c_str());
     printf("-------------\n");
-    // printf("Known Services [%d]\n", services.size());
-    // services.print();
-    // printf("Binders [%d]\n", bind.size());
-    // bind.printPs();
-    // printf("Connections [%d]\n", conn.size());
-    // conn.printPs();
     services.print();
 }

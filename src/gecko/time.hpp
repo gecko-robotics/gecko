@@ -5,6 +5,57 @@
 \**************************************************/
 #pragma once
 
+#include <chrono>
+#include <thread>  // sleep_for
+#include <string>
+
+namespace gecko {
+
+// double now();
+// inline double from_time(double datumn){ return now() - datumn; }
+inline void msleep(int msec){ std::this_thread::sleep_for(std::chrono::milliseconds(msec)); }
+inline void usleep(int usec){ std::this_thread::sleep_for(std::chrono::microseconds(usec)); }
+inline void  sleep(int  sec){ std::this_thread::sleep_for(std::chrono::seconds(sec)); }
+
+}
+
+std::string time_date();
+
+/*
+ A simple stop watch to time an event.
+ */
+class Clock {
+public:
+    Clock();
+    void start();
+    double stop();
+
+protected:
+    double now();
+    double hack;
+};
+
+/*
+ Allows you to set a rate in hertz for a loop to run and this class
+ keeps track of it.
+
+ Rate r(10); // sets 10 Hz
+ while (1){
+    // do something
+    r.sleep();  // will adjust sleep time to keep 10Hz
+ }
+ */
+class Rate {
+public:
+    Rate(double hertz);
+    void sleep(void);
+protected:
+    std::chrono::time_point<std::chrono::system_clock> last_time;
+    // std::chrono::duration<double> dt;
+    std::chrono::milliseconds dt;
+};
+
+////////////////////////////////////////////////////////////////////////////
 // https://en.cppreference.com/w/cpp/chrono
 
 /*
@@ -47,41 +98,3 @@ int main()
 }
 >> Current time: 06/24/16 20:07:42.949494132 UTC
 */
-
-#include <chrono>
-#include <thread>  // sleep_for
-#include <string>
-
-namespace gecko {
-
-// double now();
-// inline double from_time(double datumn){ return now() - datumn; }
-inline void msleep(int msec){ std::this_thread::sleep_for(std::chrono::milliseconds(msec)); }
-inline void usleep(int usec){ std::this_thread::sleep_for(std::chrono::microseconds(usec)); }
-inline void  sleep(int  sec){ std::this_thread::sleep_for(std::chrono::seconds(sec)); }
-
-}
-
-std::string time_date();
-
-class Clock {
-public:
-    Clock();
-    void start();
-    double stop();
-
-protected:
-    double now();
-    double hack;
-};
-
-
-class Rate {
-public:
-    Rate(double hertz);
-    void sleep(void);
-protected:
-    std::chrono::time_point<std::chrono::system_clock> last_time;
-    // std::chrono::duration<double> dt;
-    std::chrono::milliseconds dt;
-};
