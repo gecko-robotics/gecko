@@ -1,4 +1,5 @@
 language: cpp
+sudo: false
 matrix:
   include:
     - os: osx
@@ -21,6 +22,7 @@ script:
 
 after_success:
     - echo "yeah!!"
+
 
 # notifications:
 #   email: false
