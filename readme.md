@@ -243,7 +243,160 @@ processes that have talked to it.
  > sammie[97318].................22.0 0.0  tcp://10.0.1.70:51176
  > scott[97321]..................25.8 0.0  tcp://10.0.1.70:51177
  > scott[97323]..................25.9 0.0  tcp://10.0.1.70:51177
- ```
+```
+
+There are 4 publishers and 8 subscribers (2 per topic):
+
+```
+(cv) kevin@Logan tcp $ ./tcp.py
+----------------------------------
+GeckoPy
+-----------
+  Process: pub_ryan
+  PID: 97305
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_ryan
+  PID: 97307
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_ryan_2
+  PID: 97308
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: pub_mike
+  PID: 97311
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_mike
+  PID: 97312
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_mike_2
+  PID: 97313
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: pub_sammie
+  PID: 97315
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_sammie
+  PID: 97316
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_sammie_2
+  PID: 97318
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: pub_scott
+  PID: 97320
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_scott
+  PID: 97321
+  Host: 10.0.1.70
+----------------------------------
+----------------------------------
+GeckoPy
+-----------
+  Process: sub_scott_2
+  PID: 97323
+  Host: 10.0.1.70
+----------------------------------
+>> bind raw: ['local', 'ryan', '97305', 'ok']
+>> pub_ryan:[0] published msg
+>> conn raw:  ['']
+>> conn raw:  ['local', 'ryan', 'tcp://10.0.1.70:51174', 'ok']
+[>] Receiving messages on ALL topics...
+>> conn raw:  ['local', 'ryan', 'tcp://10.0.1.70:51174', 'ok']
+[>] Receiving messages on ALL topics...
+>> bind raw: ['local', 'mike', '97311', 'ok']
+>> pub_mike:[0] published msg
+>> conn raw:  ['local', 'mike', 'tcp://10.0.1.70:51175', 'ok']
+[>] Receiving messages on ALL topics...
+>> conn raw:  ['local', 'mike', 'tcp://10.0.1.70:51175', 'ok']
+[>] Receiving messages on ALL topics...
+>> bind raw: ['local', 'sammie', '97315', 'ok']
+>> pub_sammie:[0] published msg
+>> conn raw:  ['']
+>> conn raw:  ['local', 'sammie', 'tcp://10.0.1.70:51176', 'ok']
+[>] Receiving messages on ALL topics...
+>> conn raw:  ['local', 'sammie', 'tcp://10.0.1.70:51176', 'ok']
+[>] Receiving messages on ALL topics...
+>> bind raw: ['local', 'scott', '97320', 'ok']
+>> pub_scott:[0] published msg
+>> conn raw:  ['local', 'scott', 'tcp://10.0.1.70:51177', 'ok']
+[>] Receiving messages on ALL topics...
+>> conn raw:  ['local', 'scott', 'tcp://10.0.1.70:51177', 'ok']
+[>] Receiving messages on ALL topics...
+>> pub_ryan:[1] published msg
+>> sub_ryan:ryan: {'time': 0.4579482078552246}
+>> sub_ryan_2:ryan: {'time': 0.4579482078552246}
+>> pub_mike:[1] published msg
+>> sub_mike:mike: {'time': 0.4434690475463867}
+
+... more messages streaming by
+
+>> sub_sammie:sammie: {'time': 6.8596580028533936}
+>> sub_sammie:sammie: {'time': 6.8596580028533936}
+>> sub_scott:scott: {'time': 6.861537933349609}
+>> sub_scott_:scott: {'time': 6.861537933349609}
+>> sub_ryan:ryan: {'time': 6.969848155975342}
+>> pub_ryan:[15] published msg
+>> pub_mike:[15] published msg
+>> sub_ryan_2:ryan: {'time': 7.471033096313477}
+>> sub_mike:mike: {'time': 7.450994253158569}
+>> sub_mike_2:mike: {'time': 7.450994253158569}
+>> pub_sammie:[15] published msg
+>> pub_scott:[15] published msg
+>> sub_sammie:sammie: {'time': 7.360673904418945}
+>> sub_sammie:sammie: {'time': 7.360673904418945}
+>> sub_scott:scott: {'time': 7.3624796867370605}
+>> sub_scott_:scott: {'time': 7.3624796867370605}
+^Cmain process got ctrl-c
+sub bye ...
+pub bye ...
+sub bye ...
+pub bye ...
+sub bye ...
+sub bye ...
+pub bye ...
+pub bye ...
+sub bye ...
+sub bye ...
+sub bye ...
+sub bye ...
+```
 
 # ToDo
 
