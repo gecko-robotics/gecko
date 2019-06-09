@@ -22,11 +22,11 @@
 #include "gecko/log.hpp"         // logging, local and remote
 #include "gecko/signals.hpp"
 #include "gecko/msocket.hpp"  // beacon
-#include "gecko/ascii.hpp"  // ascii message parser
-#include "gecko/db.hpp"    // database for core
-#include "gecko/core.hpp"  // geckocore/beaconcoreserver
-#include "gecko/ps.hpp"    // process performance
-#include <unistd.h>        // sleep, usleep
+#include "gecko/ps.hpp"       // process performance
+#include "gecko/ascii.hpp"    // ascii message parser
+#include "gecko/db.hpp"       // database for core
+#include "gecko/core.hpp"     // geckocore/beaconcoreserver
+#include <unistd.h>           // sleep, usleep
 
 // copy header from here
 // https://github.com/zeromq/cppzmq

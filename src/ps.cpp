@@ -10,7 +10,7 @@
 using namespace std;
 
 
-int PS::get(int pid){
+int PS::get(const string& pid){
 
 // I don't support windows, but I threw this in for fun
 #if defined(_WIN32)
@@ -19,7 +19,7 @@ int PS::get(int pid){
     this->cpu = "0";
 
 #elif defined(__APPLE__) || defined(__linux__) || defined(__unix__)
-    string cmd = "/bin/ps -o pid,%mem,%cpu -p " + to_string(pid) + " | sed -n '1!p'";
+    string cmd = "/bin/ps -o pid,%mem,%cpu -p " + pid + " | sed -n '1!p'";
 
     array<char, 128> buffer;
     string result;
@@ -32,6 +32,8 @@ int PS::get(int pid){
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
     }
+
+    result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
 
     stringstream ss(result);
     string token;
@@ -46,6 +48,8 @@ int PS::get(int pid){
     this->pid = toks[0];
     this->mem = toks[1];
     this->cpu = toks[2];
+
+
 #endif
 
     return 0;

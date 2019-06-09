@@ -1,3 +1,4 @@
+#include <gecko/ps.hpp>
 #include <gecko/core.hpp>
 #include <thread>
 #include <map>
@@ -162,7 +163,7 @@ void BeaconCoreServer::print(){
     printf("Known Services [%d]\n", services.size());
     services.print();
     printf("Binders [%d]\n", bind.size());
-    bind.print();
+    bind.printPs();
     printf("Connections [%d]\n", conn.size());
-    conn.print();
+    conn.printPs();
 }

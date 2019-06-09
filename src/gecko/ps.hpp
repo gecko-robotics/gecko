@@ -4,7 +4,7 @@
 
 class PS {
 public:
-    int get(int pid);
+    int get(const std::string& pid);
 
     std::string pid;
     std::string mem;
