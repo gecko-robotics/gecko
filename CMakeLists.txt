@@ -61,6 +61,12 @@ else()
     message(WARNING "*** Could not find ZeroMQ ***")
 endif()
 
+# turn this on with cmake -DBUILD_MSGPACK
+option(BUILD_MSGPACK "Build the message pack messages" OFF)
+if(BUILD_MSGPACK)
+    message(STATUS ">> Compiling MsgPack")
+endif(BUILD_MSGPACK)
+
 # Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
 include_directories(src)
