@@ -25,7 +25,7 @@ void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
     zmq::message_t reply = callback(request);
     printf(">> sending reply\n");
     // cout << reply << endl;
-    if (reply.size() > 0) sock.send(reply);
+    if (reply.size() > 0) sock.send(reply, zmq::send_flags::none);
 }
 
 

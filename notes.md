@@ -1,3 +1,8 @@
+using send_result_t = std::optional<size_t>;
+using recv_result_t = std::optional<size_t>;
+using recv_buffer_result_t = std::optional<recv_buffer_size>;
+
+
 ```
 watch -n 1 'ps -o pid,%mem,%cpu,comm -p 36879'
 ```

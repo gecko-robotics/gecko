@@ -11,6 +11,8 @@ Publisher::Publisher(): zmqBase(ZMQ_PUB){}
 
 void Publisher::publish(zmq::message_t& msg){
     sock.send(msg);
+    // sock.send(msg, zmq::send_flags::none);
+    // sock.send(zmq::buffer(msg), zmq::send_flags::none);
 }
 
 ///////////////////////////////////////////////////
@@ -21,6 +23,7 @@ zmq::message_t Subscriber::recv(int flags){
     zmq::message_t msg;
     // if(check()) sock.recv(&msg, flags);
     sock.recv(&msg, flags);
+    // sock.recv(msg, zmq::recv_flags::none);
     return msg;
 }
 

@@ -26,6 +26,13 @@ you could swap it out for Google's `protobuf`.
 This is because, *really*, topics are deconflicted by port number and not
 something found *in* the message sent
 
+# cppzmq
+
+This contains a submodule of the git repo for cppzmq:
+
+```
+git submodule update --init
+```
 
 # macOS
 
