@@ -32,7 +32,7 @@ HostInfo::HostInfo(){
     // To retrieve host information
     // host_entry = gethostbyname(hostbuffer);
     host_entry = gethostbyname(hostname.c_str());
-    if (host_entry == NULL) thow HostnameError(); //cout << "gethostbyname() error" << endl;
+    if (host_entry == NULL) throw HostnameError(); //cout << "gethostbyname() error" << endl;
 
     // To convert an Internet network
     // address into ASCII string
