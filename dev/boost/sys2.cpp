@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <vector>
-// #include <memory>
+#include <memory>
 #include <array>
 
 /*
