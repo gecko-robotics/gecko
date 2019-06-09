@@ -56,9 +56,8 @@ kevin@dalek apt $ sudo apt install libboost-filesystem-dev libboost-system-dev l
 
 # Status
 
-- multicast works (sort of)
-    - right now my core is written python ... i want to convert it c++ eventually
-- pub/sub and req/rep working
+- multicast works
+- pub/sub working
 - need to sort out `Node` and `gecko` classes, they sort of do the same thing
 
 ## Multicast Messages
@@ -69,16 +68,9 @@ use a `key` (ex: `dalek`, `local`, `bob`, `whatever`) that only that core will
 respond too. You can thus make it robot centric, or whatever you want centric.
 
 ```
-sub: key|topic|pid
-=> sub: key|topic|endpt
-
-pub: key|topic|pid|endpt
-=> pub: key|topic|endpt|ok
-
----
 multiple nodes can connect to endpt
 connect: key|topic|pid
-=> connect: key|topic|endpt
+=> conn: key|topic|endpt|ok
 
 only one node can bind to an endpt
 bind: key|topic|pid|endpt
@@ -116,23 +108,7 @@ to get the ip/port publishing the topic
 With `zmq`, a publisher and subscriber can both bind or connect to a TCP or
 a UDS endpoint.
 
-## Messages
 
-Message formats are pulled from ROS. There are both common messages and time
-stamped messages.
-
-### Common Message Types (\_t suffix)
-
-- vec_t: 3D vector
-- quaternion_t: 4D quaternion
-- twist_t:
-- pose_t: robot orientation (quaternion) and postion (vector)
-- wrench_t:
-
-### Time Stamped Messages (\_st suffix)
-
-- imu_st: IMU measurement (acceleration, angular velocity, magnetometer)
-- lidar_st: lidar measurements, an array of (angle [deg], range [m])
 
 # Examples
 
@@ -417,7 +393,7 @@ sub bye ...
 - [ ] serialize opencv images
 - [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice
 - [ ] travis-ci setup
-- [ ] `msocket` has a lot of exit commands, replace with exceptions or something better
+- [x] `msocket` has a lot of exit commands, replace with exceptions or something better
 
 # MIT License
 

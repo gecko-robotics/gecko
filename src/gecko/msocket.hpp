@@ -9,6 +9,15 @@
 #include <stdint.h>
 #include <string>
 #include <tuple>
+#include <exception>
+
+struct MulticastError : public std::exception {
+    MulticastError(const std::string &s): msg("Multicast Error: " + s) {}
+    MulticastError(): msg("Multicast Error") {}
+    const char * what () const throw () {return msg.c_str();}
+protected:
+    std::string msg;
+};
 
 // http://www.kohala.com/start/mcast.api.txt
 // http://www.kohala.com/start/
