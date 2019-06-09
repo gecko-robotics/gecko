@@ -60,7 +60,7 @@ using namespace std;
 
 int main(){
     BeaconCoreServer core("local");
-    core.listen(false);
+    core.listen(false);  // crashes??
 
     return 0;
 }

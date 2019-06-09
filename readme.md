@@ -388,7 +388,7 @@ sub bye ...
 - [ ] Look into NN with https://keras.io/
 - [ ] Does https://openai.com/ help with anything?
 - [ ] Bag files ... probably embed in message serialization library
-- [ ] Add submodules for: serialization, zmq, msgpack, cxxopts, json
+- [ ] Add submodules for: message serialization, cxxopts, json
 - [x] Add submodules for zmq
 - [ ] Better way to add new message types
 - [ ] serialize opencv images
