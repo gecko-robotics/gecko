@@ -405,6 +405,12 @@ sub bye ...
 - [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
 - [ ] Log server
 - [ ] echo
+- [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/
+- [ ] AI vision using http://cocodataset.org/#home
+- [ ] AI https://skymind.ai/wiki/convolutional-network
+- [ ] https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
+- [ ] Look into NN with https://keras.io/
+- [ ] Does https://openai.com/ help with anything?
 - [ ] Bag files ... probably embed in message serialization library
 - [ ] Add submodules for: serialization, zmq, msgpack
 - [ ] Better way to add new message types
