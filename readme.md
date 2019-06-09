@@ -261,7 +261,7 @@ processes that have talked to it.
 
 # MIT License
 
-**Copyright (c) 2019 Kevin J. Walchko**
+**Copyright (c) 2014 Kevin J. Walchko**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
