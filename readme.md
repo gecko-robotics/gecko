@@ -251,6 +251,7 @@ processes that have talked to it.
 - [ ] Better way to add new message types
 - [ ] serialize opencv images
 - [ ] Command line args that works both on macOS and linux
+- [ ] travis-ci setup
 
 # MIT License
 
