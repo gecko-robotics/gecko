@@ -95,11 +95,17 @@ typedef struct
 } zmq_pollitem_t;
 */
 bool zmqBase::check(uint16_t msec){
-    zmq_pollitem_t items[] = {
-      {sock, 0, ZMQ_POLLIN, 0},
-    };
+    // zmq_pollitem_t items[] = {
+    //   {&sock, 0, ZMQ_POLLIN, 0},
+    // };
 
-    // if (zmq_poll(items, 1, msec) > 0) return true;
+    // take from http://api.zeromq.org/2-1:zmq-poll
+    zmq_pollitem_t items [1];
+    // First item refers to ØMQ socket 'socket'
+    items[0].socket = &sock;
+    items[0].events = ZMQ_POLLIN;
+    //
+    // // if (zmq_poll(items, 1, msec) > 0) return true;
     int ret = zmq_poll(items, 1, msec);
     if (ret < 0) perror("zmq_poll failed");
     else if (ret > 0) return true;

@@ -389,6 +389,7 @@ sub bye ...
 - [ ] Does https://openai.com/ help with anything?
 - [ ] Bag files ... probably embed in message serialization library
 - [ ] Add submodules for: serialization, zmq, msgpack, cxxopts, json
+- [x] Add submodules for zmq
 - [ ] Better way to add new message types
 - [ ] serialize opencv images
 - [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice
