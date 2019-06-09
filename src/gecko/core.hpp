@@ -5,37 +5,33 @@
 \**************************************************/
 #pragma once
 
-#include <map>
-#include <gecko/ascii.hpp>
+// #include <map>
+// #include <gecko/ascii.hpp>
+#include <gecko/db.hpp>
 #include <gecko/gecko.hpp>
 #include <string>
-#include <tuple>
-#include <vector>
-#include <exception>
-#include <unistd.h>     // getpid
+// #include <tuple>
+// #include <vector>
+// #include <exception>
+// #include <unistd.h>     // getpid
 
 
 class BeaconCoreServer: public SigCapture {
 public:
     BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);
-    void start();
-    void stop();
+    void stop();  // shutdown core
     std::string handle_bind(ascii_t& data);
     std::string handle_conn(ascii_t& data);
-    void run();
-    void listen();
-    void printLoop();
-    void print();
+    void listen(bool print=true);  // main loop to handle connections
 
 protected:
+    void printLoop(); // thread function, runs until signal
+    void print();     // print once
     std::string key;
     std::string host;
     std::string datum;
     int pid;
-    // DB bind, conn;  // [topic, (addr, pid)]
-    DBs services;  // [topic, endpt]
-    DBs bind, conn;
-    bool exit;
+    DBv services; // [topic, (pid, endpt)]
     int delay;
     // SSocket ss;
 

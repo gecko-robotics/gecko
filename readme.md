@@ -205,6 +205,53 @@ int main(){
 }
 ```
 
+## Performance
+
+`geckocore` has a thread that prints out performance information of all
+processes that have talked to it.
+
+```
+========================================
+ Geckocore [96103]
+-------------
+ Start: 09-06-2019 09:03:49
+ Key: local
+ Host IP: 10.0.1.70
+ Listening on: 224.3.29.110:11311
+ CPU: 0.0   Memory: 0.0
+--------------------
+ Binder [4]
+ Topic                           CPU  MEM  EndPt
+ > mike[97311]...................0.0  0.0  tcp://10.0.1.70:51175
+ > ryan[97305]...................0.0  0.0  tcp://10.0.1.70:51174
+ > sammie[97315].................0.0  0.0  tcp://10.0.1.70:51176
+ > scott[97320]..................0.0  0.0  tcp://10.0.1.70:51177
+--------------------
+ Connector [8]
+ Topic                           CPU  MEM  EndPt
+ > ryan[97307]...................20.5 0.0  tcp://10.0.1.70:51174
+ > ryan[97308]...................22.2 0.0  tcp://10.0.1.70:51174
+ > mike[97312]...................20.5 0.0  tcp://10.0.1.70:51175
+ > mike[97313]...................16.5 0.0  tcp://10.0.1.70:51175
+ > sammie[97316].................23.7 0.0  tcp://10.0.1.70:51176
+ > sammie[97318].................22.0 0.0  tcp://10.0.1.70:51176
+ > scott[97321]..................25.8 0.0  tcp://10.0.1.70:51177
+ > scott[97323]..................25.9 0.0  tcp://10.0.1.70:51177
+ ```
+
+# ToDo
+
+- [ ] Add json file support
+- [ ] Make python bindings and maybe get rid of separate pygecko?
+- [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
+- [ ] Log server
+- [ ] echo
+- [ ] Bag files ... probably embed in message serialization library
+- [ ] Add submodules for: serialization, zmq
+- [ ] Better way to add new message types
+- [ ] serialize opencv images
+- [ ] Command line args that works both on macOS and linux
+
 # MIT License
 
 **Copyright (c) 2019 Kevin J. Walchko**

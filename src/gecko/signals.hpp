@@ -8,12 +8,10 @@
 class SigCapture {
 public:
     SigCapture();
-    static void my_handler(int s);
-    // bool ok(){return ok;}
-    void on(); // turn on
-    void shutdown();
-    // bool isOk();
+    static void my_handler(int s); // signal handler function
+    void on();          // turn on
+    void shutdown();    // turn off
 
 // protected:
-    static bool ok;
+    static bool ok;     // global status on if a SIGINT has occured
 };

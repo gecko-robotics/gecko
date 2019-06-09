@@ -4,8 +4,6 @@
 #include <map>
 #include <unistd.h>     // getpid
 #include <stdlib.h>
-// #include <tuple>s
-// #include <map>
 #include <iostream>
 #include <vector>
 #include <exception>
@@ -13,6 +11,14 @@
 using namespace std;
 
 ///////////////////////////////////////////
+
+/*
+ Binders [6]
+  [PID]   Topic                  CPU   MEM   EndPoint
+  [65993] hello................. 0.0%  0.0%  tcp://10.0.1.57:65303
+  [65994] hey there............. 0.0%  0.0%  tcp://10.0.1.57:65303
+  [66008] ryan.................. 0.1%  0.0%  uds:///var/run/ryan-0
+*/
 
 // FIXME: move else where
 static string mc_addr = {"224.3.29.110"};
@@ -23,8 +29,8 @@ static int mc_port = 11311;
 */
 
 BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
-    exit(false), pid(getpid()), delay(delay) {
-    // HostInfo hi = HostInfo();
+    pid(getpid()), delay(delay) {
+
     HostInfo hi;
 
     if (key.size() > 0) this->key = key;
@@ -35,13 +41,13 @@ BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     datum = time_date();
 }
 
-void BeaconCoreServer::start(){
-    // start thread
-    // thread(this->printLoop());
-}
+// void BeaconCoreServer::start(){
+//     // start thread
+//     // thread(this->printLoop());
+// }
 
 void BeaconCoreServer::stop(){
-    exit = true;
+    ok = false;
 }
 
 string BeaconCoreServer::handle_bind(ascii_t& data){
@@ -59,9 +65,12 @@ string BeaconCoreServer::handle_bind(ascii_t& data){
             return msg;
         }
         // {key,topic,pid,endpt/fail,ok/fail}
-        services.push(topic, endpt);
-        bind.push(topic, pid);
+        // services.push(topic, endpt);
+        // bind.push(topic, pid);
         // data.push_back("ok");
+
+        services.pushbind(topic, pid, endpt);
+
         data[3] = "ok";
 
         printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
@@ -82,8 +91,9 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
         string topic = data[1];
         string pid = data[2];
         string endpt = services.get(topic);
-        conn.push(topic, pid);
-        services.push(topic, endpt);
+        // conn.push(topic, pid);
+        // services.push(topic, endpt);
+        services.pushconn(topic, pid, endpt);
 
         // {key,topic,pid,endpt/fail,ok/fail}
         printf(">> CONN[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
@@ -108,15 +118,16 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
     return msg;
 }
 
-void BeaconCoreServer::run(){}
+// void BeaconCoreServer::run(){}
 
-void BeaconCoreServer::listen(){
+void BeaconCoreServer::listen(bool print){
     // setup multicast
     SSocket ss;
     ss.init(mc_addr, mc_port, 1, true);
 
     // setup printing loop in another thread
-    thread prnt(&BeaconCoreServer::printLoop, this);
+    if (print)
+        thread prnt(&BeaconCoreServer::printLoop, this);
 
     Ascii a;
     while(ok){
@@ -152,6 +163,9 @@ void BeaconCoreServer::printLoop(){
 }
 
 void BeaconCoreServer::print(){
+    PS ps;
+    ps.get(to_string(pid));
+
     printf("========================================\n");
     printf(" Geckocore [%d]\n", pid);
     printf("-------------\n");
@@ -159,11 +173,13 @@ void BeaconCoreServer::print(){
     printf(" Key: %s\n", key.c_str());
     printf(" Host IP: %s\n", host.c_str());
     printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" CPU: %s   Memory: %s\n", ps.cpu.c_str(), ps.mem.c_str());
     printf("-------------\n");
-    printf("Known Services [%d]\n", services.size());
+    // printf("Known Services [%d]\n", services.size());
+    // services.print();
+    // printf("Binders [%d]\n", bind.size());
+    // bind.printPs();
+    // printf("Connections [%d]\n", conn.size());
+    // conn.printPs();
     services.print();
-    printf("Binders [%d]\n", bind.size());
-    bind.printPs();
-    printf("Connections [%d]\n", conn.size());
-    conn.printPs();
 }

@@ -45,3 +45,26 @@ public:
     // [topic, (addr, pid)]
     std::map<std::string, std::string> db;
 };
+
+// struct record {
+//     record() {}
+//     std::string pid, topic, endpt;
+//     int type;
+// };
+
+using record_t = std::tuple<std::string, std::string>; // pid endpt
+
+class DBv {
+public:
+    DBv(){}
+    std::string get(const std::string& topic);
+    void pushbind(const std::string& topic, const std::string& pid, const std::string& endpt);
+    void pushconn(const std::string& topic, const std::string& pid, const std::string& endpt);
+    // int size(){ return db.size(); }
+    void print();
+
+protected:
+    void pop(std::map<std::string, record_t>& db, const std::string& key);
+    void printDB(int type, std::map<std::string, record_t>& db);
+    std::map<std::string, record_t> bind, conn;
+};

@@ -72,7 +72,6 @@ public:
 
 protected:
     double now();
-
     double hack;
 };
 
