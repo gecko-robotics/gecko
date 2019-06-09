@@ -33,7 +33,7 @@ int PS::get(const string& pid){
         result += buffer.data();
     }
 
-    result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
+    // result.erase(std::remove(result.begin(), result.end(), '\n'), result.end());
 
     stringstream ss(result);
     string token;

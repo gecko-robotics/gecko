@@ -77,7 +77,7 @@ string BeaconCoreServer::handle_bind(ascii_t& data){
 
         Ascii a;
         msg = a.pack(data);
-        cout << "\nbind send: " << msg << "\n" << endl;
+        // cout << "\nbind send: " << msg << "\n" << endl;
         // ss.send(msg);
     // }
 
@@ -87,9 +87,9 @@ string BeaconCoreServer::handle_bind(ascii_t& data){
 string BeaconCoreServer::handle_conn(ascii_t& data){
     // FindTopic [3]: {key,topic,pid}
     string msg;
+    string topic = data[1];
+    string pid = data[2];
     try {
-        string topic = data[1];
-        string pid = data[2];
         string endpt = services.get(topic);
         // conn.push(topic, pid);
         // services.push(topic, endpt);
@@ -103,12 +103,12 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
         Ascii a;
         msg = a.pack(data);
-        cout << "\nconn send: " << msg << "\n" << endl;
+        // cout << "\nconn send: " << msg << "\n" << endl;
         // ss.send(msg);
         // return msg;
     }
     catch (InvalidKey e){
-        printf("** Invalid Key **\n");
+        printf("** Invalid Topic: %s **\n", topic.c_str());
         // data.push_back("fail");
 
         // Ascii a;
@@ -151,7 +151,7 @@ void BeaconCoreServer::listen(bool print){
             else if (t.size() == 4) msg = handle_bind(t);
             ss.send(msg, addr);
         }
-        else cout << "** nothing **" << endl;
+        // else cout << "** nothing **" << endl;
     }
 }
 

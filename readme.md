@@ -400,11 +400,11 @@ sub bye ...
 
 # ToDo
 
-- [ ] Add json file support
+- [ ] Add json file support (spotify-json is not compiling)
 - [ ] Make python bindings and maybe get rid of separate pygecko?
 - [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
 - [ ] Log server
-- [ ] echo
+- [ ] geckotopic echo/pub/list/find tools
 - [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/
 - [ ] AI vision using http://cocodataset.org/#home
 - [ ] AI https://skymind.ai/wiki/convolutional-network
@@ -412,11 +412,12 @@ sub bye ...
 - [ ] Look into NN with https://keras.io/
 - [ ] Does https://openai.com/ help with anything?
 - [ ] Bag files ... probably embed in message serialization library
-- [ ] Add submodules for: serialization, zmq, msgpack
+- [ ] Add submodules for: serialization, zmq, msgpack, cxxopts, json
 - [ ] Better way to add new message types
 - [ ] serialize opencv images
-- [x] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain)
+- [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice
 - [ ] travis-ci setup
+- [ ] `msocket` has a lot of exit commands, replace with exceptions or something better
 
 # MIT License
 

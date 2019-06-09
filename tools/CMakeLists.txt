@@ -1,7 +1,7 @@
 message(STATUS "Gecko Tools ----------------------")
 list(APPEND tools
     logserver/gecko-logserver.cpp
-    echo/gecko-echo.cpp
+    topic/geckotopic.cpp
     # bag/gecko-bag.cpp
     core/geckocore.cpp
 )

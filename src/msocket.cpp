@@ -124,10 +124,10 @@ MsgAddr SSocket::recv(){
     }
 
     /* output received string */
-    printf("=> Received %d bytes from %s:%d\n",
-        recv_len,
-        inet_ntoa(from_addr.sin_addr),
-        ntohs(from_addr.sin_port));
+    // printf("=> Received %d bytes from %s:%d\n",
+    //     recv_len,
+    //     inet_ntoa(from_addr.sin_addr),
+    //     ntohs(from_addr.sin_port));
 
     msg = recv_str;
     // cout << msg << endl;
@@ -144,7 +144,7 @@ MsgAddr SSocket::recv_nb(long msec){
 }
 
 bool SSocket::send(const std::string& msg){
-    cout << "=> send: " << msg << " to " << inet_ntoa(mc_addr.sin_addr) << ":" << ntohs(mc_addr.sin_port) << endl;
+    // cout << "=> send: " << msg << " to " << inet_ntoa(mc_addr.sin_addr) << ":" << ntohs(mc_addr.sin_port) << endl;
     /* send string to multicast address */
     if ((sendto(sock, msg.c_str(), msg.size(), 0,
             (struct sockaddr *) &mc_addr, sizeof(mc_addr))) != msg.size()) {
@@ -156,7 +156,7 @@ bool SSocket::send(const std::string& msg){
 }
 
 bool SSocket::send(const std::string& msg, struct sockaddr_in& addr){
-    cout << "=> send: " << msg << " to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;
+    // cout << "=> send: " << msg << " to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;
 
     if ((sendto(sock, msg.c_str(), msg.size(), 0,
             (struct sockaddr *) &addr, sizeof(addr))) != msg.size()) {
