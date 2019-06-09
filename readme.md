@@ -48,6 +48,12 @@ cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=/home/kevin/.local ..
 make install
 ```
 
+## boost
+
+```
+kevin@dalek apt $ sudo apt install libboost-filesystem-dev libboost-system-dev libboost-program-options-dev libboost-thread-dev
+```
+
 # Status
 
 - multicast works (sort of)
@@ -247,10 +253,10 @@ processes that have talked to it.
 - [ ] Log server
 - [ ] echo
 - [ ] Bag files ... probably embed in message serialization library
-- [ ] Add submodules for: serialization, zmq
+- [ ] Add submodules for: serialization, zmq, msgpack
 - [ ] Better way to add new message types
 - [ ] serialize opencv images
-- [ ] Command line args that works both on macOS and linux
+- [x] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain)
 - [ ] travis-ci setup
 
 # MIT License
