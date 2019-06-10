@@ -125,31 +125,23 @@ bool zmqBase::check(uint16_t msec){
 // }
 
 void zmqBase::setEndPt(){
-    // std::array<char, 100> e;  // tcp://x.x.x.x:port
-    // size_t e_size = e.size();
-    // sock.getsockopt(ZMQ_LAST_ENDPOINT, e.data(), &e_size);
     size_t s = 100;
     char e[s];
     sock.getsockopt(ZMQ_LAST_ENDPOINT, e, &s);
 
     endpoint = e;
-    // std::cout << ">> endpoint: " << endpoint << std::endl;
 }
 
 zmqBase::~zmqBase(){
-    // // any pending sends will block the context destructor
-    // cout << ">> killing (ZMQ_LINGER): " << endpoint << endl;
-    // if(bind) sock.unbind(endpoint);
-    // int msec = 5;
-    // sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));
-    // sock.close();
     zmqBase::close();
 }
 
 void zmqBase::close(){
     // any pending sends will block the context destructor
     // zmqType z(type);
-    // printf(">> %s killing (ZMQ_LINGER): %s\n",z.c_str(), endpoint.c_str());
+    printf(">> %s killing (ZMQ_LINGER): %s\n",
+        type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        endpoint.c_str());
     if(bound) sock.unbind(endpoint);
     int msec = 5;
     sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));
