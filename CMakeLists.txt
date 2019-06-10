@@ -54,17 +54,28 @@ if(libzmq_FOUND)
     list(APPEND ALL_LIBS ${libzmq_LIBRARIES})
 
     # ZeroMQ CPP ------------------------------------------------------
-    # https://github.com/zeromq/cppzmq
+    # git submodule add https://github.com/zeromq/cppzmq
     include_directories(cppzmq)
     # include_directories(/usr/include)
 else()
     message(WARNING "*** Could not find ZeroMQ ***")
 endif()
 
-# turn this on with cmake -DBUILD_MSGPACK
+# git submodule add https://github.com/zeromq/cppzmq.git
+# turn this on with cmake -DBUILD_CXXOPTS=ON
+option(BUILD_CXXOPTS "Build command line options cxxopts" OFF)
+if(BUILD_CXXOPTS)
+    message(STATUS ">> Compiling cxxopts")
+    include_directories(gecko-msgpack)
+endif(BUILD_CXXOPTS)
+
+# git submodule add git@github.com:gecko-robotics/gecko-msgpack.git
+# turn this on with cmake -DBUILD_MSGPACK=ON
 option(BUILD_MSGPACK "Build the message pack messages" OFF)
 if(BUILD_MSGPACK)
     message(STATUS ">> Compiling MsgPack")
+    include_directories(gecko-msgpack)
+
     if (NOT APPLE)
         set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
         include_directories($ENV{HOME}/.local/include)
@@ -118,6 +129,14 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 list(APPEND ALL_LIBS ${PROJECT_NAME})
 
+# Build tools -------------------------------------------------------
+add_subdirectory(tools)
+
+# Tests --------------------------------------------------------------
+# add_subdirectory(tests)
+add_subdirectory(gtests)
+
+######################################################################
 # Package Generator ------------------
 if(APPLE)
     set(CPACK_GENERATOR "DMG")
@@ -162,12 +181,6 @@ set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_SOURCE_DIR}/build/;${CMAKE_SOURCE_DIR}/.g
 
 include(CPack)
 
-
-# Tests --------------------------------------------------------------
-add_subdirectory(tests)
-add_subdirectory(gtests)
-add_subdirectory(tools)
-
 # Install ----------
 # You can redefine at build time:
 #   cmake .. -DCMAKE_INSTALL_PREFIX=/home/kevin/.local
@@ -177,4 +190,4 @@ install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 file(GLOB HEADERS src/gecko/*.hpp)
 install(FILES ${HEADERS} DESTINATION include/gecko)
-install(FILES zmq/zmq.hpp zmq/zmq_addon.hpp DESTINATION include/gecko/zmq)
+install(FILES cppzmq/zmq.hpp cppzmq/zmq_addon.hpp DESTINATION include/gecko/zmq)
