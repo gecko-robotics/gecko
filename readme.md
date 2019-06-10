@@ -394,7 +394,7 @@ sub bye ...
 - [ ] https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
 - [ ] Look into NN with https://keras.io/
 - [ ] Does https://openai.com/ help with anything?
-- [ ] Bag files ... probably embed in message serialization library
+- [ ] Bag files with geckobag ... probably embed in message serialization library
 - [ ] Add submodules for gecko-msgpack
 - [x] Add submodules for cppzmq
 - [ ] Add submodules for cxxopts
@@ -404,6 +404,10 @@ sub bye ...
 - [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice
 - [ ] travis-ci setup
 - [x] `msocket` has a lot of exit commands, replace with exceptions or something better
+- [ ] geckotopic
+- [ ] Local nodes, show performance
+- [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
+- [ ] Remote nodes, investigate ping, return performance info (core -> node)
 
 # MIT License
 
@@ -426,3 +430,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
