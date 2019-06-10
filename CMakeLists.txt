@@ -53,6 +53,8 @@ if(libzmq_FOUND)
     # list(APPEND ALL_LIBS ${ALL_LIBS} ${libzmq_LIBRARIES})
     list(APPEND ALL_LIBS ${libzmq_LIBRARIES})
 
+    option(ZMQ_BUILD_DRAFT_API " " OFF)
+
     # ZeroMQ CPP ------------------------------------------------------
     # git submodule add https://github.com/zeromq/cppzmq
     include_directories(cppzmq)

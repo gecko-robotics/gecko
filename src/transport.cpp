@@ -50,32 +50,32 @@ string zmqUDS(const string& file){
     // printf("zmqUDS: %s\n", endpt.c_str());
     return endpt;
 }
-
-std::string zmqType::to_string() {
-    std::string ans;
-    ColorPrint c;
-    switch(type){
-    case ZMQ_PUB:
-        ans = c.color(0,6,"ZMQ_PUB");
-        break;
-    case ZMQ_SUB:
-        ans = c.color(0,7,"ZMQ_SUB");
-        break;
-    case ZMQ_REQ:
-        ans = c.color(0,2,"ZMQ_REQ");
-        break;
-    case ZMQ_REP:
-        ans = c.color(0,3,"ZMQ_REP");
-        break;
-    default:
-        ans = c.color(0,1,"ZMQ_ZMQ_UNKNOWNSUB");
-    }
-    return ans;
-}
-
-const char* zmqType::c_str(){
-    return to_string().c_str();
-}
+//
+// std::string zmqType::to_string() {
+//     std::string ans;
+//     ColorPrint c;
+//     switch(type){
+//     case ZMQ_PUB:
+//         ans = c.color(0,6,"ZMQ_PUB");
+//         break;
+//     case ZMQ_SUB:
+//         ans = c.color(0,7,"ZMQ_SUB");
+//         break;
+//     case ZMQ_REQ:
+//         ans = c.color(0,2,"ZMQ_REQ");
+//         break;
+//     case ZMQ_REP:
+//         ans = c.color(0,3,"ZMQ_REP");
+//         break;
+//     default:
+//         ans = c.color(0,1,"ZMQ_ZMQ_UNKNOWNSUB");
+//     }
+//     return ans;
+// }
+//
+// const char* zmqType::c_str(){
+//     return to_string().c_str();
+// }
 
 ////////////////////////////////////////////////////////
 
@@ -148,8 +148,8 @@ zmqBase::~zmqBase(){
 
 void zmqBase::close(){
     // any pending sends will block the context destructor
-    zmqType z(type);
-    printf(">> %s killing (ZMQ_LINGER): %s\n",z.c_str(), endpoint.c_str());
+    // zmqType z(type);
+    // printf(">> %s killing (ZMQ_LINGER): %s\n",z.c_str(), endpoint.c_str());
     if(bound) sock.unbind(endpoint);
     int msec = 5;
     sock.setsockopt(ZMQ_LINGER, &msec, sizeof(msec));

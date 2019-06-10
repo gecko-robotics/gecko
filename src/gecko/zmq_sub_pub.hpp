@@ -47,9 +47,9 @@ public:
     Subscriber(const std::string& topic={""});
     // Subscriber(std::string addr, std::string topic, bool bind=false);
     // Subscriber(std::string addr, bool bind=false);
-    zmq::message_t recv(int flags=0);
+    zmq::message_t recv(zmq::recv_flags flags=zmq::recv_flags::none);
     // inline zmq::message_t recv_nb(){return recv(ZMQ_DONTWAIT);}
-    inline zmq::message_t recv_nb(){return recv(ZMQ_DONTWAIT);}
+    inline zmq::message_t recv_nb(){return recv(zmq::recv_flags::dontwait);}
     // void setCallback(void(*callback)(zmq::message_t&));
     //
     // void(*callback)(zmq::message_t&);

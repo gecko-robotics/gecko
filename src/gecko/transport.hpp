@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 #include <string>
-#include "zmq.hpp"
+#include <zmq.hpp>
 
 // helper functions to create TCP or UDS connections
 std::string zmqTCP(const std::string& addr, uint16_t port); // specific port
@@ -18,13 +18,13 @@ std::string zmqUDS(const std::string& file); // UDS file, must be on same machin
 // Returns the type of zmq connection as a colored string
 // Useful for debugging
 // FIXME: embed in zmqBase???
-class zmqType {
-public:
-    zmqType(int i): type(i) {}
-    std::string to_string();
-    const char* c_str();
-    int type;
-};
+// class zmqType {
+// public:
+//     zmqType(int i): type(i) {}
+//     std::string to_string();
+//     const char* c_str();
+//     int type;
+// };
 
 class zmqBase {
 public:

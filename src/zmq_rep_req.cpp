@@ -25,7 +25,7 @@ void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
     zmq::message_t reply = callback(request);
     printf(">> sending reply\n");
     // cout << reply << endl;
-    if (reply.size() > 0) sock.send(reply, zmq::send_flags::none);
+    // if (reply.size() > 0) sock.send(reply, zmq::send_flags::none);
 }
 
 
@@ -37,7 +37,7 @@ Request::Request(std::string addr): zmqBase(ZMQ_REQ){
 }
 
 zmq::message_t Request::get(zmq::message_t& msg, int flags){
-    sock.send(msg);
+    // sock.send(msg);
 
     bool msg_ready = zmqBase::check(1);
 

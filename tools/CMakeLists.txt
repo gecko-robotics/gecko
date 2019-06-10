@@ -4,6 +4,7 @@ list(APPEND tools
     topic/geckotopic.cpp
     # bag/gecko-bag.cpp
     core/geckocore.cpp
+    version/version.cpp
 )
 
 # find_package(Boost COMPONENTS system program_options REQUIRED)
