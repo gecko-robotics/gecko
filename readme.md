@@ -1,11 +1,6 @@
 # :lizard: Gecko
 
-This library uses:
-
-- [ZeroMQ](https://zeromq.org) for sending an receiving messages, it uses:
-    - Subscribe/publish
-    - Request/reply
-- C++17 syntax
+My robotic framework
 
 ## ROS Influence
 
@@ -25,22 +20,39 @@ you could swap it out for Google's `protobuf`.
 - When a message is published on a topic, the topic name is not published too.
 This is because, *really*, topics are deconflicted by port number and not
 something found *in* the message sent
+- Multicast is used to find publishers
 
-# cppzmq
+This library uses:
 
-This contains a submodule of the git repo for cppzmq:
+- [ZeroMQ](https://zeromq.org) for sending an receiving messages, it uses:
+    - Subscribe/publish
+    - Request/reply
+- C++17 syntax
+
+## Other Potential Libraries
+
+- [cxxopts](https://github.com/jarro2783/cxxopts) header only c++ for args
+- [spotify-json](https://github.com/spotify/spotify-json) for files
+
+## ZMQ
+
+### cppzmq
+
+I use a high level C++ abstractin of the lower level zmq to build gecko.
+This contains a submodule of the git repo for cppzmq and requires the following
+command to set it up:
 
 ```
 git submodule update --init
 ```
 
-# macOS
+### macOS
 
 ```
 brew install zeromq
 ```
 
-# Linux (Ubuntu)
+### Linux (Ubuntu)
 
 The `apt` package is old, so to use the current one and compile
 it for C++17 and install it to `~/.local` (to not polute my system
@@ -55,17 +67,16 @@ cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=/home/kevin/.local ..
 make install
 ```
 
-## boost
+### boost
+
+I generally hate boost because it is a pain to work with.
 
 ```
 kevin@dalek apt $ sudo apt install libboost-filesystem-dev libboost-system-dev libboost-program-options-dev libboost-thread-dev
 ```
 
-# Status
 
-- multicast works
-- pub/sub working
-- need to sort out `Node` and `gecko` classes, they sort of do the same thing
+# Gecko C++ API
 
 ## Multicast Messages
 
@@ -83,8 +94,6 @@ only one node can bind to an endpt
 bind: key|topic|pid|endpt
 => bind: key|topic|endpt|ok
 ```
-
-# Gecko C++ API
 
 ## `gecko`
 
@@ -113,9 +122,8 @@ to get the ip/port publishing the topic
 - `gecko::subConnectUDS(key, topic)`: variation
 
 With `zmq`, a publisher and subscriber can both bind or connect to a TCP or
-a UDS endpoint.
-
-
+a UDS endpoint. Publishers do not *always* bind and subscribers do not *always*
+connect.
 
 # Examples
 
@@ -430,4 +438,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-

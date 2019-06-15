@@ -45,6 +45,7 @@ cxxopts::ParseResult parse(int argc, char* argv[])
   } catch (const cxxopts::OptionException& e)
   {
     std::cout << "error parsing options: " << e.what() << std::endl;
+    // std::cout << options.help({"", "Group"}) << std::endl;
     exit(1);
   }
 }
