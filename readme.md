@@ -402,6 +402,7 @@ sub bye ...
 - [ ] https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
 - [ ] Look into NN with https://keras.io/
 - [ ] Does https://openai.com/ help with anything?
+- [ ] Learn anything from the bluezero service
 - [ ] Bag files with geckobag ... probably embed in message serialization library
 - [ ] Add submodules for gecko-msgpack
 - [x] Add submodules for cppzmq

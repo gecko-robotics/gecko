@@ -57,7 +57,7 @@ if(libzmq_FOUND)
 
     # ZeroMQ CPP ------------------------------------------------------
     # git submodule add https://github.com/zeromq/cppzmq
-    include_directories(cppzmq)
+    include_directories(extlibs/cppzmq)
     # include_directories(/usr/include)
 else()
     message(WARNING "*** Could not find ZeroMQ ***")
