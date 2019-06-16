@@ -407,10 +407,10 @@ sub bye ...
 - [ ] Add submodules for gecko-msgpack
 - [x] Add submodules for cppzmq
 - [ ] Add submodules for cxxopts
-- [ ] Add submodules for spotify-json
+- [ ] Add submodules for [spotify-json](https://github.com/spotify/spotify-json) or [nlohmann-json](https://github.com/nlohmann/json)
 - [ ] Better way to add new message types
 - [ ] serialize opencv images
-- [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice
+- [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice ... other?
 - [ ] travis-ci setup
 - [x] `msocket` has a lot of exit commands, replace with exceptions or something better
 - [ ] geckotopic
