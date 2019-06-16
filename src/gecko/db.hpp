@@ -9,6 +9,7 @@
 #include <map>
 #include <tuple>
 #include <exception>
+#include <gecko/exceptions.hpp>
 
 struct InvalidKey : public std::exception {
     InvalidKey(const std::string &s): msg("Invalid Key: " + s) {}
@@ -39,6 +40,7 @@ public:
     void pushconn(const std::string& topic, const std::string& pid, const std::string& endpt);
     // int size(){ return db.size(); }
     void print();
+    void saveJson(const std::string& filename){throw NotImplemented("DBv::save()");} // value?
 
 protected:
     void pop(std::map<std::string, record_t>& db, const std::string& key);

@@ -391,32 +391,33 @@ sub bye ...
 
 # ToDo
 
-- [ ] Add json file support (spotify-json is not compiling)
 - [ ] Make python bindings and maybe get rid of separate pygecko?
 - [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
 - [ ] Log server
-- [ ] geckotopic echo/pub/list/find tools
+- [ ] `geckotopic` echo/pub/list/find tools
+- [ ] Learn anything from the bluezero service
+- [ ] Bag files with geckobag ... probably embed in message serialization library
+- [ ] Add submodules for gecko-msgpack
+- [x] Add submodules for cppzmq
+- [ ] Add submodules for cxxopts ... this is a pain ... write my own?
+- [x] Add submodules for [nlohmann-json](https://github.com/nlohmann/json)
+- [ ] Add json file setup
+- [ ] Add json file `geckolaunch`
+- [ ] Better way to add new message types
+- [ ] serialize opencv images
+- [ ] travis-ci setup
+- [x] `msocket` has a lot of exit commands, replace with exceptions or something better
+- [ ] Local nodes only, show performance ... or figure how to handle remote nodes
+- [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
+- [ ] Remote nodes, investigate ping, return performance info (core -> node)
+
+Robot stuff
 - [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/
 - [ ] AI vision using http://cocodataset.org/#home
 - [ ] AI https://skymind.ai/wiki/convolutional-network
 - [ ] https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
 - [ ] Look into NN with https://keras.io/
 - [ ] Does https://openai.com/ help with anything?
-- [ ] Learn anything from the bluezero service
-- [ ] Bag files with geckobag ... probably embed in message serialization library
-- [ ] Add submodules for gecko-msgpack
-- [x] Add submodules for cppzmq
-- [ ] Add submodules for cxxopts
-- [ ] Add submodules for [spotify-json](https://github.com/spotify/spotify-json) or [nlohmann-json](https://github.com/nlohmann/json)
-- [ ] Better way to add new message types
-- [ ] serialize opencv images
-- [ ] Command line args that works both on macOS and linux, had to fix boost on ubuntu (ass pain), also looking at `cxxopts` which seems to be nice ... other?
-- [ ] travis-ci setup
-- [x] `msocket` has a lot of exit commands, replace with exceptions or something better
-- [ ] geckotopic
-- [ ] Local nodes, show performance
-- [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
-- [ ] Remote nodes, investigate ping, return performance info (core -> node)
 
 # MIT License
 

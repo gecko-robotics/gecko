@@ -10,6 +10,13 @@
 #include <string>
 
 
+/****
+ * This is the main geckocore server. It uses multicast to communicate with
+ * other gecko nodes. Because the messages are really short, the core only
+ * uses simple UTF-8 ASCII characters for simplicity. This could change in the
+ * future.
+ */
+
 class BeaconCoreServer: public SigCapture {
 public:
     BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);

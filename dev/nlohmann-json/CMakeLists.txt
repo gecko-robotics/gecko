@@ -13,7 +13,7 @@ message(STATUS "  C++ ${CMAKE_CXX_STANDARD}")
 message(STATUS "-------------------------------------")
 
 # Add local -----------------------------------------------------
-include_directories(./json-develop/include)
+include_directories(../../extlibs/nlohmann-json/include)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 

@@ -30,6 +30,9 @@ endif()
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
+# Json ---------------------------------------------------------
+include_directories(extlibs/nlohmann-json/include)
+
 # Threads ---------------------------------------------------------
 find_package(Threads REQUIRED)
 if(Threads_FOUND)
