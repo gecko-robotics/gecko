@@ -35,7 +35,7 @@ public:
     T as() {
         // try {
             T ret;
-            parse(value, ret);
+            parse(ret);
             return ret;
         // }
         // catch {
@@ -43,14 +43,14 @@ public:
         // }
     }
 
-    inline void parse(const std::string& s, std::string& v){v = s;}  // this is stupid
-    inline void parse(const std::string& s, double& v){v = stod(s);}
-    inline void parse(const std::string& s, float& v){v = stof(s);}
-    inline void parse(const std::string& s, int& v){v = stoi(s);}
-    inline void parse(const std::string& s, bool& v){
+    inline void parse(std::string& v){v = value;}  // this is stupid
+    inline void parse(double& v){v = stod(value);}
+    inline void parse(float& v){v = stof(value);}
+    inline void parse(int& v){v = stoi(value);}
+    inline void parse(bool& v){
         // if (s == "true") v = true;
         // else if (s == "false") v = false;
-        if (s == "false" || s == "0") v = false;
+        if (value == "false" || value == "0") v = false;
         else v = true;
         // else throw exception();
     }
@@ -66,9 +66,9 @@ class Options {
 public:
     void parse() {}
     void add_place(const std::string& group){
-        string toks;
-        stringstream ss(group);
-        string token;
+        std::string toks;
+        std::stringstream ss(group);
+        std::string token;
         try{
             while(getline(ss,token,' ')) {
                 // toks.push_back(token);
@@ -90,7 +90,7 @@ public:
     }
 
     Value& operator[](const std::string& key) {
-        map<string, Value>::iterator it;
+        std::map<std::string, Value>::iterator it;
         it = opts.find(key);
         // if (it == opts.end()) throw InvalidKey(key);
         // string pid, endpt;
