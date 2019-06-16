@@ -1,3 +1,6 @@
 [submodule "cppzmq"]
 	path = extlibs/cppzmq
 	url = https://github.com/zeromq/cppzmq.git
+[submodule "extlibs/nlohmann-json"]
+	path = extlibs/nlohmann-json
+	url = https://github.com/nlohmann/json.git
