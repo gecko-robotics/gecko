@@ -76,10 +76,8 @@ endif(BUILD_CXXOPTS)
 
 # git submodule add git@github.com:gecko-robotics/gecko-msgpack.git
 # turn this on with cmake -DBUILD_MSGPACK=ON
-option(BUILD_MSGPACK "Build the message pack messages" OFF)
+option(BUILD_MSGPACK "Build the message pack messages" ON)
 if(BUILD_MSGPACK)
-    message(STATUS ">> Compiling MsgPack")
-    include_directories(gecko-msgpack)
 
     if (NOT APPLE)
         set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
@@ -125,6 +123,11 @@ if(BUILD_MSGPACK)
             message(WARNING "\n<<--- Could not find MsgPack --->>\n")
         endif()
     endif()
+
+    message(STATUS ">> Compiling MsgPack")
+    include_directories(extlibs/gecko-msgpack)
+    add_subdirectory(extlibs/gecko-msgpack)
+
 endif(BUILD_MSGPACK)
 
 # Build Gecko library ----------------------------------------------

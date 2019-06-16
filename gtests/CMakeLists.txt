@@ -45,7 +45,7 @@ list(APPEND gtests
     # msgpack-adaptor-gtest.cpp
 )
 
-message(STATUS "gTests ----------------------")
+message(STATUS "Gecko::gTests ----------------------")
 foreach(src ${gtests})
     get_filename_component(name ${src} NAME_WE)
     message(STATUS " -> ${name}")
