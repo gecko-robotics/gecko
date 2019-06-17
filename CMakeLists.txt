@@ -74,6 +74,15 @@ if(BUILD_CXXOPTS)
     include_directories(gecko-msgpack)
 endif(BUILD_CXXOPTS)
 
+
+# Build Gecko library ----------------------------------------------
+file(GLOB SOURCES src/*.cpp)
+include_directories(src)
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
+target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
+list(APPEND ALL_LIBS ${PROJECT_NAME})
+
+# Build Gecko-MsgPack ----------------------------------------------
 # git submodule add git@github.com:gecko-robotics/gecko-msgpack.git
 # turn this on with cmake -DBUILD_MSGPACK=ON
 option(BUILD_MSGPACK "Build the message pack messages" ON)
@@ -130,12 +139,6 @@ if(BUILD_MSGPACK)
 
 endif(BUILD_MSGPACK)
 
-# Build Gecko library ----------------------------------------------
-file(GLOB SOURCES src/*.cpp)
-include_directories(src)
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
-list(APPEND ALL_LIBS ${PROJECT_NAME})
 
 # Build tools -------------------------------------------------------
 add_subdirectory(tools)
