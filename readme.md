@@ -2,37 +2,27 @@
 
 My robotic framework
 
-## ROS Influence
-
-This draws many ideas from [ros](https://ros.org), but doesn't strickly always
-follow the API. It also pulls a lot from rospy. This library is step as:
-
-- The gecko library is serialization independent. I have chosen `msgpack`, but
-you could swap it out for Google's `protobuf`.
-    - All `zmq` interfaces are standarized on `zmq::message_t` as input/output
-    so you can change the serialization easily
-    - Just pick your library of choice and write classes/functions that
-    transpose your favorite message format to/from `zmq::message_t` and you
-    should be good
-- `gecko` can use either unix domain sockets (UDS) or TCP sockets for messages
-- `zmq` publisher only sends one type of message (e.g., `imu_t`) per topic
-    - *For example:* topic `robot_pose` will only send `pose_t` on that topic
-- When a message is published on a topic, the topic name is not published too.
-This is because, *really*, topics are deconflicted by port number and not
-something found *in* the message sent
-- Multicast is used to find publishers
-
-This library uses:
-
-- [ZeroMQ](https://zeromq.org) for sending an receiving messages, it uses:
-    - Subscribe/publish
-    - Request/reply
+- [ZeroMQ](https://zeromq.org)
+    - [cppzmq](https://github.com/zeromq/cppzmq)
 - C++17 syntax
+    - Apple LLVM version 10.0.1 (clang-1001.0.46.4)
+    - c++ (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0
+- [msgpack](https://msgpack.org/index.html)
+- [json](https://github.com/nlohmann/json)
+- [Google Test](https://github.com/google/googletest)
+- Publish/subscriber and request/reply architecture
+- Multicast to find nodes
 
-## Other Potential Libraries
+## Building
 
-- [cxxopts](https://github.com/jarro2783/cxxopts) header only c++ for args
-- [spotify-json](https://github.com/spotify/spotify-json) for files
+```
+git clone --recursive https://github.com/gecko-robotics/gecko.git
+git submodule update --init --recursive
+cd gecko
+mkdir build
+cd build
+cmake ..
+```
 
 ## ZMQ
 
@@ -41,10 +31,6 @@ This library uses:
 I use a high level C++ abstractin of the lower level zmq to build gecko.
 This contains a submodule of the git repo for cppzmq and requires the following
 command to set it up:
-
-```
-git submodule update --init
-```
 
 ### macOS
 
@@ -69,7 +55,8 @@ make install
 
 ### boost
 
-I generally hate boost because it is a pain to work with.
+I generally hate boost because it is a pain to work with. Right now you don't
+need it.
 
 ```
 kevin@dalek apt $ sudo apt install libboost-filesystem-dev libboost-system-dev libboost-program-options-dev libboost-thread-dev

@@ -10,6 +10,9 @@ message(STATUS "  Project: ${PROJECT_NAME}")
 message(STATUS "  C++ ${CMAKE_CXX_STANDARD}")
 message(STATUS "-------------------------------------")
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_RULE_MESSAGES OFF)
+
 # set path for FindXXX.cmake
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND ALL_LIBS "")
