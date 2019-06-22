@@ -8,6 +8,7 @@
 #include <gecko/db.hpp>
 #include <gecko/gecko.hpp>
 #include <string>
+#include <thread>
 
 
 /****
@@ -20,6 +21,8 @@
 class BeaconCoreServer: public SigCapture {
 public:
     BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);
+    ~BeaconCoreServer();
+    
     void stop();  // shutdown core
     std::string handle_bind(ascii_t& data);
     std::string handle_conn(ascii_t& data);
@@ -34,4 +37,5 @@ protected:
     int pid;           // core pid
     DBv services;      // bind[topic, (pid, endpt)]  conn[pid, (topic, endpt)]
     int delay;         // replace with Rate?
+    std::thread prnt;
 };

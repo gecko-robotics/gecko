@@ -20,7 +20,7 @@ foreach(src ${tools})
     #     # message("geckocore !!!!")
     # else()
         # message(">> ${name} <<")
-        target_link_libraries(${name} ${ALL_LIBS})
+        target_link_libraries(${name} ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
     # endif()
 
     install(TARGETS ${name} DESTINATION bin)

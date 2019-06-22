@@ -5,6 +5,15 @@
 \**************************************************/
 #pragma once
 
+// #include <string>
+//
+// namespace gecko {
+//
+// static std::string mc_addr = {"224.3.29.110"};
+// static int mc_port = 11311;
+//
+// }
+
 // Just add gecko.hpp and all of these get added
 #include "gecko/geckocpp.hpp"    // geckocpp stuff
 #include "gecko/time.hpp"        // rate

@@ -2,6 +2,7 @@
 #include "gecko/log.hpp"
 #include "gecko/signals.hpp"
 #include "gecko/geckocpp.hpp"
+#include <gecko/defaults.hpp>
 #include <thread>
 #include <mutex>
 #include <pwd.h>        // geteuid,getpwuid
@@ -22,8 +23,8 @@ namespace gecko {
     mutex g_mutex;
     static string host_name;
     static string host_addr;
-    static string mc_addr = {"224.3.29.110"};
-    static int mc_port = 11311;
+    // static string mc_addr = {"224.3.29.110"};
+    // static int mc_port = 11311;
     // Time time;
     Logger logger;
     static SigCapture sig; // this should be in init ... not global activation

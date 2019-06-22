@@ -1,5 +1,6 @@
 #include <gecko/ps.hpp>
 #include <gecko/core.hpp>
+#include <gecko/defaults.hpp>
 #include <thread>
 #include <map>
 #include <unistd.h>     // getpid
@@ -21,12 +22,14 @@ using namespace std;
 */
 
 // FIXME: move else where
-static string mc_addr = {"224.3.29.110"};
-static int mc_port = 11311;
+// static string mc_addr = {"224.3.29.110"};
+// static int mc_port = 11311;
 
 /*
 
 */
+
+using namespace gecko;
 
 BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     pid(getpid()), delay(delay) {
@@ -39,6 +42,10 @@ BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     host = hi.address;
 
     datum = time_date();
+}
+
+BeaconCoreServer::~BeaconCoreServer(){
+    prnt.join();
 }
 
 void BeaconCoreServer::stop(){
@@ -121,12 +128,7 @@ void BeaconCoreServer::listen(bool print){
 
     // setup printing loop in another thread
     if (print)
-        try{
-            thread prnt(&BeaconCoreServer::printLoop, this);
-        }
-        catch (const exception& e){
-            cout << e.what() << endl;
-        }
+        prnt = thread(&BeaconCoreServer::printLoop, this);
 
 
     Ascii a;
@@ -153,14 +155,15 @@ void BeaconCoreServer::listen(bool print){
         }
         // else cout << "** nothing **" << endl;
     }
+    // prnt.join();
 }
 
 void BeaconCoreServer::printLoop(){
-    cout << "printLoop()" << endl;
-    // while(ok){
-    //     print();
-    //     sleep(delay);
-    // }
+    // cout << "printLoop()" << endl;
+    while(ok){
+        print();
+        sleep(delay);
+    }
 }
 
 void BeaconCoreServer::print(){
