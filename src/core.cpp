@@ -121,7 +121,13 @@ void BeaconCoreServer::listen(bool print){
 
     // setup printing loop in another thread
     if (print)
-        thread prnt(&BeaconCoreServer::printLoop, this);
+        try{
+            thread prnt(&BeaconCoreServer::printLoop, this);
+        }
+        catch (const exception& e){
+            cout << e.what() << endl;
+        }
+
 
     Ascii a;
     while(ok){
@@ -150,10 +156,11 @@ void BeaconCoreServer::listen(bool print){
 }
 
 void BeaconCoreServer::printLoop(){
-    while(ok){
-        print();
-        sleep(delay);
-    }
+    cout << "printLoop()" << endl;
+    // while(ok){
+    //     print();
+    //     sleep(delay);
+    // }
 }
 
 void BeaconCoreServer::print(){
