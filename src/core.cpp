@@ -21,14 +21,6 @@ using namespace std;
   [66008] ryan.................. 0.1%  0.0%  uds:///var/run/ryan-0
 */
 
-// FIXME: move else where
-// static string mc_addr = {"224.3.29.110"};
-// static int mc_port = 11311;
-
-/*
-
-*/
-
 using namespace gecko;
 
 BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
