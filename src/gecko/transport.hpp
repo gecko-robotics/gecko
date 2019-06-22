@@ -14,6 +14,11 @@ std::string zmqTCP(const std::string& addr, uint16_t port); // specific port
 std::string zmqTCP(const std::string& addr); // get random port number
 std::string zmqUDS(const std::string& file); // UDS file, must be on same machine
 
+extern "C"
+{
+    static const char* zmqTCPc(const char* addr, uint16_t port){std::string s(addr); return zmqTCP(s, port).c_str();}
+}
+
 
 // Returns the type of zmq connection as a colored string
 // Useful for debugging
