@@ -3,9 +3,20 @@
 #include "gecko/time.hpp"
 #include "gecko/color.hpp"
 #include <iostream>
+#include <string>
+#include <map>
 // #include <algorithm>  // erase
 
 using namespace std;
+
+
+static map<int,string> zmqTypes = {
+    {ZMQ_SUB, "Subscriber"},
+    {ZMQ_PUB, "Publisher"},
+    {ZMQ_REP, "Reply"},
+    {ZMQ_REQ, "Request"}
+};
+
 
 // enum zmq_types_t {pub, sub, rep, req};
 // enum class socket_type : int
@@ -140,7 +151,8 @@ void zmqBase::close(){
     // any pending sends will block the context destructor
     // zmqType z(type);
     printf(">> %s killing (ZMQ_LINGER): %s\n",
-        type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        // type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        zmqTypes[type].c_str(),
         endpoint.c_str());
     if(bound) sock.unbind(endpoint);
     int msec = 5;
@@ -158,7 +170,8 @@ void zmqBase::bind(const std::string& addr){
     setEndPt();
 
     printf(">> %s[BIND] %s\n",
-        type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        // type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        zmqTypes[type].c_str(),
         endpoint.c_str()
     );
 }
@@ -173,7 +186,8 @@ void zmqBase::connect(const std::string& addr){
     setEndPt();
 
     printf(">> %s[CONNECT] %s\n",
-        type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        // type == ZMQ_SUB ? "Subscriber" : "Publisher",
+        zmqTypes[type].c_str(),
         endpoint.c_str()
     );
 }

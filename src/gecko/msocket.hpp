@@ -33,7 +33,7 @@ using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
 class SSocket{
 public:
     void init(
-        std::string mc_addr_str={"224.3.29.110"},
+        std::string mc_addr_str={"224.3.29.110"}, // FIXME: address
         uint16_t mc_port=11311,
         uint8_t mc_ttl=1,
         bool reuse=false

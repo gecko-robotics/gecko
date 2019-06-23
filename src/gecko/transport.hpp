@@ -14,10 +14,10 @@ std::string zmqTCP(const std::string& addr, uint16_t port); // specific port
 std::string zmqTCP(const std::string& addr); // get random port number
 std::string zmqUDS(const std::string& file); // UDS file, must be on same machine
 
-extern "C"
-{
-    static const char* zmqTCPc(const char* addr, uint16_t port){std::string s(addr); return zmqTCP(s, port).c_str();}
-}
+// extern "C"
+// {
+//     static const char* zmqTCPc(const char* addr, uint16_t port){std::string s(addr); return zmqTCP(s, port).c_str();}
+// }
 
 
 // Returns the type of zmq connection as a colored string
@@ -50,6 +50,11 @@ public:
     int type;  // pub/sub/etc
 protected:
     void setEndPt();  // determine ip:port that was given by OS
+    // std::map<int,std::string> = {
+    //     {ZMQ_SUB, "Subscriber"},
+    //     {ZMQ_PUB, "Publisher"},
+    //     {}
+    // }
 };
 
 // class Publisher: public zmqBase {

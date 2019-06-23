@@ -8,14 +8,14 @@ using namespace std;
 
 
 Reply::Reply(std::string addr): zmqBase(ZMQ_REP){
-    sock.bind(addr);
+    bind(addr);
     setEndPt();
 }
 
 void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
     zmq::message_t request;
 
-    if (zmqBase::check(1) == false) return;
+    // if (zmqBase::check(1) == false) return;
 
     sock.recv (&request, flags);
 
@@ -23,8 +23,10 @@ void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
 
     //  create the reply
     zmq::message_t reply = callback(request);
-    printf(">> sending reply\n");
-    // cout << reply << endl;
+    // printf(">> sending reply\n");
+    cout << ">> reply::listen(): " << reply << endl;
+    sock.send(reply, zmq::send_flags::none);
+    cout << ">> reply::listen() sent message" << endl;
     // if (reply.size() > 0) sock.send(reply, zmq::send_flags::none);
 }
 
@@ -32,17 +34,19 @@ void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
 ////////////////////////////////////////////////////
 
 Request::Request(std::string addr): zmqBase(ZMQ_REQ){
-    sock.connect(addr);
+    connect(addr);
     setEndPt();
 }
 
 zmq::message_t Request::get(zmq::message_t& msg, int flags){
-    // sock.send(msg);
+    sock.send(msg);
 
-    bool msg_ready = zmqBase::check(1);
+    // bool msg_ready = zmqBase::check(1);
 
     zmq::message_t rep;
-    if (msg_ready) sock.recv(&rep, flags);
+    // if (msg_ready)
+    sock.recv(&rep, flags);
+    cout << ">> request::get(): " << rep << endl;
 
     return rep;
 }
