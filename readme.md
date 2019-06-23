@@ -387,6 +387,7 @@ sub bye ...
 - [x] Add submodule for gecko-msgpack
 - [x] Add submodule for cppzmq
 - [ ] Add submodule for cxxopts ... this is a pain ... write my own?
+- [ ] Add boost for command line args ... boost sucks
 - [x] Add submodule for [nlohmann-json](https://github.com/nlohmann/json)
 - [ ] Add json file setup
 - [ ] Add json file `geckolaunch`
