@@ -1,0 +1,7 @@
+find_package(OpenCV REQUIRED)
+if(OpenCV_FOUND)
+    message(STATUS ">> OpenCV found: ${OpenCV_VERSION}")
+    list(APPEND ALL_LIBS ${OpenCV_LIBS})
+else()
+    message(WARNING "*** Could not find OpenCV ***")
+endif()
