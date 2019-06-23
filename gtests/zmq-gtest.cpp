@@ -13,7 +13,7 @@ TEST(zmq, endpoint) {
     EXPECT_TRUE("ipc://file" == zmqUDS("file"));
 }
 
-TEST(zmq, pubsubstring) {
+TEST(zmq, pub_sub_uds) {
     // string uds = "ipc://test_uds_file";
     string uds = zmqUDS("/tmp/test_uds");
 
@@ -44,6 +44,10 @@ TEST(zmq, pubsubstring) {
 
     string str2(reinterpret_cast<const char*>(ans.data()), ans.size());
     EXPECT_TRUE(str == str2);
+}
+
+TEST(zmq, req_rep_uds) {
+
 }
 
 // TEST(zmq, pubsubmsgs) {

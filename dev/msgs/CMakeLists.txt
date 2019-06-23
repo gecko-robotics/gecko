@@ -21,5 +21,9 @@ include(../../cmake/threads.cmake)
 include(../../cmake/zmq.cmake)
 
 # Build test ---------------------------------------------------
-add_executable(${PROJECT_NAME} msg-test.cpp)
-target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
+add_executable(msg-test msg-test.cpp)
+target_link_libraries(msg-test ${ALL_LIBS})
+
+
+add_executable(common-msg-test common-msg-test.cpp)
+target_link_libraries(common-msg-test ${ALL_LIBS})

@@ -384,13 +384,13 @@ sub bye ...
 - [ ] `geckotopic` echo/pub/list/find tools
 - [ ] Learn anything from the bluezero service
 - [ ] Bag files with geckobag ... probably embed in message serialization library
-- [ ] Add submodules for gecko-msgpack
-- [x] Add submodules for cppzmq
-- [ ] Add submodules for cxxopts ... this is a pain ... write my own?
-- [x] Add submodules for [nlohmann-json](https://github.com/nlohmann/json)
+- [x] Add submodule for gecko-msgpack
+- [x] Add submodule for cppzmq
+- [ ] Add submodule for cxxopts ... this is a pain ... write my own?
+- [x] Add submodule for [nlohmann-json](https://github.com/nlohmann/json)
 - [ ] Add json file setup
 - [ ] Add json file `geckolaunch`
-- [ ] Better way to add new message types
+- [x] Better way to add new message types
 - [ ] serialize opencv images
 - [ ] travis-ci setup
 - [x] `msocket` has a lot of exit commands, replace with exceptions or something better
