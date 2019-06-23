@@ -20,13 +20,16 @@ enum class send_flags : int
 
 void Publisher::publish(zmq::message_t& msg){
     // sock.send(msg);
-    zmq::detail::send_result_t sr = sock.send(msg, zmq::send_flags::none);
+    size_t sr = sock.send(msg, zmq::send_flags::none).value_or(-1);
+    cout << ">> publish(): " << sr << endl;
     // sock.send(zmq::buffer(msg), zmq::send_flags::none);
 }
 
 ///////////////////////////////////////////////////
 
-Subscriber::Subscriber(const string& topic): zmqBase(ZMQ_SUB){}
+// Subscriber::Subscriber(const string& topic): zmqBase(ZMQ_SUB){}
+
+Subscriber::Subscriber(): zmqBase(ZMQ_SUB){}
 
 
 /*
@@ -40,7 +43,7 @@ zmq::message_t Subscriber::recv(zmq::recv_flags flags){
     zmq::message_t msg;
     // if(check()) sock.recv(&msg, flags);
     // sock.recv(&msg, flags);
-    sock.recv(msg, flags);
+    size_t rr = sock.recv(msg, flags).value_or(-1);
     // zmq::detail::recv_result_t r = sock.recv(&msg, zmq::recv_flags::none); //.value_or(std::nullopt);
     // sock.recv(msg, zmq::recv_flags::none);
     return msg;

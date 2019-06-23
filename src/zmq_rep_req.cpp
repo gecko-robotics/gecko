@@ -12,12 +12,12 @@ Reply::Reply(std::string addr): zmqBase(ZMQ_REP){
     setEndPt();
 }
 
-void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), int flags){
+void Reply::listen(zmq::message_t (*callback)(zmq::message_t&), zmq::recv_flags flags){
     zmq::message_t request;
 
     // if (zmqBase::check(1) == false) return;
 
-    sock.recv (&request, flags);
+    zmq::detail::recv_result_t rr = sock.recv (request, flags);
 
     // if (request.size() == 0) return;
 
@@ -38,14 +38,14 @@ Request::Request(std::string addr): zmqBase(ZMQ_REQ){
     setEndPt();
 }
 
-zmq::message_t Request::get(zmq::message_t& msg, int flags){
+zmq::message_t Request::get(zmq::message_t& msg, zmq::recv_flags flags){
     sock.send(msg);
 
     // bool msg_ready = zmqBase::check(1);
 
     zmq::message_t rep;
     // if (msg_ready)
-    sock.recv(&rep, flags);
+    zmq::detail::recv_result_t rr = sock.recv(rep, flags);
     cout << ">> request::get(): " << rep << endl;
 
     return rep;

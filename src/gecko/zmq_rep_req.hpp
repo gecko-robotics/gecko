@@ -10,11 +10,25 @@
 #include <string>
 #include "zmq.hpp"
 
+// partially satisfies named requirement BitmaskType
+// enum class send_flags : int
+// {
+//     none = 0,
+//     dontwait = ZMQ_DONTWAIT,
+//     sndmore = ZMQ_SNDMORE
+// };
+//
+// enum class recv_flags : int
+// {
+//     none = 0,
+//     dontwait = ZMQ_DONTWAIT
+// };
+
 class Reply: public zmqBase {
 public:
     Reply(std::string addr);
-    void listen(zmq::message_t(*)(zmq::message_t&), int flags=0);
-    inline void listen_nb(zmq::message_t(*cb)(zmq::message_t&)){listen(cb,ZMQ_DONTWAIT);}
+    void listen(zmq::message_t(*)(zmq::message_t&), zmq::recv_flags flags=zmq::recv_flags::none);
+    inline void listen_nb(zmq::message_t(*cb)(zmq::message_t&)){listen(cb,zmq::recv_flags::dontwait);}
 protected:
 };
 
@@ -22,7 +36,7 @@ protected:
 class Request: public zmqBase {
 public:
     Request(std::string);
-    zmq::message_t get(zmq::message_t&,int flags=0);
-    inline zmq::message_t get_nb(zmq::message_t& req){return get(req, ZMQ_DONTWAIT);}
+    zmq::message_t get(zmq::message_t&, zmq::recv_flags flags=zmq::recv_flags::none);
+    inline zmq::message_t get_nb(zmq::message_t& req){return get(req, zmq::recv_flags::dontwait);}
 protected:
 };

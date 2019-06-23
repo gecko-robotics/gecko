@@ -43,8 +43,8 @@ public:
 
 class Subscriber: public zmqBase {
 public:
-    // Subscriber();
-    Subscriber(const std::string& topic={""});
+    Subscriber();
+    // Subscriber(const std::string& topic={""});
     // Subscriber(std::string addr, std::string topic, bool bind=false);
     // Subscriber(std::string addr, bool bind=false);
     zmq::message_t recv(zmq::recv_flags flags=zmq::recv_flags::none);
