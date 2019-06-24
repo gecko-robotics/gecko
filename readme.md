@@ -124,7 +124,6 @@ to use this.
 #include <string>
 #include <gecko/gecko.hpp>
 #include <gecko/msgpack/msgs.hpp>
-#include <msgpack/msgpack_pub_sub.hpp>
 
 using namespace std;
 
@@ -134,12 +133,10 @@ void sub()
     Subscriber s;
     s.connect(endpt);
 
-    MsgPack<imu_t> buffer;
-
     while (gecko::ok())
     {
         zmq::message_t msg = s.recv();
-        imu_t m = buffer.unpack(msg);
+        imu_t m(msg);
         // do something with it ...
     }
 }
@@ -157,7 +154,6 @@ int main(){
 #include <iostream>
 #include <gecko/gecko.hpp>
 #include <gecko/msgpack/msgs.hpp>
-#include <msgpack/msgpack_pub_sub.hpp>
 
 using namespace std;
 
@@ -168,15 +164,13 @@ void pub()
     p.bind(endpt);
     Rate rate(1);
 
-    MsgPack<imu_t> buffer;
-
     while (gecko::ok())
     {
         vec_t a(1,2,3);
         imu_t b(a,a,a);  // create new timestamp
-        zmq::message_t msg = buffer.pack(b);
+        zmq::message_t msg = b.pack();
 
-        p.pub(msg);
+        p.publish(msg);
 
         cout << "pub" << endl;
         rate.sleep();
@@ -392,7 +386,7 @@ sub bye ...
 - [ ] Add json file setup
 - [ ] Add json file `geckolaunch`
 - [x] Better way to add new message types
-- [ ] serialize opencv images
+- [x] serialize opencv images
 - [ ] travis-ci setup
 - [x] `msocket` has a lot of exit commands, replace with exceptions or something better
 - [ ] Local nodes only, show performance ... or figure how to handle remote nodes

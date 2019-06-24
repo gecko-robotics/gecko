@@ -17,7 +17,9 @@ public:
             return true;
         return false;
     }
-    cv::Mat get(){return cv::imdecode(buffer, channels == 1 ? cv::IMREAD_GRAYSCALE : cv::IMREAD_COLOR);}
+    cv::Mat get(){
+        return cv::imdecode(buffer, channels == 1 ? cv::IMREAD_GRAYSCALE : cv::IMREAD_COLOR);
+    }
     uint32_t width, height, channels;
     std::vector<uint8_t> buffer;
     MSGPACK_DEFINE(width, height, channels, buffer);
@@ -35,4 +37,28 @@ int main(){
     cout << (b == c) << endl;
     Mat im = c.get();
     cout << (!cv::norm(im,img,NORM_L1)) << endl;
+
+    VideoCapture inputVideo(0);
+    if (!inputVideo.isOpened()) {
+        exit(1);
+    }
+
+    Mat frame;
+    namedWindow("frame");
+    while(1){
+        inputVideo >> frame;
+        if (frame.empty()) continue;
+
+        // Test: image -> msg -> image
+        b_t m(frame);
+        zmq::message_t mm = m.pack();
+        b_t mmm(mm);
+        Mat img = mmm.get();
+
+        imshow("frame", img);
+        char c = (char) waitKey(30);
+        if (c == 27) break;
+    }
+
+    inputVideo.release();
 }
