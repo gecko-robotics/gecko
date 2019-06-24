@@ -1,32 +1,29 @@
 cmake_minimum_required(VERSION 3.6)
-project(ssdp)
+project(boost-test)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(/usr/local/include)
+# include_directories(/usr/local/include)
 # link_directories(/usr/local/lib /usr/lib/x86_64-linux-gnu)
 
-set(Boost_DEBUG OFF)
+list(APPEND ALL_LIBS "")
 
-find_package(Boost COMPONENTS system program_options thread REQUIRED)
-# find_package(Boost COMPONENTS system thread REQUIRED)
-# find_package(Boost COMPONENTS system REQUIRED)
+# Load in pkg-config support ------------------------------------
+find_package(PkgConfig)
 
-include_directories(${Boost_PROGRAM_OPTIONS_HEADERS})
-message("boost: ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_SYSTEM_LIBRARY}")
-message("Version: ${Boost_LIBRARIES}")
-message("headers: ${Boost_INCLUDE_DIRS}")
+# CMake ---------------------------------------------------------
+include(../../cmake/boost.cmake)
 
 add_executable(port port.cpp)
-target_link_libraries(port ${Boost_LIBRARIES})
+target_link_libraries(port ${ALL_LIBS})
 
 add_executable(sys2 sys2.cpp)
 # target_link_libraries(sys ${Boost_SYSTEM_LIBRARY})
 # target_link_libraries(sys ${Boost_LIBRARIES})
 
 add_executable(args args.cpp)
-target_link_libraries(args ${Boost_LIBRARIES})
+target_link_libraries(args ${ALL_LIBS})
 
 add_executable(hostname hostname.cpp)
-target_link_libraries(hostname ${Boost_LIBRARIES})
+target_link_libraries(hostname ${ALL_LIBS})
