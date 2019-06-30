@@ -53,13 +53,19 @@ cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=/home/kevin/.local ..
 make install
 ```
 
+### libzmq
+
+```
+sudo apt install libzmq3-dev
+```
+
 ### boost
 
 I generally hate boost because it is a pain to work with. Right now you don't
 need it.
 
 ```
-kevin@dalek apt $ sudo apt install libboost-filesystem-dev libboost-system-dev libboost-program-options-dev libboost-thread-dev
+sudo apt install libboost-dev
 ```
 
 
