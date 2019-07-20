@@ -56,6 +56,7 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
     memset(&mc_addr, 0, sizeof(mc_addr));
     mc_addr.sin_family      = AF_INET;
     mc_addr.sin_addr.s_addr = inet_addr(mc_addr_str.c_str());
+    // mc_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     mc_addr.sin_port        = htons(mc_port);
 
     // bind to all interfaces to receive address
@@ -65,6 +66,7 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
     aaddr.sin_addr.s_addr = inet_addr("0.0.0.0"); // need to send response back
     aaddr.sin_port = htons(mc_port);
     if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
+    // if (::bind(sock, (struct sockaddr*) &mc_addr, sizeof(mc_addr)) < 0) {
         // perror("Listener::listen() --> bind");
         // return 1;
         throw MulticastError("Listener::listen() --> bind");
