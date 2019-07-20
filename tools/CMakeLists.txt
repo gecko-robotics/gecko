@@ -5,6 +5,8 @@ list(APPEND tools
     # bag/gecko-bag.cpp
     core/geckocore.cpp
     version/version.cpp
+    ping-test/recv.cpp
+    ping-test/send.cpp
 )
 
 # find_package(Boost COMPONENTS system program_options REQUIRED)

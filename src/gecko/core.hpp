@@ -10,6 +10,24 @@
 #include <string>
 #include <thread>
 
+/*
+https://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
+Bit -->  0                           31            Address Range:
+        +-+----------------------------+
+        |0|       Class A Address      |       0.0.0.0 - 127.255.255.255
+        +-+----------------------------+
+        +-+-+--------------------------+
+        |1 0|     Class B Address      |     128.0.0.0 - 191.255.255.255
+        +-+-+--------------------------+
+        +-+-+-+------------------------+
+        |1 1 0|   Class C Address      |     192.0.0.0 - 223.255.255.255
+        +-+-+-+------------------------+
+        +-+-+-+-+----------------------+
+        |1 1 1 0|  MULTICAST Address   |     224.0.0.0 - 239.255.255.255
+        +-+-+-+-+----------------------+
+        +-+-+-+-+-+--------------------+
+        |1 1 1 1 0|     Reserved       |     240.0.0.0 - 247.255.255.255
+ */
 
 /****
  * This is the main geckocore server. It uses multicast to communicate with
@@ -22,7 +40,7 @@ class BeaconCoreServer: public SigCapture {
 public:
     BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);
     ~BeaconCoreServer();
-    
+
     void stop();  // shutdown core
     std::string handle_bind(ascii_t& data);
     std::string handle_conn(ascii_t& data);
