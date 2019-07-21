@@ -16,13 +16,14 @@ using namespace gecko;
 
 int main(void){
     try {
+        HostInfo host;
         Subscriber s;
-        s.connect(zmqTCP("10.0.1.73", 9000));
+        s.connect(zmqTCP(host.address, 9000));
         Rate r(40);
 
         while(true){
-            // zmq::message_t msg = s.recv_nb();
-            zmq::message_t msg;
+            zmq::message_t msg = s.recv_nb();
+            // zmq::message_t msg;
             if(msg.size() > 0){
                 imu_st m(msg);
                 printf(">> msg time: %f\n", m.timestamp);

@@ -5,6 +5,7 @@ list(APPEND tools
     # bag/gecko-bag.cpp
     core/geckocore.cpp
     version/version.cpp
+    version/host.cpp
     ping-test/recv.cpp
     ping-test/send.cpp
 )

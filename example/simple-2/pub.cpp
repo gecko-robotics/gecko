@@ -9,8 +9,9 @@ using namespace std;
 
 int main(void){
     try {
+        HostInfo host;
         Publisher p;
-        p.bind(zmqTCP("10.0.1.73", 9000));
+        p.bind(zmqTCP(host.address, 9000));
 
         Rate r(1);
 
