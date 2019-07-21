@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.0)
-project(multicast-zmq)
-enable_language(CXX)
+project(test)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -18,17 +18,13 @@ list(APPEND ALL_LIBS "")
 
 # Get msgpack -----------------------------------------------------
 include_directories(
-    .
     /usr/local/include
-    ../../src
-    ../../extlibs/cppzmq
-    ../../extlibs/gecko-msgpack)
-link_directories(/usr/local/lib ../../build)
+    ../../extlibs/cppzmq)
+link_directories(/usr/local/lib)
 
 find_package(PkgConfig)
 include(../../cmake/msgpack.cmake)
-
-
+# include_directories(../../extlibs/gecko-msgpack)  # why????
 
 # find_package(ZLIB)
 # if(ZLIB_FOUND)
@@ -38,19 +34,32 @@ include(../../cmake/msgpack.cmake)
 #     message(WARNING "\n<<--- Could not find zlib --->>\n")
 # endif()
 
+# Gecko -----------------------------------------------------------
+include_directories(
+    ../../src
+    ../../extlibs/gecko-msgpack)
+link_directories(../../build)
+
+list(APPEND ALL_LIBS "gecko")
+
 # Threads ---------------------------------------------------------
 include(../../cmake/threads.cmake)
 
 # ZeroMQ ----------------------------------------------------------
 include(../../cmake/zmq.cmake)
+include_directories(../../extlibs/cppzmq)
+
+# Json ------------------------------------------------------------
+include_directories(../../extlibs/nlohmann-json/include)
 
 # Build Project ----------------------------------------------
+message(STATUS "libs: ${ALL_LIBS}")
 
-add_executable(request request.cpp msock.cpp)
-target_link_libraries(request ${ALL_LIBS})
+add_executable(pub pub.cpp)
+target_link_libraries(pub ${ALL_LIBS})
 
-add_executable(reply reply.cpp msock.cpp)
-target_link_libraries(reply ${ALL_LIBS})
+add_executable(sub sub.cpp)
+target_link_libraries(sub ${ALL_LIBS})
 
 # file(GLOB SOURCES *.cpp)
 #

@@ -91,6 +91,15 @@ public:
         }
     }
 
+    bool isEcho(const struct sockaddr_in& a){
+        std::string ip(inet_ntoa(saddr.sin_addr));
+        if(ip[0] == '1' && ip[1] == '2' && ip[2] == '7'){
+            printf("echo ...");
+            return true;
+        }
+        return false;
+    }
+
     void recv(){
         zmq::pollitem_t items[] = {NULL, sock, ZMQ_POLLIN, 0};
         zmq::poll(&items[0], 1, SOCKET_POLL_TIMEOUT);
@@ -104,13 +113,15 @@ public:
 
             size_t size = recvfrom(sock, recvBuf, PING_MSG_SIZE + 1, 0,
                 (sockaddr*)&saddr, &saSize);
+
+            if (isEcho(saddr)) return;
             {
                 std::string ip(inet_ntoa(saddr.sin_addr));
-                std::cout << "received: " + std::string(recvBuf) + " from " + ip << std::endl;
+                std::cout << "recv: " + std::string(recvBuf) + " from " + ip << std::endl;
             }
         }
         else
-            std::cout << ">> no data" << std::endl;
+            std::cout << ">> recv no data" << std::endl;
     }
 
     void reply(){
@@ -123,24 +134,25 @@ public:
             char recvBuf[PING_MSG_SIZE] = {0};
 
             socklen_t saSize = sizeof(struct sockaddr_in);  // why?
-            struct sockaddr_in saddr; // tmp
+            struct sockaddr_in tmp; // tmp
 
             size_t size = recvfrom(sock, recvBuf, PING_MSG_SIZE + 1, 0,
-                (sockaddr*)&saddr, &saSize);
+                (sockaddr*)&tmp, &saSize);
 
+            // handle echos ---------------------
             if (recvBuf[0] == 'h'){
                 printf("echo ...\n");
                 return;
             }
-            {
-                std::string ip(inet_ntoa(saddr.sin_addr));
-                std::cout << "received: " + std::string(recvBuf) + " from " + ip << std::endl;
-            }
+            if(isEcho(tmp)) return;
 
-            this->sendto("h", saddr);
+            std::string ip(inet_ntoa(tmp.sin_addr));
+            std::cout << "reply::recv: " + std::string(recvBuf) + " from " + ip << " sending reply" << std::endl;
+
+            this->sendto("h", tmp);
         }
         else
-            std::cout << ">> no data" << std::endl;
+            std::cout << ">> reply no data" << std::endl;
     }
 
     void sendto(const std::string& buffer){
