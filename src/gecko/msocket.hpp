@@ -43,6 +43,10 @@ public:
     MsgAddr recv_nb(long msec=500);
     bool send(const std::string& msg); // remove?
     bool send(const std::string& msg, struct sockaddr_in& addr); // sendto?
+    bool send(const std::string& msg, const std::string& saddr, int port);
+
+    template<class T>
+    bool setsocketopt(int level, int name, T val, const std::string& msg);
 
 // protected:
     int sock;                   // socket descriptor
