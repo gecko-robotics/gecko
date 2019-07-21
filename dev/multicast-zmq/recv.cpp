@@ -101,7 +101,7 @@ int main()
 
     // Bind the socket
     int nResult = 0;
-    nResult = bind(fdSocket, (sockaddr*)&saListen, sizeof(saListen));
+    nResult = ::bind(fdSocket, (sockaddr*)&saListen, sizeof(saListen));
     if (nResult != NO_ERROR)
     {
         ERROR_OUT("zmqListen : socket bind failed");
