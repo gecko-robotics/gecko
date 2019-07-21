@@ -1,4 +1,4 @@
 {
-    "pub": ["topic1", "ip address", 9000],
-    "sub": ["topic2", "ip address", 9001]
+    "topic a": ["localhost", 9000],
+    "topic b": ["localhost", 9001]
 }

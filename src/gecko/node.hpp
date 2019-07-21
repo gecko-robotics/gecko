@@ -19,13 +19,13 @@
 // #include "time.hpp"
 
 
-class Process {
-public:
-    Process(): sid(0) {}
-    void go_daemon();
-    void savepid(const std::string& fname);
-    pid_t sid;
-};
+// class Process {
+// public:
+//     Process(): sid(0) {}
+//     void go_daemon();
+//     void savepid(const std::string& fname);
+//     pid_t sid;
+// };
 
 // thread class member
 // https://rafalcieslak.wordpress.com/2014/05/16/c11-

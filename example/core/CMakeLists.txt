@@ -19,12 +19,13 @@ list(APPEND ALL_LIBS "")
 # Get msgpack -----------------------------------------------------
 include_directories(
     /usr/local/include
-    ../../extlibs/cppzmq)
-link_directories(/usr/local/lib)
+    ../../src
+    ../../extlibs/cppzmq
+    ../../extlibs/gecko-msgpack)
+link_directories(/usr/local/lib ../../build)
 
 find_package(PkgConfig)
 include(../../cmake/msgpack.cmake)
-# include_directories(../../extlibs/gecko-msgpack)  # why????
 
 # find_package(ZLIB)
 # if(ZLIB_FOUND)
@@ -34,40 +35,20 @@ include(../../cmake/msgpack.cmake)
 #     message(WARNING "\n<<--- Could not find zlib --->>\n")
 # endif()
 
-# Gecko -----------------------------------------------------------
-include_directories(
-    ../../src
-    ../../extlibs/gecko-msgpack)
-link_directories(../../build)
-
-list(APPEND ALL_LIBS "gecko;msgpackc")
-
 # Threads ---------------------------------------------------------
 include(../../cmake/threads.cmake)
 
 # ZeroMQ ----------------------------------------------------------
 include(../../cmake/zmq.cmake)
-include_directories(../../extlibs/cppzmq)
-
-# Json ------------------------------------------------------------
-include_directories(../../extlibs/nlohmann-json/include)
 
 # Build Project ----------------------------------------------
-message(STATUS "libs: ${ALL_LIBS}")
+file(GLOB SOURCES *.cpp)
 
-add_executable(pub pub.cpp)
-target_link_libraries(pub ${ALL_LIBS})
+list(APPEND ALL_LIBS ${ALL_LIBS} gecko)
 
-add_executable(sub sub.cpp)
-target_link_libraries(sub ${ALL_LIBS})
-
-# file(GLOB SOURCES *.cpp)
-#
-# list(APPEND ALL_LIBS ${ALL_LIBS} gecko)
-#
-# foreach(src ${SOURCES})
-#     get_filename_component(name ${src} NAME_WE)
-#     message(STATUS " -> ${name}")
-#     add_executable(${name} ${src})
-#     target_link_libraries(${name} ${ALL_LIBS})
-# endforeach()
+foreach(src ${SOURCES})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+    add_executable(${name} ${src})
+    target_link_libraries(${name} ${ALL_LIBS})
+endforeach()

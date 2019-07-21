@@ -4,3 +4,5 @@
 * see LICENSE for full details
 \**************************************************/
 #pragma once
+
+char *getUserName(void);

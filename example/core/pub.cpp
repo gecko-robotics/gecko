@@ -5,15 +5,15 @@
 #include <unistd.h>  // usleep
 // #include <cstdarg>
 
-#include "gecko/time.hpp"
-#include "gecko/node.hpp"
+#include "time.hpp"
+#include "node.hpp"
 // #include "signals.hpp"
-#include "gecko/transport.hpp"
+#include "transport.hpp"
 
 // msgpack stuff
 #include <msgpack.hpp>
-#include "gecko/msgpack/msgs.hpp"
-// #include "gecko/serialization.hpp"
+#include "msgs.hpp"
+#include "serialization.hpp"
 
 // copy header from here
 // https://github.com/zeromq/cppzmq
@@ -23,7 +23,7 @@ using namespace std;
 
 void pub(bool *e){
 
-    // Transport<imu_t> buffer;
+    Transport<imu_t> buffer;
     try {
         pid_t pid = getpid();
         printf("-> pub pid: %d\n",pid);

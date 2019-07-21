@@ -14,6 +14,9 @@
 //
 // }
 
+inline constexpr int  G_EXIT_FAILURE = 1;
+inline constexpr int  G_EXIT_SUCCESS = 0;
+
 // Just add gecko.hpp and all of these get added
 #include "gecko/geckocpp.hpp"    // geckocpp stuff
 #include "gecko/time.hpp"        // rate
