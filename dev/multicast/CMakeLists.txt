@@ -12,11 +12,11 @@ add_library(beacon SHARED mbeacon.cpp)
 find_package(PkgConfig)
 find_package(Threads REQUIRED)
 
-add_executable(ssdp main.cpp)
+add_executable(ssdp ssdp.cpp)
 target_link_libraries(ssdp beacon ${CMAKE_THREAD_LIBS_INIT})
 
 
-add_executable(mcast test.cpp)
+add_executable(mcast mcast.cpp)
 
 # include(tests/catch.cmake)
 #
