@@ -46,8 +46,11 @@ include(../../cmake/zmq.cmake)
 
 # Build Project ----------------------------------------------
 
-add_executable(test-mc main.cpp msock.cpp)
-target_link_libraries(test-mc ${ALL_LIBS})
+add_executable(send send.cpp msock.cpp)
+target_link_libraries(send ${ALL_LIBS})
+
+add_executable(recv recv.cpp msock.cpp)
+target_link_libraries(recv ${ALL_LIBS})
 
 # file(GLOB SOURCES *.cpp)
 #

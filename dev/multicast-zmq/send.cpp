@@ -1,6 +1,6 @@
 #include <iostream>
 #include <msock.hpp>
-#include <atomic>
+// #include <atomic>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -18,15 +18,18 @@
 #define PING_INTERVAL       500
 #define SOCKET_POLL_TIMEOUT 3000
 
-#define INFO_OUT(MSG)  std::cout << "[INFO]   " << " " << (MSG) << std::endl
-#define ERROR_OUT(MSG) std::cerr << "[ERROR]  " << " " << (MSG) << std::endl
+inline void INFO_OUT(const std::string& MSG) {std::cout << "[INFO]   " << " " << (MSG) << std::endl;}
+inline void ERROR_OUT(const std::string& MSG) {std::cerr << "[ERROR]  " << " " << (MSG) << std::endl;}
 
 #define SOCKET int
 #define INVALID_SOCKET (SOCKET)(~0)
 #define SOCKET_ERROR (SOCKET)(~1)
 #define NO_ERROR 0
 
-std::atomic<bool> g_threadInterupted(false);
+
+using namespace std;
+
+// std::atomic<bool> g_threadInterupted(false);
 
 
 struct sockaddr_in set_udp(int port, int addr){
@@ -75,55 +78,57 @@ SOCKET bind_udp(SOCKET& fdSocket){
 http://hintjens.com/blog:32
 Create a socket and use ZeroMQ to poll.
 */
-void listener()
-{
-    int nResult = 0;
-
-    // Create UDP socket
-    // SOCKET fdSocket;
-    // fdSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); //
-    // if (fdSocket == INVALID_SOCKET)
-    // {
-    //     ERROR_OUT("zmqListen : Socket creation failed");
-    // }
-
-    SOCKET fdSocket = make_udp();
-
-    // Set up the sockaddr structure
-    // struct sockaddr_in saListen = {0};
-    // saListen.sin_family = AF_INET;
-    // saListen.sin_port = htons(PING_PORT_NUMBER);
-    // saListen.sin_addr.s_addr = htonl(INADDR_ANY);
-    struct sockaddr_in saListen = set_udp(PING_PORT_NUMBER, INADDR_ANY);
-
-    // Bind the socket
-    nResult = bind(fdSocket, (sockaddr*)&saListen, sizeof(saListen));
-    if (nResult != NO_ERROR)
-    {
-        ERROR_OUT("zmqListen : socket bind failed");
-    }
-
-    while (!g_threadInterupted)
-    {
-        // Poll socket for a message
-        zmq::pollitem_t items[] = {NULL, fdSocket, ZMQ_POLLIN, 0};
-        zmq::poll(&items[0], 1, SOCKET_POLL_TIMEOUT);
-
-        // If we get a message, print the contents
-        if (items[0].revents & ZMQ_POLLIN)
-        {
-            char recvBuf[PING_MSG_SIZE] = {0};
-
-            socklen_t saSize = sizeof(struct sockaddr_in);
-
-            size_t size = recvfrom(fdSocket, recvBuf, PING_MSG_SIZE + 1, 0, (sockaddr*)&saListen, &saSize);
-            {
-                std::string ip(inet_ntoa(saListen.sin_addr));
-                INFO_OUT("received: " + std::string(recvBuf) + " from " + ip);
-            }
-        }
-    }
-}
+// void listener()
+// {
+//     int nResult = 0;
+//
+//     // Create UDP socket
+//     // SOCKET fdSocket;
+//     // fdSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); //
+//     // if (fdSocket == INVALID_SOCKET)
+//     // {
+//     //     ERROR_OUT("zmqListen : Socket creation failed");
+//     // }
+//
+//     SOCKET fdSocket = make_udp();
+//
+//     // Set up the sockaddr structure
+//     // struct sockaddr_in saListen = {0};
+//     // saListen.sin_family = AF_INET;
+//     // saListen.sin_port = htons(PING_PORT_NUMBER);
+//     // saListen.sin_addr.s_addr = htonl(INADDR_ANY);
+//     struct sockaddr_in saListen = set_udp(PING_PORT_NUMBER, INADDR_ANY);
+//
+//     // Bind the socket
+//     nResult = bind(fdSocket, (sockaddr*)&saListen, sizeof(saListen));
+//     if (nResult != NO_ERROR)
+//     {
+//         ERROR_OUT("zmqListen : socket bind failed");
+//     }
+//
+//     while (!g_threadInterupted)
+//     {
+//         // Poll socket for a message
+//         zmq::pollitem_t items[] = {NULL, fdSocket, ZMQ_POLLIN, 0};
+//         zmq::poll(&items[0], 1, SOCKET_POLL_TIMEOUT);
+//
+//         // If we get a message, print the contents
+//         if (items[0].revents & ZMQ_POLLIN)
+//         {
+//             char recvBuf[PING_MSG_SIZE] = {0};
+//
+//             socklen_t saSize = sizeof(struct sockaddr_in);
+//
+//             size_t size = recvfrom(fdSocket, recvBuf, PING_MSG_SIZE + 1, 0, (sockaddr*)&saListen, &saSize);
+//             {
+//                 std::string ip(inet_ntoa(saListen.sin_addr));
+//                 INFO_OUT("received: " + std::string(recvBuf) + " from " + ip);
+//             }
+//         }
+//         else
+//             cout << ">> no data" << endl;
+//     }
+// }
 
 
 /**
@@ -132,18 +137,18 @@ Main function starts a listener thread and then sends out 5 broadcast pings
 */
 int main()
 {
-    g_threadInterupted = false;
-
-    // Start listener in a seperate thread
-    std::thread listenerThread(listener);
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    // g_threadInterupted = false;
+    //
+    // // Start listener in a seperate thread
+    // std::thread listenerThread(listener);
+    //
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     {
-        int nResult = 0;
-        int nOptOffVal = 0;
-        int nOptOnVal = 1;
-        int nOptLen = sizeof(int);
+        // int nResult = 0;
+        // int nOptOffVal = 0;
+        // int nOptOnVal = 1;
+        // int nOptLen = sizeof(int);
 
         // // Create UDP socket
         // SOCKET fdSocket;
@@ -188,9 +193,9 @@ int main()
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    g_threadInterupted = true;
-
-    listenerThread.join();
+    // g_threadInterupted = true;
+    //
+    // listenerThread.join();
 
     return 0;
 }
