@@ -100,7 +100,8 @@ int main()
     struct sockaddr_in saListen = set_udp(PING_PORT_NUMBER, INADDR_ANY);
 
     // Bind the socket
-    int nResult = bind(fdSocket, (sockaddr*)&saListen, sizeof(saListen));
+    int nResult = 0;
+    nResult = bind(fdSocket, (sockaddr*)&saListen, sizeof(saListen));
     if (nResult != NO_ERROR)
     {
         ERROR_OUT("zmqListen : socket bind failed");
