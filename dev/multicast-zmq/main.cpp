@@ -40,6 +40,36 @@ struct sockaddr_in set_udp(int port, int addr){
     return std::move(saBroadcast);
 }
 
+SOCKET make_udp(){
+    // int nOptOffVal = 0;
+    // int nOptOnVal = 1;
+    // int nOptLen = sizeof(int);
+
+    // Create UDP socket
+    SOCKET fdSocket;
+    fdSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); //
+    if (fdSocket == INVALID_SOCKET)
+    {
+        ERROR_OUT("broadcast : socket creation failed");
+    }
+
+    return fdSocket;
+}
+
+SOCKET bind_udp(SOCKET& fdSocket){
+    int nOptOffVal = 0;
+    int nOptOnVal = 1;
+    int nOptLen = sizeof(int);
+    // Ask operating system to let us do broadcasts from socket
+    int nResult = setsockopt(fdSocket, SOL_SOCKET, SO_BROADCAST, (char *)&nOptOnVal, nOptLen); //
+    if (nResult != NO_ERROR)
+    {
+        ERROR_OUT("broadcast : setsockopt SO_BROADCAST failed");
+    }
+
+    return fdSocket;
+}
+
 
 /**
 http://hintjens.com/blog:32
@@ -50,12 +80,14 @@ void listener()
     int nResult = 0;
 
     // Create UDP socket
-    SOCKET fdSocket;
-    fdSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); //
-    if (fdSocket == INVALID_SOCKET)
-    {
-        ERROR_OUT("zmqListen : Socket creation failed");
-    }
+    // SOCKET fdSocket;
+    // fdSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); //
+    // if (fdSocket == INVALID_SOCKET)
+    // {
+    //     ERROR_OUT("zmqListen : Socket creation failed");
+    // }
+
+    SOCKET fdSocket = make_udp();
 
     // Set up the sockaddr structure
     // struct sockaddr_in saListen = {0};
@@ -93,28 +125,6 @@ void listener()
     }
 }
 
-SOCKET make_udp(){
-    int nOptOffVal = 0;
-    int nOptOnVal = 1;
-    int nOptLen = sizeof(int);
-
-    // Create UDP socket
-    SOCKET fdSocket;
-    fdSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); //
-    if (fdSocket == INVALID_SOCKET)
-    {
-        ERROR_OUT("broadcast : socket creation failed");
-    }
-
-    // Ask operating system to let us do broadcasts from socket
-    int nResult = setsockopt(fdSocket, SOL_SOCKET, SO_BROADCAST, (char *)&nOptOnVal, nOptLen); //
-    if (nResult != NO_ERROR)
-    {
-        ERROR_OUT("broadcast : setsockopt SO_BROADCAST failed");
-    }
-
-    return fdSocket;
-}
 
 /**
 
@@ -152,6 +162,7 @@ int main()
 
 
         SOCKET fdSocket = make_udp();
+        fdSocket = bind_udp(fdSocket);
 
         // // Set up the sockaddr structure
         // struct sockaddr_in saBroadcast = {0};
@@ -164,7 +175,7 @@ int main()
         for (int i = 0; i < 5; i++)
         {
             char buffer[PING_MSG_SIZE] = {0};
-            strcpy(&buffer[0], "!");
+            strcpy(&buffer[0], ">");
             int bytes = sendto(fdSocket, buffer, PING_MSG_SIZE + 1, 0, (sockaddr*)&saBroadcast, sizeof(struct sockaddr_in));
             if (bytes == SOCKET_ERROR)
             {
