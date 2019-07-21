@@ -40,7 +40,7 @@ include_directories(
     ../../extlibs/gecko-msgpack)
 link_directories(../../build)
 
-list(APPEND ALL_LIBS "gecko")
+list(APPEND ALL_LIBS "gecko;msgpackc")
 
 # Threads ---------------------------------------------------------
 include(../../cmake/threads.cmake)
