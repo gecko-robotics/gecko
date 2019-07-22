@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
                 printf("option needs a value\n");
                 break;
             case '?':
-                printf("unknown option: %c\n", optopt);
+                printf("unknown arguments: %c\n", optopt);
                 break;
         }
     }
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     // which are not parsed
     bool bye = false;
     for(; optind < argc; optind++){
-        printf("extra arguments: %s\n", argv[optind]);
+        printf("unknown arguments: %s\n", argv[optind]);
         bye = true;
     }
     if (bye) return 1;
