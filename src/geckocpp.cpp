@@ -137,8 +137,8 @@ void gecko::init(string mc, int port){
 
     sig.on();
 
-    mc_addr = mc;
-    mc_port = port;
+    if(mc.size() > 0) mc_addr = mc;
+    if(port > 0) mc_port = port;
 
     HostInfo h = HostInfo();
     host_addr = h.address;
