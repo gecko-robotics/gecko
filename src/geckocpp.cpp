@@ -10,6 +10,7 @@
 #include <sys/stat.h>   // umask
 #include <unistd.h>     // getpid
 #include <iostream>
+#include <atomic>
 
 
 using namespace std;
@@ -20,6 +21,7 @@ using namespace std;
 
 namespace gecko {
     static bool initialized = false;
+//     std::atomic<bool> initialized(false);  // better?
     mutex g_mutex;
     static string host_name;
     static string host_addr;
