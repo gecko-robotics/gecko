@@ -9,8 +9,8 @@
 
 using namespace std;
 
-#define EXIT_FAILURE 1
-#define EXIT_SUCCESS 0
+// #define EXIT_FAILURE 1
+// #define EXIT_SUCCESS 0
 
 Node::~Node(){
     cout << ">> Stopping: thread " << the_thread.get_id() << endl;

@@ -15,8 +15,8 @@
 using namespace std;
 // using std::mutex;
 
-#define EXIT_FAILURE 1
-#define EXIT_SUCCESS 0
+// #define EXIT_FAILURE 1
+// #define EXIT_SUCCESS 0
 
 namespace gecko {
     static bool initialized = false;

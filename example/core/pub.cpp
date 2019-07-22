@@ -1,49 +1,37 @@
+/**************************************************\
+* The MIT License (MIT)
+* Copyright (c) 2014 Kevin Walchko
+* see LICENSE for full details
+\**************************************************/
 #include <iostream>
-// #include <thread>
-// #include <chrono>
 #include <stdio.h>
-#include <unistd.h>  // usleep
-// #include <cstdarg>
 
-#include "time.hpp"
-#include "node.hpp"
-// #include "signals.hpp"
-#include "transport.hpp"
-
-// msgpack stuff
-#include <msgpack.hpp>
-#include "msgs.hpp"
-#include "serialization.hpp"
-
-// copy header from here
-// https://github.com/zeromq/cppzmq
-#include "zmq.hpp"
+#include <gecko/gecko.hpp>
+#include <gecko/msgpack/msgs.hpp>
 
 using namespace std;
 
-void pub(bool *e){
 
-    Transport<imu_t> buffer;
+int main(int argc, char *argv[]){
     try {
-        pid_t pid = getpid();
-        printf("-> pub pid: %d\n",pid);
-        Publisher *p = Node::advertise("local", "a");
-        if (p == nullptr){
-            printf("Pubisher failed\n");
-            return;
+        gecko::init();
+        Publisher *p = gecko::pubBindTCP("local", "test");
+        if (p == nullptr) {
+            printf("Couldn't get publisher\n");
+            exit(1);
         }
-        Rate r(30);
 
-        while(*e){
+        Rate r(1);
+
+        while(gecko::ok()){
             vec_t a(1,2,3);
-            imu_t b(a,a,a);  // new timestamp
-            zmq::message_t msg = buffer.pack(b);
+            imu_st b(a,a,a);  // new timestamp
+            zmq::message_t msg = b.pack();
 
-            p->pub(msg);
-            // printf(">> [PUB] sent msg\n");
+            p->publish(msg);
+            printf(">> [PUB] sent msg\n");
             r.sleep();
         }
-        delete p;
     }
     catch(zmq::error_t& e) {
         cout << e.what() << endl;
@@ -51,17 +39,6 @@ void pub(bool *e){
     }
 
     printf(">> pub bye ...\n");
-}
-
-
-
-
-int main(void){
-    Node::init();
-
-    // Node p; p.run(pub);
-    // Node::wait();
-    pub(&Node::ok);
 
     return 0;
 }

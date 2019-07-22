@@ -58,8 +58,17 @@ Connections [8]
 
 using namespace std;
 
-int main(){
-    BeaconCoreServer core("local");
+int main(int argc, char *argv[]){
+    string key;
+    if (argc == 2){
+        key = argv[1];
+    }
+    else {
+        HostInfo host;
+        key = host.hostname;
+    }
+
+    BeaconCoreServer core(key);
     core.listen(true);  // crashes??
 
     return 0;

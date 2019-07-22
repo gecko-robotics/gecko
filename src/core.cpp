@@ -121,6 +121,8 @@ void BeaconCoreServer::listen(bool print){
     // setup printing loop in another thread
     if (print)
         prnt = thread(&BeaconCoreServer::printLoop, this);
+    else
+        this->print();
 
 
     Ascii a;
