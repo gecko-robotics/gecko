@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <iostream>
-#include <map>
+// #include <iostream>
+// #include <map>
 
 using namespace std;
 
@@ -46,9 +46,12 @@ int main(int argc, char *argv[])
 
     // optind is for the extra arguments
     // which are not parsed
+    bool bye = false;
     for(; optind < argc; optind++){
         printf("extra arguments: %s\n", argv[optind]);
+        bye = true;
     }
+    if (bye) return 1;
 
     return 0;
 }
