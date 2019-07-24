@@ -26,6 +26,15 @@ protected:
 
 using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
 
+static
+struct sockaddr_in create_sockaddr(int port, int addr){
+    struct sockaddr_in saBroadcast = {0};
+    saBroadcast.sin_family = AF_INET;
+    saBroadcast.sin_port = htons(port);
+    saBroadcast.sin_addr.s_addr = htonl(addr);
+    return std::move(saBroadcast);
+}
+
 /*
  * Multicast socket for a beacon
  *
@@ -33,26 +42,39 @@ using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
 class SSocket{
 public:
     ~SSocket();
-    void init();
     void init(
-        std::string mc_addr_str, // FIXME: address
-        uint16_t mc_port,
-        uint8_t mc_ttl,
-        bool reuse
+        std::string mc_addr_str={"224.3.29.110"}, // FIXME: address
+        uint16_t mc_port=11311,
+        uint8_t mc_ttl=1,
+        bool reuse=false
     );
-    void bind(int port, int addr);
     bool ready(long msec=500);
     MsgAddr recv();
     MsgAddr recv_nb(long msec=500);
-    bool broadcast(const std::string& msg); // remove?
+    bool send(const std::string& msg); // remove?
     bool send(const std::string& msg, struct sockaddr_in& addr); // sendto?
     bool send(const std::string& msg, const std::string& saddr, int port);
 
-    void sockopt(int level, int name, int val);
-    void sockopt(int level, int name, const std::string& group);
+    template<class T>
+    bool setsocketopt(int level, int name, T val, const std::string& msg){
+        // u_int yes = 1;
+        int err = setsockopt(sock, level, name, (void*) &val, sizeof(val));
+        if (err < 0)
+            throw MulticastError(msg);
+        return true;
+    }
 
-protected:
+    bool setsocketopt(int level, int name, int val, const std::string& msg){
+        // u_int yes = 1;
+        int err = setsockopt(sock, level, name, (int*) &val, sizeof(val));
+        if (err < 0)
+            throw MulticastError(msg);
+        return true;
+    }
+
+// protected:
     int sock;                   // socket descriptor
-    struct sockaddr_in mc_addr; // socket address structure -- why?
+    struct sockaddr_in mc_addr; // socket address structure
+    // struct sockaddr_in from_addr;
 
 };
