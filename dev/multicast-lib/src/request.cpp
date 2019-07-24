@@ -10,7 +10,7 @@ using namespace std;
 int main(){
     SSocket sock;
     sock.init();
-    sock.bind(11311, INADDR_ANY);
+    // sock.bind(11311, INADDR_ANY);
 
     for (int i=0; i < 5; i++){
         sock.broadcast("hi");

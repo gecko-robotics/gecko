@@ -49,7 +49,7 @@ struct sockaddr_in make(int port, int iaddr){
 }
 
 SSocket::~SSocket(){
-    sockopt(IPPROTO_IP, IP_DROP_MEMBERSHIP, "224.3.29.110");
+    // sockopt(IPPROTO_IP, IP_DROP_MEMBERSHIP, "224.3.29.110");
     ::close(sock);
 }
 
@@ -85,7 +85,23 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
     // sockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mc_addr_str);
 }
 
+/*
+INADDR_ANY - bind to all available interfaces
+*/
 void SSocket::bind(int port, int addr){
+    // allow multiple sockets to re-use the same port
+    sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
+
+    struct sockaddr_in aaddr = make(port, addr);
+    if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
+        throw MulticastError("SSock::bind failed");
+    }
+}
+
+void SSocket::bind(int port, const string& saddr){
+    // allow multiple sockets to re-use the same port
+    sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
+
     struct sockaddr_in aaddr = make(port, addr);
     if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
         throw MulticastError("SSock::bind failed");
@@ -99,14 +115,35 @@ void SSocket::sockopt(int level, int name, int val){
     }
 }
 
-void SSocket::sockopt(int level, int name, const string& group){
+// void SSocket::sockopt(int level, int name, const string& group){
+//     struct ip_mreq mreq;
+//     mreq.imr_multiaddr.s_addr = inet_addr(group.c_str());
+//     mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+//     int err = setsockopt(sock, level, name, (char*) &mreq, sizeof(mreq));
+//     if (err < 0){
+//         throw MulticastError("SSock::setsockopt " + debug_setsockopt[name] + " failed");
+//     }
+// }
+
+void SSocket::multicastGroup(const string& group){
     struct ip_mreq mreq;
     mreq.imr_multiaddr.s_addr = inet_addr(group.c_str());
     mreq.imr_interface.s_addr = htonl(INADDR_ANY);
-    int err = setsockopt(sock, level, name, (char*) &mreq, sizeof(mreq));
+    int err = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq));
     if (err < 0){
-        throw MulticastError("SSock::setsockopt " + debug_setsockopt[name] + " failed");
+        throw MulticastError("SSock::setsockopt IP_ADD_MEMBERSHIP failed");
     }
+}
+
+void SSocket::timeToLive(int ttl){
+    sockopt(IPPROTO_IP, IP_MULTICAST_TTL, ttl);
+}
+
+// If you plan to have more than one process or user "listening",
+// loopback must be enabled.
+// 0-disable  1-enable
+void SSocket::multicastLoop(int val){
+    sockopt(IPPROTO_IP, IP_MULTICAST_LOOP, val);
 }
 
 bool SSocket::ready(long msec){

@@ -49,7 +49,11 @@ public:
     bool send(const std::string& msg, const std::string& saddr, int port);
 
     void sockopt(int level, int name, int val);
-    void sockopt(int level, int name, const std::string& group);
+    // void sockopt(int level, int name, const std::string& group);
+
+    void multicastGroup(const std::string& group);
+    void multicastLoop(int val);
+    void timeToLive(int ttl);
 
 protected:
     int sock;                   // socket descriptor

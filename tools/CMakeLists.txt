@@ -6,6 +6,7 @@ list(APPEND tools
     core/geckocore.cpp
     version/version.cpp
     version/host.cpp
+    version/uname.cpp
     ping-test/recv.cpp
     ping-test/send.cpp
 )
