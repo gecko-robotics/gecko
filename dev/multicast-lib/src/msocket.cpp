@@ -90,6 +90,7 @@ INADDR_ANY - bind to all available interfaces
 */
 void SSocket::bind(int port, int addr){
     // allow multiple sockets to re-use the same port
+    sockopt(SOL_SOCKET, SO_REUSEPORT, 1);
     sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
 
     struct sockaddr_in aaddr = make(port, addr);
