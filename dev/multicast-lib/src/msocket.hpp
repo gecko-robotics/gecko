@@ -22,7 +22,7 @@ protected:
 // http://www.kohala.com/start/mcast.api.txt
 // http://www.kohala.com/start/
 // https://rg3.name/201504241907.html
-
+// https://www.cs.odu.edu/~cs779/spring17/lectures/multicasting.html
 
 using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
 

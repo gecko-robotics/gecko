@@ -98,15 +98,15 @@ void SSocket::bind(int port, int addr){
     }
 }
 
-void SSocket::bind(int port, const string& saddr){
-    // allow multiple sockets to re-use the same port
-    sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
-
-    struct sockaddr_in aaddr = make(port, addr);
-    if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
-        throw MulticastError("SSock::bind failed");
-    }
-}
+// void SSocket::bind(int port, const string& saddr){
+//     // allow multiple sockets to re-use the same port
+//     sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
+//
+//     struct sockaddr_in aaddr = make(port, addr);
+//     if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
+//         throw MulticastError("SSock::bind failed");
+//     }
+// }
 
 void SSocket::sockopt(int level, int name, int val){
     int err = setsockopt(sock, level, name, (int*) &val, sizeof(val));
