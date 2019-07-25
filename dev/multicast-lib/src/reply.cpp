@@ -11,7 +11,7 @@ int main(){
     sock.init();
     sock.bind(11311, INADDR_ANY);
     sock.multicastGroup("224.3.29.110");
-    sock.multicastLoop(0);
+    // sock.multicastLoop(0);
 
     while(true){
         struct sockaddr_in remote;
@@ -19,7 +19,11 @@ int main(){
 
         tie(s, remote) = sock.recv();
 
-        cout << "Reply: " << s << endl;
+        // cout << "Reply: " << s << endl;
+        printf("=> Received %s from %s:%d\n",
+            s.c_str(),
+            inet_ntoa(remote.sin_addr),
+            ntohs(remote.sin_port));
 
         if (s != "hellooo!") sock.send("hellooo!", remote);
     }

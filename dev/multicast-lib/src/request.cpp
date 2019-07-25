@@ -12,7 +12,8 @@ int main(){
     sock.init();
     sock.bind(11311, INADDR_ANY);
     sock.multicastGroup("224.3.29.110");
-    sock.multicastLoop(0);
+    // sock.multicastLoop(0);
+    // sock.timeToLive(32);
 
     for (int i=0; i < 5; i++){
         sock.broadcast("hi");
