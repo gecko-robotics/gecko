@@ -52,7 +52,7 @@ public:
     // void sockopt(int level, int name, const std::string& group);
 
     void multicastGroup(const std::string& group);
-    void multicastLoop(int val);
+    void multicastLoop();
     void timeToLive(int ttl);
 
 protected:

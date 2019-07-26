@@ -10,8 +10,8 @@ int main(){
     SSocket sock;
     sock.init();
     sock.bind(11311, INADDR_ANY);
+    // sock.multicastLoop();
     sock.multicastGroup("224.3.29.110");
-    // sock.multicastLoop(0);
 
     while(true){
         struct sockaddr_in remote;
