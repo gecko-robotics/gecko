@@ -48,8 +48,8 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     p->bind(addr);
     int retry = 5;
 
-    SSocket ss;
-    ss.init(mc_addr, mc_port);
+    BCSocket ss(11311);
+    // ss.init(mc_addr, mc_port);
 
     Ascii a;
     pid_t pid = getpid();
@@ -57,7 +57,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     string msg = a.pack(tmp);
 
     for (int i=0; i<retry; i++){
-        ss.send(msg);
+        ss.cast(msg);
         printf("binder send\n");
 
         string ans;
@@ -84,8 +84,8 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 
 template<typename T>
 T* connecter(string key, string topic){
-    SSocket ss;
-    ss.init(mc_addr, mc_port);
+    BCSocket ss(11311);
+    // ss.init(mc_addr, mc_port);
     int retry = 5;
 
     Ascii a;
@@ -94,7 +94,7 @@ T* connecter(string key, string topic){
     string msg = a.pack(tmp);
 
     for (int i=0; i<retry; i++){
-        ss.send(msg);
+        ss.cast(msg);
         printf("connect send\n");
 
         string ans;

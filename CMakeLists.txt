@@ -46,6 +46,7 @@ include(cmake/threads.cmake)
 include_directories(extlibs/marko/lib/include)
 link_directories(extlibs/marko/build)
 list(APPEND ALL_LIBS "marko")
+add_subdirectory(extlibs/marko)
 
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)

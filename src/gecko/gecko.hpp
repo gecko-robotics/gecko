@@ -13,7 +13,7 @@
 // static int mc_port = 11311;
 //
 // }
-// 
+//
 // inline constexpr int  G_EXIT_FAILURE = 1;
 // inline constexpr int  G_EXIT_SUCCESS = 0;
 //
@@ -33,14 +33,18 @@
 #include "gecko/color.hpp"       // ColorPrint ... doesn't work on all OS'es
 #include "gecko/log.hpp"         // logging, local and remote
 #include "gecko/signals.hpp"  // capture ctrl-c
-#include "gecko/msocket.hpp"  // beacon
+// #include "gecko/msocket.hpp"  // beacon
 #include "gecko/ps.hpp"       // process performance
-#include "gecko/ascii.hpp"    // ascii message parser
+// #include "gecko/ascii.hpp"    // ascii message parser
 #include "gecko/db.hpp"       // database for core
 #include "gecko/core.hpp"     // geckocore/beaconcoreserver
 #include "gecko/json.hpp"     // read/write json files
 
 #include <unistd.h>           // sleep, usleep
+
+#include <ascii.hpp>
+#include <bsocket.hpp>
+#include <mcsocket.hpp>
 
 // copy header from here
 // https://github.com/zeromq/cppzmq

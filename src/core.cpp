@@ -115,8 +115,8 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
 void BeaconCoreServer::listen(bool print){
     // setup multicast
-    SSocket ss;
-    ss.init(mc_addr, mc_port, 1, true);
+    BCSocket ss(11311);
+    // ss.init(mc_addr, mc_port, 1, true);
 
     // setup printing loop in another thread
     if (print)

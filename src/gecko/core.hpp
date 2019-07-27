@@ -10,6 +10,8 @@
 #include <string>
 #include <thread>
 
+#include <ascii.hpp>
+
 /*
 https://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
 Bit -->  0                           31            Address Range:
