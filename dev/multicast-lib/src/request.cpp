@@ -9,11 +9,16 @@
 using namespace std;
 
 int main(){
-    // MCSocket sock("224.3.29.110", 11311);
+
+#if 0
+    MCSocket sock("224.3.29.110", 11311);
+    sock.multicastLoop(false);
+    sock.timeToLive(1);
+#else
     BCSocket sock(11311);
+#endif
+
     sock.bind();
-    // sock.multicastLoop(false);
-    // sock.timeToLive(32);
 
     for (int i=0; i < 5; i++){
         cout << ">> msg sent " << i+1 << " of 5" << endl;

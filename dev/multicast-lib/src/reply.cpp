@@ -8,12 +8,16 @@
 using namespace std;
 
 int main(){
-    // MCSocket sock("224.3.29.110", 11311);
-    BCSocket sock(11311);
-    sock.bind();
-    // sock.multicastLoop(false);
-    // sock.timeToLive(32);
 
+#if 0
+    MCSocket sock("224.3.29.110", 11311);
+    sock.multicastLoop(false);
+    sock.timeToLive(1);
+#else
+    BCSocket sock(11311);
+#endif
+
+    sock.bind();
     sock.info();
 
     cout << ">> Listening" << endl;
@@ -24,12 +28,12 @@ int main(){
 
         tie(msg, remote) = sock.recv();
 
-        // cout << "Reply: " << s << endl;
         printf("=> Received %s from %s:%d\n",
             msg.c_str(),
             inet_ntoa(remote.sin_addr),
             ntohs(remote.sin_port));
 
+        // handle echo of message
         if (msg != "hellooo!") sock.send("hellooo!", remote);
     }
     return 0;
