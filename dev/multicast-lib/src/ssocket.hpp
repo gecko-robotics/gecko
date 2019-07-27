@@ -11,6 +11,11 @@
 #include <tuple>
 #include <exception>
 
+typedef int SOCKET;
+inline constexpr int INVALID_SOCKET = -1;
+inline constexpr int SOCKET_ERROR = -1;
+inline constexpr int NO_ERROR = 0;
+
 struct MulticastError : public std::exception {
     MulticastError(const std::string &s): msg("Multicast Error: " + s) {}
     MulticastError(): msg("Multicast Error") {}
@@ -36,13 +41,13 @@ class SSocket{
 public:
     SSocket();
     ~SSocket();
-    void init();
-    void init(
-        std::string mc_addr_str, // FIXME: address
-        uint16_t mc_port,
-        uint8_t mc_ttl,
-        bool reuse
-    );
+    // void init();
+    // void init(
+    //     std::string mc_addr_str, // FIXME: address
+    //     uint16_t mc_port,
+    //     uint8_t mc_ttl,
+    //     bool reuse
+    // );
     void bind(int port, int addr);
     bool ready(long msec=500);
     MsgAddr recv();
@@ -57,9 +62,17 @@ public:
     // void multicastGroup(const std::string& group);
     // void multicastLoop();
     // void timeToLive(int ttl);
+    bool isEcho(const struct sockaddr_in& a){
+        std::string ip(inet_ntoa(a.sin_addr));
+        if(ip[0] == '1' && ip[1] == '2' && ip[2] == '7'){
+            printf("echo ...");
+            return true;
+        }
+        return false;
+    }
 
 protected:
-    int sock;                   // socket descriptor
+    SOCKET sock;                   // socket descriptor
     // struct sockaddr_in mc_addr; // socket address structure -- why?
 
 };

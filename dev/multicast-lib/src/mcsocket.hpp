@@ -46,11 +46,38 @@ public:
         sockopt(IPPROTO_IP, IP_MULTICAST_TTL, ttl);
     }
 
+    void info(){
+        u_char val;
+        socklen_t size = sizeof(val);
+
+        printf("Multicast Socket =====================================\n");
+        printf("  fd: %d\n", sock);
+
+        // getsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &val, &size);
+
+        getsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &val, &size);
+        printf("  loopback: %s\n", val ? "enabled" : "disabled");
+
+        getsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &val, &size);
+        printf("  reuse addr: %s\n", val ? "true" : "false");
+
+        getsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &val, &size);
+        printf("  reuse port: %s\n", val ? "true" : "false");
+    }
+
     // If you plan to have more than one process or user "listening",
     // loopback must be enabled.
     // 0-disable  1-enable
-    void multicastLoop(){
-        sockopt(IPPROTO_IP, IP_MULTICAST_LOOP, 0);
+    void multicastLoop(bool val){
+        // int lp;
+        // val ? lp = 1 : lp = 0;
+        sockopt(IPPROTO_IP, IP_MULTICAST_LOOP, val ? 1 : 0);
+
+        u_char loop;
+        socklen_t size = sizeof(loop);
+
+        getsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, &size);
+        printf("** loopback: %d\n", loop);
     }
 
 protected:

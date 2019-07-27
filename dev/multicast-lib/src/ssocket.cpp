@@ -95,41 +95,8 @@ SSocket::~SSocket(){
     ::close(sock);
 }
 
-void SSocket::init(){
-    this->init("224.3.29.110", 11311, 1, true);
-}
 
-void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool reuse){
-    // create a socket for sending to the multicast address
-    // if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-    //     throw MulticastError("SSocket::init socket() SOCK_DGRAM failed");
-    // }
-
-    // allow multiple sockets to re-use the same port
-    // sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
-
-    // set multicast time to live
-    // sockopt(IPPROTO_IP, IP_MULTICAST_TTL, mc_ttl);
-
-    //
-    // If you plan to have more than one process or user "listening",
-    // loopback must be enabled.
-    // 0-disable  1-enable
-    // sockopt(IPPROTO_IP, IP_MULTICAST_LOOP, 0);
-
-    // construct a multicast address structure
-    // mc_addr = make(mc_port, INADDR_ANY);
-
-    // bind to all interfaces to receive address
-    // this->bind(mc_port, INADDR_ANY);
-
-    // request that the kernel join a multicast group
-    // sockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mc_addr_str);
-}
-
-/*
-INADDR_ANY - bind to all available interfaces
-*/
+// INADDR_ANY - bind to all available interfaces
 void SSocket::bind(int port, int addr){
     // allow multiple sockets to re-use the same port
     sockopt(SOL_SOCKET, SO_REUSEPORT, 1);
@@ -147,36 +114,6 @@ void SSocket::sockopt(int level, int name, int val){
         throw MulticastError("SSocket::setsockopt " + debug_setsockopt[name] + " failed");
     }
 }
-
-// void SSocket::multicastGroup(const string& group){
-//     struct ip_mreq mreq;
-//     mreq.imr_multiaddr.s_addr = inet_addr(group.c_str());
-//     mreq.imr_interface.s_addr = htonl(INADDR_ANY);
-//     // string s = ip();
-//     // cout << ">> ip: " << s << " " << inet_addr(s.c_str()) << endl;
-//     // mreq.imr_interface.s_addr = inet_addr(s.c_str());
-//     int err = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq));
-//     if (err < 0){
-//         throw MulticastError("SSock::setsockopt IP_ADD_MEMBERSHIP failed");
-//     }
-//
-//     string s = ip();
-//     cout << ">> ip: " << s << " " << inet_addr(s.c_str()) << endl;
-//     struct in_addr addr;
-//     addr.s_addr = inet_addr(s.c_str());
-//     setsockopt(sock, IPPROTO_IP, IP_MULTICAST_IF, (char*)&addr, sizeof(addr));
-// }
-//
-// void SSocket::timeToLive(int ttl){
-//     sockopt(IPPROTO_IP, IP_MULTICAST_TTL, ttl);
-// }
-//
-// // If you plan to have more than one process or user "listening",
-// // loopback must be enabled.
-// // 0-disable  1-enable
-// void SSocket::multicastLoop(){
-//     sockopt(IPPROTO_IP, IP_MULTICAST_LOOP, 0);
-// }
 
 bool SSocket::ready(long msec){
     struct timeval tv;
@@ -236,17 +173,6 @@ MsgAddr SSocket::recv_nb(long msec){
     MsgAddr r;
     return r;
 }
-
-// bool SSocket::broadcast(const std::string& msg){
-//     // cout << "=> send: " << msg << " to " << inet_ntoa(mc_addr.sin_addr) << ":" << ntohs(mc_addr.sin_port) << endl;
-//
-//     // send string to multicast address
-//     if ((sendto(sock, msg.c_str(), msg.size(), 0,
-//             (struct sockaddr *) &mc_addr, sizeof(mc_addr))) != msg.size()) {
-//         throw MulticastError("sendto() sent incorrect number of bytes");
-//     }
-//     return true;
-// }
 
 bool SSocket::send(const std::string& msg, struct sockaddr_in& addr){
     // cout << "=> send: " << msg << " to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;

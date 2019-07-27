@@ -4,16 +4,18 @@
 #include <unistd.h>
 
 #include "mcsocket.hpp"
+#include "bsocket.hpp"
 
 using namespace std;
 
 int main(){
     // SSocket sock;
-    MCSocket sock;
-    sock.init();
+    BCSocket sock;
+    // sock.init();
     sock.bind(11311, INADDR_ANY);
-    sock.multicastLoop();
-    sock.multicastGroup("224.3.29.110", 11311);
+    sock.set_broadcast(11311, INADDR_BROADCAST);
+    // sock.multicastGroup("224.3.29.110", 11311);
+    // sock.multicastLoop(false);
     // sock.timeToLive(32);
 
     for (int i=0; i < 5; i++){
