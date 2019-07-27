@@ -1,9 +1,11 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #include "mcsocket.hpp"
 #include "bsocket.hpp"
+#include "ascii.hpp"
 
 using namespace std;
 
@@ -20,6 +22,9 @@ int main(){
     sock.bind();
     sock.info();
 
+    Ascii buffer;
+    vector<string> vmsg = {"hi", "ho"};
+
     cout << ">> Listening" << endl;
 
     while(true){
@@ -27,14 +32,18 @@ int main(){
         string msg;
 
         tie(msg, remote) = sock.recv();
+        ascii_t mm = buffer.unpack(msg);
 
-        printf("=> Received %s from %s:%d\n",
+        printf("=> reply got %s from %s:%d\n",
             msg.c_str(),
             inet_ntoa(remote.sin_addr),
             ntohs(remote.sin_port));
 
         // handle echo of message
-        if (msg != "hellooo!") sock.send("hellooo!", remote);
+        if (mm[0] != "hi") {
+            string r = buffer.pack(vmsg);
+            sock.send(r, remote);
+        }
     }
     return 0;
 }

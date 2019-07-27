@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 #include <exception>
+#include <gecko/helpers.hpp>
 
 struct MulticastError : public std::exception {
     MulticastError(const std::string &s): msg("Multicast Error: " + s) {}
@@ -31,7 +32,7 @@ using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
  *
  */
  // GECKO_DEPRECATED("Use the new class instead")
-class SSocket{
+class GECKO_DEPRECATED("Use the new class instead") SSocket{
 public:
     void init(
         std::string mc_addr_str={"224.3.29.110"}, // FIXME: address

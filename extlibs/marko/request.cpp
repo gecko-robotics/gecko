@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
+#include <vector>
 
 #include "mcsocket.hpp"
 #include "bsocket.hpp"
+#include "ascii.hpp"
 
 using namespace std;
 
@@ -21,10 +23,17 @@ int main(){
     sock.bind();
     sock.info();
 
+    Ascii buffer;
+    string msg;
+    struct sockaddr_in remote;
+    vector<string> vmsg = {"hi","1.2.3.4","me","12345"};
+
     for (int i=0; i < 5; i++){
         cout << ">> msg sent " << i+1 << " of 5" << endl;
-        sock.cast("hi");
-        sock.recv_nb();
+        string s = buffer.pack(vmsg);
+        sock.cast(s);
+        tie(msg, remote) = sock.recv_nb();
+        cout << "request: " << msg << endl;
         sleep(1);
     }
     cout << ">> Done ..." << endl;

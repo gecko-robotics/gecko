@@ -42,6 +42,11 @@ include_directories(extlibs/nlohmann-json/include)
 # Threads ---------------------------------------------------------
 include(cmake/threads.cmake)
 
+# Marko -----------------------------------------------------------
+include_directories(extlibs/marko/lib/include)
+link_directories(extlibs/marko/build)
+list(APPEND ALL_LIBS "marko")
+
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
 
