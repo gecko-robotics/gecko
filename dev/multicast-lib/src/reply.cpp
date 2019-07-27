@@ -8,15 +8,11 @@
 using namespace std;
 
 int main(){
-    // SSocket sock;
-    // MCSocket sock;
-    BCSocket sock;
-    // sock.init();
-    sock.bind(11311, INADDR_ANY);
-    sock.set_broadcast(11311, INADDR_BROADCAST);
-    // sock.multicastLoop();
-    // sock.multicastGroup("224.3.29.110", 11311);
+    // MCSocket sock("224.3.29.110", 11311);
+    BCSocket sock(11311);
+    sock.bind();
     // sock.multicastLoop(false);
+    // sock.timeToLive(32);
 
     sock.info();
 

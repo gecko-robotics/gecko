@@ -3,32 +3,40 @@
 #include <ssocket.hpp>
 #include <string>
 
+
+/*
+ * Uses the broadcast address to transmit a query response pattern. Since
+ * it uses broadcast, the sender will receive a copy of the message and must
+ * ignore it.
+ */
 class BCSocket: public SSocket {
 public:
-    BCSocket(){}
-
-    // void broadcast(const std::string& msg, int port){}
-    void set_broadcast(int port, int addr){
-        int val = 1;
-        // int nResult = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (int*)&val, sizeof(int)); //
-        sockopt(SOL_SOCKET, SO_BROADCAST, val);
-
-        bc_addr = make(port, addr);
+    BCSocket(int port): port(port){
+        sockopt(SOL_SOCKET, SO_BROADCAST, 1);
+        bc_addr = make(port, INADDR_BROADCAST);
     }
 
-    void broadcast(const std::string& buffer){
-        // char buffer[PING_MSG_SIZE] = {0};
-        // strcpy(&buffer[0], ">");
-        int bytes = ::sendto(sock, buffer.c_str(), buffer.size() + 1, 0,
-            (sockaddr*)&bc_addr, sizeof(struct sockaddr_in));
-        if (bytes == SOCKET_ERROR)
-        {
-            printf("broadcast : sendto failed");
-        }
+    // void set_broadcast(int port){
+    //     sockopt(SOL_SOCKET, SO_BROADCAST, 1);
+    //     bc_addr = make(port, INADDR_BROADCAST);
+    // }
+
+    inline
+    bool cast(const std::string& msg){
+        return send(msg, bc_addr);
     }
 
-    void info(){}
+    inline
+    void bind(){
+        SSocket::bind(port, INADDR_ANY);
+    }
+
+    void info(){
+        printf("Broadcast Socket =====================================\n");
+        printf("  fd: %d\n", sock);
+    }
 
 protected:
+    int port;
     struct sockaddr_in bc_addr;
 };
