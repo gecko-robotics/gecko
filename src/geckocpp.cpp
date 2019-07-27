@@ -48,7 +48,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     p->bind(addr);
     int retry = 5;
 
-    BCSocket ss(11311);
+    BCSocket ss(mc_port);
     // ss.init(mc_addr, mc_port);
 
     Ascii a;
@@ -84,7 +84,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 
 template<typename T>
 T* connecter(string key, string topic){
-    BCSocket ss(11311);
+    BCSocket ss(mc_port);
     // ss.init(mc_addr, mc_port);
     int retry = 5;
 
@@ -122,8 +122,11 @@ T* connecter(string key, string topic){
     return nullptr;
 }
 
-}
+} // gecko
 
+void gecko::set_port(int port){
+    mc_port = port;
+}
 
 bool gecko::ok(){
     return sig.ok;
@@ -133,14 +136,15 @@ void gecko::shutdown(){
     sig.ok = false;
 }
 
-void gecko::init(string mc, int port){
+// void gecko::init(string mc, int port){
+void gecko::init(){
     lock_guard<mutex> guard(g_mutex);
     if (initialized) return;
 
     sig.on();
 
-    if(mc.size() > 0) mc_addr = mc;
-    if(port > 0) mc_port = port;
+    // if(mc.size() > 0) mc_addr = mc;
+    // if(port > 0) mc_port = port;
 
     HostInfo h = HostInfo();
     host_addr = h.address;
@@ -150,7 +154,7 @@ void gecko::init(string mc, int port){
     printf("gecko --------------------------\n");
     printf(" initialized: %s\n", initialized ? "true" : "false");
     printf(" %s [%s]\n", host_name.c_str(), host_addr.c_str());
-    printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
+    // printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
     // printf(" key: %s\n", key.c_str());
     printf("\n");
 }

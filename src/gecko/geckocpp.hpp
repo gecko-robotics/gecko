@@ -14,7 +14,9 @@
 namespace gecko {
 
     // functions ---------------------------------
-    void init(std::string mc={""}, int port=0);  // FIXME
+    // void init(std::string mc={""}, int port=0);  // FIXME
+    void set_port(int port);
+    void init();
     bool ok();  // still running? true/false
     inline bool is_shutdown(){return !ok();} // stopping? true/false
     void shutdown(); // shutdown gecko

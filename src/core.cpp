@@ -28,10 +28,11 @@ BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
 
     HostInfo hi;
 
-    if (key.size() > 0) this->key = key;
-    else this->key = hi.hostname;
-
-    host = hi.address;
+    // if (key.size() > 0) this->key = key;
+    // else this->key = hi.cleanHostname();
+    this->key = key;
+    hostname = hi.hostname;
+    address = hi.address;
 
     datum = time_date();
 }
@@ -47,33 +48,28 @@ void BeaconCoreServer::stop(){
 string BeaconCoreServer::handle_bind(ascii_t& data){
     // PublishTopic [4]: {key,topic,pid,endpt}
     string msg;
+    string topic = data[1];
+    string pid = data[2];
+    string endpt = data[3];
 
-    // if(data.size() == 4){
-        string topic = data[1];
-        string pid = data[2];
-        string endpt = data[3];
+    if (endpt == "ok"){
+        // this is an echo
+        cout << "** crap echo: " << endl;
+        return msg;
+    }
+    // {key,topic,pid,endpt/fail,ok/fail}
+    // services.push(topic, endpt);
+    // bind.push(topic, pid);
+    // data.push_back("ok");
 
-        if (endpt == "ok"){
-            // this is an echo
-            cout << "** crap echo: " << endl;
-            return msg;
-        }
-        // {key,topic,pid,endpt/fail,ok/fail}
-        // services.push(topic, endpt);
-        // bind.push(topic, pid);
-        // data.push_back("ok");
+    services.pushbind(topic, pid, endpt);
 
-        services.pushbind(topic, pid, endpt);
+    data[3] = "ok";
 
-        data[3] = "ok";
+    printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
 
-        printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
-
-        Ascii a;
-        msg = a.pack(data);
-        // cout << "\nbind send: " << msg << "\n" << endl;
-        // ss.send(msg);
-    // }
+    Ascii a;
+    msg = a.pack(data);
 
     return msg;
 }
@@ -97,17 +93,9 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
         Ascii a;
         msg = a.pack(data);
-        // cout << "\nconn send: " << msg << "\n" << endl;
-        // ss.send(msg);
-        // return msg;
     }
     catch (InvalidKey e){
         printf("** Invalid Topic: %s **\n", topic.c_str());
-        // data.push_back("fail");
-
-        // Ascii a;
-        // string msg = a.pack(data);
-        // ss.send(msg);
     }
     return msg;
 }
@@ -115,7 +103,7 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
 void BeaconCoreServer::listen(bool print){
     // setup multicast
-    BCSocket ss(11311);
+    BCSocket ss(gecko::mc_port);
     // ss.init(mc_addr, mc_port, 1, true);
 
     // setup printing loop in another thread
@@ -124,12 +112,8 @@ void BeaconCoreServer::listen(bool print){
     else
         this->print();
 
-
     Ascii a;
     while(ok){
-        // string ans = ss.recv_nb();
-        // MsgAddr ma = ss.recv2();
-        // string ans = ma.msg;
         string ans;
         struct sockaddr_in addr;
 
@@ -137,19 +121,13 @@ void BeaconCoreServer::listen(bool print){
 
         if(!ans.empty()){
             ascii_t t = a.unpack(ans);
-
-            // cout << "Msg: ";
-            // for (const auto& s: t) cout << s << " ";
-            // cout << endl;
             string msg;
 
             if (t.size() == 3) msg = handle_conn(t);
             else if (t.size() == 4) msg = handle_bind(t);
             ss.send(msg, addr);
         }
-        // else cout << "** nothing **" << endl;
     }
-    // prnt.join();
 }
 
 void BeaconCoreServer::printLoop(){
@@ -169,8 +147,9 @@ void BeaconCoreServer::print(){
     printf("-------------\n");
     printf(" Start: %s\n", datum.c_str());
     printf(" Key: %s\n", key.c_str());
-    printf(" Host IP: %s\n", host.c_str());
-    printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" Host name[IP]: %s[%s]\n", hostname.c_str(), address.c_str());
+    // printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" Listening on: %d\n", mc_port);
     printf(" CPU: %s   Memory: %s\n", ps.cpu.c_str(), ps.mem.c_str());
     printf("-------------\n");
     services.print();

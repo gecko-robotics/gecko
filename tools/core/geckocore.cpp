@@ -62,22 +62,15 @@ using namespace std;
 
 int main(int argc, char *argv[]){
     string key;
-    // if (argc == 2){
-    //     key = argv[1];
-    // }
-    // else {
-    //     HostInfo host;
-    //     key = host.hostname;
-    // }
-
     int opt;
-    int port = 9000;
-    bool verbose = false;
+    int port = gecko::mc_port;
+    string addr = gecko::mc_addr;
+    bool verbose = true;
 
     // put ':' in the starting of the
     // string so that program can
     // distinguish between '?' and ':'
-    while((opt = getopt(argc, argv, ":k:hvp:")) != -1)
+    while((opt = getopt(argc, argv, ":k:hm:vp:")) != -1)
     {
         switch(opt)
         {
@@ -90,14 +83,19 @@ int main(int argc, char *argv[]){
             printf("\n");
             printf("h .......... Print this help message\n");
             printf("k [key] .... Key to find the core, default hostname\n");
+            printf("m [addr] ... Multicast address, default %s\n", addr.c_str());
             printf("p [port] ... Port number for broadcast, default %d\n", port);
-            printf("v .......... Turn on verbose printing\n");
+            printf("v .......... Turn on verbose printing, default is %s\n", verbose ? "true" : "false");
             printf("\n");
             return 0;
             break;
         case 'k':
             // printf("key: %s\n", optarg);
             key = optarg;
+            break;
+        case 'm':
+            // printf("key: %s\n", optarg);
+            addr = optarg;
             break;
         case 'p':
             port = atoi(optarg);
@@ -125,7 +123,7 @@ int main(int argc, char *argv[]){
 
     if (key.size() == 0){
         HostInfo host;
-        key = host.hostname;
+        key = host.cleanHostname();
     }
 
     BeaconCoreServer core(key);

@@ -19,6 +19,7 @@
 //
 // #define GECKO_DEPRECATED(msg) [[deprecated(msg)]]
 
+#include "gecko/defaults.hpp"
 #include "gecko/helpers.hpp"     // misc helper functions/declears
 
 // Just add gecko.hpp and all of these get added
