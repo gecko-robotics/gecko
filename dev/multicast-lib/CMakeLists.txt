@@ -17,8 +17,8 @@ link_directories(/usr/local/lib)
 # target_link_libraries(ssdp beacon ${CMAKE_THREAD_LIBS_INIT})
 
 include_directories(src)
-add_executable(request src/request.cpp src/msocket.cpp)
-add_executable(reply src/reply.cpp src/msocket.cpp)
+add_executable(request src/request.cpp src/ssocket.cpp)
+add_executable(reply src/reply.cpp src/ssocket.cpp)
 
 # include(tests/catch.cmake)
 #

@@ -25,6 +25,8 @@ protected:
 // https://www.cs.odu.edu/~cs779/spring17/lectures/multicasting.html
 
 using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
+struct sockaddr_in make(const std::string& saddr, int port);
+struct sockaddr_in make(int port, int iaddr);
 
 /*
  * Multicast socket for a beacon
@@ -32,6 +34,7 @@ using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
  */
 class SSocket{
 public:
+    SSocket();
     ~SSocket();
     void init();
     void init(
@@ -51,12 +54,12 @@ public:
     void sockopt(int level, int name, int val);
     // void sockopt(int level, int name, const std::string& group);
 
-    void multicastGroup(const std::string& group);
-    void multicastLoop();
-    void timeToLive(int ttl);
+    // void multicastGroup(const std::string& group);
+    // void multicastLoop();
+    // void timeToLive(int ttl);
 
 protected:
     int sock;                   // socket descriptor
-    struct sockaddr_in mc_addr; // socket address structure -- why?
+    // struct sockaddr_in mc_addr; // socket address structure -- why?
 
 };

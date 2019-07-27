@@ -2,16 +2,19 @@
 #include <stdio.h>
 #include <string>
 
-#include "msocket.hpp"
+#include "mcsocket.hpp"
 
 using namespace std;
 
 int main(){
-    SSocket sock;
+    // SSocket sock;
+    MCSocket sock;
     sock.init();
     sock.bind(11311, INADDR_ANY);
     // sock.multicastLoop();
-    sock.multicastGroup("224.3.29.110");
+    sock.multicastGroup("224.3.29.110", 11311);
+
+    cout << ">> Listening" << endl;
 
     while(true){
         struct sockaddr_in remote;
