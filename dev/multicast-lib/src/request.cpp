@@ -19,6 +19,7 @@ int main(){
 #endif
 
     sock.bind();
+    sock.info();
 
     for (int i=0; i < 5; i++){
         cout << ">> msg sent " << i+1 << " of 5" << endl;

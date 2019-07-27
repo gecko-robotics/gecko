@@ -16,11 +16,6 @@ public:
         bc_addr = make(port, INADDR_BROADCAST);
     }
 
-    // void set_broadcast(int port){
-    //     sockopt(SOL_SOCKET, SO_BROADCAST, 1);
-    //     bc_addr = make(port, INADDR_BROADCAST);
-    // }
-
     inline
     bool cast(const std::string& msg){
         return send(msg, bc_addr);
@@ -38,5 +33,5 @@ public:
 
 protected:
     int port;
-    struct sockaddr_in bc_addr;
+    struct sockaddr_in bc_addr;  // used by cast to broadcast message
 };

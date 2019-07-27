@@ -1,26 +1,17 @@
 #include "ssocket.hpp"
 
-#include <sys/types.h>  /* for type definitions */
-#include <sys/socket.h> /* for socket API calls */
-#include <netinet/in.h> /* for address structs */
-// #include <arpa/inet.h>  /* for sockaddr_in */
-#include <stdio.h>      /* for printf() and fprintf() */
-#include <stdlib.h>     /* for atoi() */
-#include <string.h>     /* for strlen() */
-#include <unistd.h>     /* for close() */
+#include <sys/types.h>  // for type definitions
+#include <sys/socket.h> // for socket API calls
+#include <netinet/in.h> // for address structs
+#include <stdio.h>      // for printf() and fprintf()
+#include <stdlib.h>     // for atoi()
+#include <string.h>     // for strlen()
+#include <unistd.h>     // for close()
 #include <string>
 #include <iostream>
 #include <map>
-
-
-#include <unistd.h>
 #include <errno.h>
 #include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <string>
 
 using namespace std;
 
@@ -32,38 +23,33 @@ inline constexpr int MAX_LEN = 1024;
 // - Neuman
 //
 
-string ip(){
+string host_ip(){
     char hostbuffer[256];
     char *IPbuffer;
     struct hostent *host_entry;
 
     // To retrieve hostname
     int err = gethostname(hostbuffer, sizeof(hostbuffer));
-    // if (err == -1) throw HostnameError(); //cout << "hostname error" << endl;
     string hostname = hostbuffer;
 
     // see if .local is in hostname
     if (hostname.find(".local") == string::npos) hostname += ".local";
 
-    // printf(">> %s\n", hostname.c_str());
-
     // To retrieve host information
-    // host_entry = gethostbyname(hostbuffer);
     host_entry = gethostbyname(hostname.c_str());
-    // if (host_entry == NULL) throw HostnameError(); //cout << "gethostbyname() error" << endl;
+    // if (host_entry == NULL) throw HostnameError(); // FIXME
 
-    // To convert an Internet network
-    // address into ASCII string
+    // To convert an Internet network address into ASCII string
     return inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0]));
 }
 
-map<int, string> debug_setsockopt = {
-    {SO_REUSEADDR,       "SO_REUSEADDR"},
-    {IP_MULTICAST_TTL,   "IP_MULTICAST_TTL"},
-    {IP_MULTICAST_LOOP,  "IP_MULTICAST_LOOP"},
-    {IP_ADD_MEMBERSHIP,  "IP_ADD_MEMBERSHIP"},
-    {IP_DROP_MEMBERSHIP, "IP_DROP_MEMBERSHIP"}
-};
+// map<int, string> debug_setsockopt = {
+//     {SO_REUSEADDR,       "SO_REUSEADDR"},
+//     {IP_MULTICAST_TTL,   "IP_MULTICAST_TTL"},
+//     {IP_MULTICAST_LOOP,  "IP_MULTICAST_LOOP"},
+//     {IP_ADD_MEMBERSHIP,  "IP_ADD_MEMBERSHIP"},
+//     {IP_DROP_MEMBERSHIP, "IP_DROP_MEMBERSHIP"}
+// };
 
 struct sockaddr_in make(const string& saddr, int port){
     struct sockaddr_in addr;
@@ -86,19 +72,18 @@ struct sockaddr_in make(int port, int iaddr){
 SSocket::SSocket(){
     // create a UDP socket
     if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        throw MulticastError("SSocket::init socket() SOCK_DGRAM failed");
+        throw MulticastError("SSocket::SSocket() constructor failed");
     }
 }
 
 SSocket::~SSocket(){
-    // sockopt(IPPROTO_IP, IP_DROP_MEMBERSHIP, "224.3.29.110");
     ::close(sock);
 }
 
 
 // INADDR_ANY - bind to all available interfaces
 void SSocket::bind(int port, int addr){
-    // allow multiple sockets to re-use the same port
+    // allow multiple sockets to re-use the same address and port
     sockopt(SOL_SOCKET, SO_REUSEPORT, 1);
     sockopt(SOL_SOCKET, SO_REUSEADDR, 1);
 
@@ -123,7 +108,6 @@ bool SSocket::ready(long msec){
     if (msec >= 1000) {
         sec = msec/1000;
         msec %= 1000;
-        // printf("time %ld %ld\n",sec, msec);
     }
 
     tv.tv_sec = sec;
@@ -155,13 +139,12 @@ MsgAddr SSocket::recv(){
         throw MulticastError("recvfrom() failed");
     }
 
-    /* output received string */
-    printf("=> Received bytes from %s:%d\n",
-        inet_ntoa(from_addr.sin_addr),
-        ntohs(from_addr.sin_port));
+    // // output received string
+    // printf("=> Received bytes from %s:%d\n",
+    //     inet_ntoa(from_addr.sin_addr),
+    //     ntohs(from_addr.sin_port));
 
     string msg = recv_str;
-    // cout << msg << endl;
 
     return std::move(MsgAddr(msg, from_addr));
 }
@@ -196,4 +179,10 @@ bool SSocket::send(const std::string& msg, const string& saddr, int port){
     }
 
     return true;
+}
+
+bool SSocket::isEcho(const struct sockaddr_in& a){
+    std::string ip(inet_ntoa(a.sin_addr));
+    if(ip[0] == '1' && ip[1] == '2' && ip[2] == '7') return true;
+    return false;
 }

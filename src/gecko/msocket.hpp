@@ -30,6 +30,7 @@ using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
  * Multicast socket for a beacon
  *
  */
+ // GECKO_DEPRECATED("Use the new class instead")
 class SSocket{
 public:
     void init(
@@ -45,8 +46,8 @@ public:
     bool send(const std::string& msg, struct sockaddr_in& addr); // sendto?
     bool send(const std::string& msg, const std::string& saddr, int port);
 
-    template<class T>
-    bool setsocketopt(int level, int name, T val, const std::string& msg);
+    // template<class T>
+    // bool setsocketopt(int level, int name, T val, const std::string& msg);
 
 // protected:
     int sock;                   // socket descriptor

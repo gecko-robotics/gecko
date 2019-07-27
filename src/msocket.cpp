@@ -34,12 +34,13 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
     // allow multiple sockets to re-use the same port
     if (reuse) {
         u_int yes = 1;
-        int err = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
-        if (err < 0){
-            // perror("SSocket::init SO_REUSE failed");
-            // // return 1;
-            // exit(1);
-            throw MulticastError("SSocket::init SO_REUSE failed");
+        // int err = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
+        // int err = setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char*) &yes, sizeof(yes));
+        if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes)) < 0){
+            throw MulticastError("SSocket::init SO_REUSEADDR failed");
+        }
+        if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char*) &yes, sizeof(yes)) < 0){
+            throw MulticastError("SSocket::init SO_REUSEPORT failed");
         }
     }
 
@@ -220,11 +221,11 @@ bool SSocket::send(const std::string& msg, const string& saddr, int port){
     return true;
 }
 
-template<class T>
-bool SSocket::setsocketopt(int level, int name, T val, const string& msg){
-    // u_int yes = 1;
-    int err = setsockopt(sock, level, name, (void*) &val, sizeof(val));
-    if (err < 0)
-        throw MulticastError(msg);
-    return true;
-}
+// template<class T>
+// bool SSocket::setsocketopt(int level, int name, T val, const string& msg){
+//     // u_int yes = 1;
+//     int err = setsockopt(sock, level, name, (void*) &val, sizeof(val));
+//     if (err < 0)
+//         throw MulticastError(msg);
+//     return true;
+// }
