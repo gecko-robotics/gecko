@@ -12,7 +12,7 @@ int main(){
     MCSocket sock;
     sock.init();
     sock.bind(11311, INADDR_ANY);
-    // sock.multicastLoop();
+    sock.multicastLoop();
     sock.multicastGroup("224.3.29.110", 11311);
     // sock.timeToLive(32);
 
