@@ -44,7 +44,7 @@ include(cmake/threads.cmake)
 
 # Marko -----------------------------------------------------------
 include_directories(extlibs/marko/lib/include)
-link_directories(extlibs/marko/build)
+# link_directories(extlibs/marko/build)
 list(APPEND ALL_LIBS "marko")
 add_subdirectory(extlibs/marko)
 
