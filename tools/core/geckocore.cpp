@@ -11,6 +11,8 @@
 // #include <unistd.h>     // getpid
 // #include <stdlib.h>
 #include <exception>
+#include <stdio.h>
+#include <unistd.h>
 
 /*
 ========================================
@@ -58,9 +60,74 @@ Connections [8]
 
 using namespace std;
 
-int main(){
-    BeaconCoreServer core("local");
-    core.listen(true);  // crashes??
+int main(int argc, char *argv[]){
+    string key;
+    int opt;
+    int port = gecko::mc_port;
+    string addr = gecko::mc_addr;
+    bool verbose = true;
+
+    // put ':' in the starting of the
+    // string so that program can
+    // distinguish between '?' and ':'
+    while((opt = getopt(argc, argv, ":k:hm:vp:")) != -1)
+    {
+        switch(opt)
+        {
+        case 'h':
+            printf("\n%s \n", argv[0]);
+            printf("--------------------------------------------\n");
+            printf("GeckoCore is the connection manager for gecko. It uses\n");
+            printf("a UDP broadcast to find pub/sub and make connections.\n");
+            printf("following options are available:\n");
+            printf("\n");
+            printf("h .......... Print this help message\n");
+            printf("k [key] .... Key to find the core, default hostname\n");
+            printf("m [addr] ... Multicast address, default %s\n", addr.c_str());
+            printf("p [port] ... Port number for broadcast, default %d\n", port);
+            printf("v .......... Turn on verbose printing, default is %s\n", verbose ? "true" : "false");
+            printf("\n");
+            return 0;
+            break;
+        case 'k':
+            // printf("key: %s\n", optarg);
+            key = optarg;
+            break;
+        case 'm':
+            // printf("key: %s\n", optarg);
+            addr = optarg;
+            break;
+        case 'p':
+            port = atoi(optarg);
+            break;
+        case 'v':
+            verbose = !verbose;
+            break;
+        case ':':
+            printf("option needs a value\n");
+            break;
+        case '?':
+            printf("unknown arguments: %c\n", optopt);
+            break;
+        }
+    }
+
+    // optind is for the extra arguments
+    // which are not parsed
+    bool bye = false;
+    for(; optind < argc; optind++){
+        printf("unknown arguments: %s\n", argv[optind]);
+        bye = true;
+    }
+    if (bye) return 1;
+
+    if (key.size() == 0){
+        HostInfo host;
+        key = host.cleanHostname();
+    }
+
+    BeaconCoreServer core(key);
+    core.listen(verbose);  // crashes??
 
     return 0;
 }

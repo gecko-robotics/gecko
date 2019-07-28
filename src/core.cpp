@@ -21,17 +21,18 @@ using namespace std;
   [66008] ryan.................. 0.1%  0.0%  uds:///var/run/ryan-0
 */
 
-using namespace gecko;
+// using namespace gecko;
 
 BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     pid(getpid()), delay(delay) {
 
     HostInfo hi;
 
-    if (key.size() > 0) this->key = key;
-    else this->key = hi.hostname;
-
-    host = hi.address;
+    // if (key.size() > 0) this->key = key;
+    // else this->key = hi.cleanHostname();
+    this->key = key;
+    hostname = hi.hostname;
+    address = hi.address;
 
     datum = time_date();
 }
@@ -47,33 +48,28 @@ void BeaconCoreServer::stop(){
 string BeaconCoreServer::handle_bind(ascii_t& data){
     // PublishTopic [4]: {key,topic,pid,endpt}
     string msg;
+    string topic = data[1];
+    string pid = data[2];
+    string endpt = data[3];
 
-    // if(data.size() == 4){
-        string topic = data[1];
-        string pid = data[2];
-        string endpt = data[3];
+    if (endpt == "ok"){
+        // this is an echo
+        cout << "** crap echo: " << endl;
+        return msg;
+    }
+    // {key,topic,pid,endpt/fail,ok/fail}
+    // services.push(topic, endpt);
+    // bind.push(topic, pid);
+    // data.push_back("ok");
 
-        if (endpt == "ok"){
-            // this is an echo
-            cout << "** crap echo: " << endl;
-            return msg;
-        }
-        // {key,topic,pid,endpt/fail,ok/fail}
-        // services.push(topic, endpt);
-        // bind.push(topic, pid);
-        // data.push_back("ok");
+    services.pushbind(topic, pid, endpt);
 
-        services.pushbind(topic, pid, endpt);
+    data[3] = "ok";
 
-        data[3] = "ok";
+    printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
 
-        printf(">> BIND[%s]: %s: %s\n", pid.c_str(), topic.c_str(), endpt.c_str());
-
-        Ascii a;
-        msg = a.pack(data);
-        // cout << "\nbind send: " << msg << "\n" << endl;
-        // ss.send(msg);
-    // }
+    Ascii a;
+    msg = a.pack(data);
 
     return msg;
 }
@@ -97,57 +93,48 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
         Ascii a;
         msg = a.pack(data);
-        // cout << "\nconn send: " << msg << "\n" << endl;
-        // ss.send(msg);
-        // return msg;
+        return msg;
     }
     catch (InvalidKey e){
         printf("** Invalid Topic: %s **\n", topic.c_str());
-        // data.push_back("fail");
-
-        // Ascii a;
-        // string msg = a.pack(data);
-        // ss.send(msg);
     }
-    return msg;
+    return "";
 }
 
 
 void BeaconCoreServer::listen(bool print){
     // setup multicast
-    SSocket ss;
-    ss.init(mc_addr, mc_port, 1, true);
+    BCSocket ss(gecko::mc_port);
+    ss.bind();
 
     // setup printing loop in another thread
     if (print)
         prnt = thread(&BeaconCoreServer::printLoop, this);
-
+    else
+        this->print();
 
     Ascii a;
     while(ok){
-        // string ans = ss.recv_nb();
-        // MsgAddr ma = ss.recv2();
-        // string ans = ma.msg;
         string ans;
         struct sockaddr_in addr;
 
-        tie(ans, addr) = ss.recv();
+        tie(ans, addr) = ss.recv_nb(500);
 
         if(!ans.empty()){
-            ascii_t t = a.unpack(ans);
+            cout << "remote: " << print_addr(addr) << endl;
 
-            // cout << "Msg: ";
-            // for (const auto& s: t) cout << s << " ";
-            // cout << endl;
+            ascii_t t = a.unpack(ans);
             string msg;
 
             if (t.size() == 3) msg = handle_conn(t);
             else if (t.size() == 4) msg = handle_bind(t);
-            ss.send(msg, addr);
+
+            if (msg.size() > 0){
+                // ss.send(msg, addr);
+                ss.cast(msg);
+            }
         }
-        // else cout << "** nothing **" << endl;
     }
-    // prnt.join();
 }
 
 void BeaconCoreServer::printLoop(){
@@ -167,8 +154,9 @@ void BeaconCoreServer::print(){
     printf("-------------\n");
     printf(" Start: %s\n", datum.c_str());
     printf(" Key: %s\n", key.c_str());
-    printf(" Host IP: %s\n", host.c_str());
-    printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" Host name[IP]: %s[%s]\n", hostname.c_str(), address.c_str());
+    // printf(" Listening on: %s:%d\n", gecko::mc_addr.c_str(), gecko::mc_port);
+    printf(" Listening on: %d\n", gecko::mc_port);
     printf(" CPU: %s   Memory: %s\n", ps.cpu.c_str(), ps.mem.c_str());
     printf("-------------\n");
     services.print();

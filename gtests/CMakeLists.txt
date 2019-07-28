@@ -42,6 +42,7 @@ list(APPEND gtests
     json-gtest.cpp
     db-gtest.cpp
     all-gtest.cpp
+    gecko-gtest.cpp
     # msgpack-msgs-gtest.cpp
     # msgpack-adaptor-gtest.cpp
 )
@@ -55,3 +56,5 @@ foreach(src ${gtests})
     target_link_libraries(${name} gtest_main ${ALL_LIBS})
     add_test(NAME ${name} COMMAND ${name})
 endforeach()
+
+message(STATUS ">> gTest linked libraries: ${ALL_LIBS}")

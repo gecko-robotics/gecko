@@ -9,19 +9,10 @@ using namespace std;
 
 Publisher::Publisher(): zmqBase(ZMQ_PUB){}
 
-/*
-enum class send_flags : int
-{
-    none = 0,
-    dontwait = ZMQ_DONTWAIT,
-    sndmore = ZMQ_SNDMORE
-};
-*/
-
 void Publisher::publish(zmq::message_t& msg){
     // sock.send(msg);
     size_t sr = sock.send(msg, zmq::send_flags::none).value_or(-1);
-    cout << ">> publish(): " << sr << endl;
+    // cout << ">> publish(): " << sr << endl;
     // sock.send(zmq::buffer(msg), zmq::send_flags::none);
 }
 

@@ -1,10 +1,10 @@
-#include "gecko/signals.hpp"
+#include <gecko/signals.hpp>
 
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-// #include <iostream>
+#include <iostream>
 
 /*
 https://stackoverflow.com/questions/1641182/how-can-i-catch-a-ctrl-c-event
@@ -29,7 +29,7 @@ using namespace std;
 
 bool SigCapture::ok = true;
 
-SigCapture::SigCapture(){
+SigCapture::SigCapture(): enabled(false){
     // struct sigaction sigIntHandler;
     // sigIntHandler.sa_handler = SigCapture::my_handler;
     // sigemptyset(&sigIntHandler.sa_mask);
@@ -42,18 +42,22 @@ SigCapture::SigCapture(){
 }
 
 void SigCapture::on(){
+    cout << ">> Turning on SigCapture" << endl;
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = SigCapture::my_handler;
     sigemptyset(&sigIntHandler.sa_mask);
     sigIntHandler.sa_flags = 0;
 
     sigaction(SIGINT, &sigIntHandler, NULL);
+
+    enabled = true;
 }
 
 void SigCapture::my_handler(int s){
     printf(">> Caught signal %d\n", s);
     // cout << ">> Signal caught: " << s << endl;
     ok = false;
+    // exit(1);
 }
 
 void SigCapture::shutdown(){

@@ -5,7 +5,7 @@
 \**************************************************/
 #pragma once
 
-#include "gecko.hpp"
+#include <gecko/gecko.hpp>
 #include <string>
 
 class Logger {

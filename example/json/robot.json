@@ -1,0 +1,4 @@
+{
+    "topic a": ["localhost", 9000],
+    "topic b": ["localhost", 9001]
+}

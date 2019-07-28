@@ -1,7 +1,7 @@
 
+#include <gecko/geckocpp.hpp>
 #include "gecko/log.hpp"
 #include "gecko/signals.hpp"
-#include "gecko/geckocpp.hpp"
 #include <gecko/defaults.hpp>
 #include <thread>
 #include <mutex>
@@ -10,24 +10,72 @@
 #include <sys/stat.h>   // umask
 #include <unistd.h>     // getpid
 #include <iostream>
+#include <atomic>
 
 
 using namespace std;
 // using std::mutex;
 
-#define EXIT_FAILURE 1
-#define EXIT_SUCCESS 0
+// #define EXIT_FAILURE 1
+// #define EXIT_SUCCESS 0
 
 namespace gecko {
-    static bool initialized = false;
-    mutex g_mutex;
-    static string host_name;
-    static string host_addr;
-    // static string mc_addr = {"224.3.29.110"};
-    // static int mc_port = 11311;
-    // Time time;
-    Logger logger;
-    static SigCapture sig; // this should be in init ... not global activation
+class Hobo: public SigCapture {
+public:
+    Hobo(const Hobo&)=delete;
+    Hobo& operator=(const Hobo&)=delete;
+    Hobo(Hobo &&)=delete;
+
+    static Hobo& getInstance() {
+        static Hobo instance;
+        // static const std::unique_ptr<Hobo> instance{new Hobo{}};
+        return instance;
+        // return std::move(instance);
+    }
+
+    inline int* getAddress(){return (int*)this;}
+
+    string host_name, host_addr;
+    bool initialized;
+    int mc_port;
+    std::string mc_addr;
+
+private:
+    Hobo(): initialized(false), mc_port(11311), mc_addr("240.0.0.100"){
+        printf(">> Hobo constructor\n");
+        on();
+        initialized = true;
+
+        HostInfo h = HostInfo();
+        host_addr = h.address;
+        host_name = h.hostname;
+    }
+
+    ~Hobo(){
+        printf(">> Hobo exiting\n");
+    }
+
+    // // SigCapture sig;
+    // string host_name, host_addr;
+    // bool initialized;
+};
+
+// global shared memory
+Hobo& global_gecko = gecko::Hobo::getInstance();
+
+}; // end gecko namespace
+
+namespace gecko {
+
+static bool initialized = false;
+mutex g_mutex;
+static string host_name;
+static string host_addr;
+// static string mc_addr = {"224.3.29.110"};
+// static int mc_port = 11311;
+// Time time;
+Logger logger;
+static SigCapture sig; // this should be in init ... not global activation
 
 //
 // template<typename T, typename EP>
@@ -36,9 +84,9 @@ namespace gecko {
 
 template<typename T>
 T* binder(string key, string topic, string path, string(*EP)(const string&)){
-
     // string addr = EP(path).endpoint;
     string addr = EP(path);
+    printf(">> address: %s\n", addr.c_str());
     // if (file.empty()) addr = zmqTCP(host_addr);  // bind to next available port
     // else addr = zmqUDS(file);
     // string addr = zmqTCP(host_addr);  // bind to next available port
@@ -46,23 +94,28 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     p->bind(addr);
     int retry = 5;
 
-    SSocket ss;
-    ss.init(mc_addr, mc_port);
+    BCSocket ss(global_gecko.mc_port);
+    ss.bind();
+
+    printf(">> made socket\n");
 
     Ascii a;
     pid_t pid = getpid();
     ascii_t tmp = {key,topic,to_string(pid),p->endpoint};
     string msg = a.pack(tmp);
 
+    cout << "binder send: " << msg << endl;
+
     for (int i=0; i<retry; i++){
-        ss.send(msg);
+        ss.cast(msg);
         printf("binder send\n");
 
         string ans;
         struct sockaddr_in addr;
-        tie(ans, addr) = ss.recv();
+        tie(ans, addr) = ss.recv_nb();
 
         if(!ans.empty()){
+            cout << "binder ans: " << ans << endl;
             ascii_t t = a.unpack(ans);
             if(t.size() == 4){
                 if (t.back() == "ok") {
@@ -78,12 +131,13 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     }
     delete p;
     return nullptr;
-}
+};
 
 template<typename T>
 T* connecter(string key, string topic){
-    SSocket ss;
-    ss.init(mc_addr, mc_port);
+    BCSocket ss(global_gecko.mc_port);
+    // MCSocket(mc_addr, mc_port);
+    ss.bind();
     int retry = 5;
 
     Ascii a;
@@ -92,18 +146,18 @@ T* connecter(string key, string topic){
     string msg = a.pack(tmp);
 
     for (int i=0; i<retry; i++){
-        ss.send(msg);
+        ss.cast(msg);
         printf("connect send\n");
 
-        string ans;
-        struct sockaddr_in addr;
+        string ans = {""};
+        struct sockaddr_in addr = {0};
         tie(ans, addr) = ss.recv();
-        // cout << "sub ans " << ans << ' ' << ans.size() << endl;
 
         if(!ans.empty()){
+            cout << "sub ans " << ans << ' ' << ans.size() << endl;
             ascii_t t = a.unpack(ans);
-            if(t.size() == 3){
-                // cout << "t.back() " << t.back() << endl;
+            if(t.size() == 4 && t[3] == "ok"){
+                cout << "t.back() " << t.back() << endl;
                 if (t[0] == key && t[1] == topic) {
                     string endpt = t[2];
                     printf(">> CONNECTOR[%s]: %s\n",topic.c_str(), endpt.c_str());
@@ -120,41 +174,63 @@ T* connecter(string key, string topic){
     return nullptr;
 }
 
-}
+// void gecko::init(string mc, int port){
+void init(){
+    // cout << "init: " << global_gecko.initialized << endl;
 
+    // gecko::mc_port = iport;
+    // global_gecko.mc_port = iport;
 
-bool gecko::ok(){
-    return sig.ok;
-}
+    // cout << "global_gecko address: " << &global_gecko << endl;
+    // cout << "global_gecko address: " << global_gecko.getAddress() << endl;
 
-void gecko::shutdown(){
-    sig.ok = false;
-}
+    // cout << "iport: " << iport << endl;
+    // cout << "mc_port: " << global_gecko.mc_port << endl;
+    // lock_guard<mutex> guard(g_mutex);
+    // if (initialized) return;
 
-void gecko::init(string mc, int port){
-    lock_guard<mutex> guard(g_mutex);
-    if (initialized) return;
-
-    sig.on();
-
-    mc_addr = mc;
-    mc_port = port;
-
-    HostInfo h = HostInfo();
-    host_addr = h.address;
-    host_name = h.hostname;
-
-    initialized = true;
     printf("gecko --------------------------\n");
-    printf(" initialized: %s\n", initialized ? "true" : "false");
-    printf(" %s [%s]\n", host_name.c_str(), host_addr.c_str());
-    printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" singleton initialized: %s\n", global_gecko.initialized ? "true" : "false");
+    printf(" %s [%s]\n", global_gecko.host_name.c_str(), global_gecko.host_addr.c_str());
+    // printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" broadcast port: %d\n", global_gecko.mc_port);
     // printf(" key: %s\n", key.c_str());
+    printf(" signal handler enabled: %s\n", global_gecko.enabled ? "true" : "false");
     printf("\n");
 }
 
+// void hello(){
+//     cout << "ehllo" << endl;
+// }
+
+} // gecko namespace end
+
+int* gecko::getAddress(){
+    return global_gecko.getAddress();
+}
+
+void gecko::hello(){
+    cout << "ehllo" << endl;
+}
+
+void gecko::set_broadcast(int port){
+    global_gecko.mc_port = port;
+}
+
+int gecko::get_broadcast(){
+    return global_gecko.mc_port;
+}
+
+bool gecko::ok(){
+    return global_gecko.ok;
+}
+
+void gecko::shutdown(){
+    global_gecko.ok = false;
+}
+
 Subscriber* gecko::subBindTCP(string key, string topic){
-    return binder<Subscriber>(key, topic, host_addr, zmqTCP);
+    return binder<Subscriber>(key, topic, global_gecko.host_addr, zmqTCP);
 }
 
 Subscriber* gecko::subBindUDS(string key, string topic, string file){
@@ -170,7 +246,7 @@ Subscriber* gecko::subConnectUDS(string key, string topic){
 }
 
 Publisher* gecko::pubBindTCP(string key, string topic){
-    return binder<Publisher>(key, topic, host_addr, zmqTCP);
+    return binder<Publisher>(key, topic, global_gecko.host_addr, zmqTCP);
 }
 
 Publisher* gecko::pubBindUDS(string key, string topic, string file){

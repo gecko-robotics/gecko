@@ -5,12 +5,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+cmake_host_system_information(RESULT HOST QUERY HOSTNAME)
+cmake_host_system_information(RESULT CORES QUERY NUMBER_OF_LOGICAL_CORES)
+
 message(STATUS "-------------------------------------")
 message(STATUS "  Project: ${PROJECT_NAME}")
 message(STATUS "  C++ ${CMAKE_CXX_STANDARD}")
 message(STATUS "-------------------------------------")
+message(STATUS " ${HOST}: ${CORES} cores")
+message(STATUS "-------------------------------------")
 
-option(GECKO_VERBOSE "Print build debug info" ON)
+option(GECKO_VERBOSE "Print build debug info" OFF)
 if(GECKO_VERBOSE)
     set(CMAKE_VERBOSE_MAKEFILE ON)
     set(CMAKE_RULE_MESSAGES OFF)
@@ -41,6 +46,12 @@ include_directories(extlibs/nlohmann-json/include)
 
 # Threads ---------------------------------------------------------
 include(cmake/threads.cmake)
+
+# Marko -----------------------------------------------------------
+include_directories(extlibs/marko/lib/include)
+# link_directories(extlibs/marko/build)
+list(APPEND ALL_LIBS "marko")
+add_subdirectory(extlibs/marko)
 
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
@@ -78,4 +89,39 @@ add_subdirectory(tools)
 add_subdirectory(gtests)
 
 # Package Generator --------------------------------------------------
-include(cmake/package.cmake)
+# include(cmake/package.cmake)
+
+# Local Install for Testing/Dev --------------------------------------
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+file(GLOB HEADERS src/gecko/*.hpp)
+install(FILES ${HEADERS} DESTINATION include/gecko)
+
+# CppZmq -----------------------------------------------------------
+install(
+    FILES extlibs/cppzmq/zmq.hpp extlibs/cppzmq/zmq_addon.hpp
+    DESTINATION include/gecko/zmq
+)
+
+# MsgPack-Gecko -----------------------------------------------------
+if(BUILD_MSGPACK)
+    file(GLOB HEADERS extlibs/gecko-msgpack/gecko/msgpack/*.hpp)
+    install(FILES ${HEADERS} DESTINATION include/gecko/msgpack)
+endif()
+
+# Json ---------------------------------------------------------------
+# file(GLOB_RECURSE HEADERS extlibs/nlohmann-json/include/*)
+# install(FILES ${HEADERS} DESTINATION include/gecko/json)
+install(
+    DIRECTORY extlibs/nlohmann-json/include/
+    DESTINATION include/gecko/json
+)
+
+# Marko ---------------------------------------------------------------
+install(
+    DIRECTORY extlibs/marko/lib/include/
+    DESTINATION include
+)
+
+# install(TARGETS marko DESTINATION lib)

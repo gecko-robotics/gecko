@@ -13,6 +13,16 @@
 
 using namespace std;
 
+struct sockaddr_in make(const string& saddr, int port){
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family      = AF_INET;
+    addr.sin_addr.s_addr = inet_addr(saddr.c_str());
+    addr.sin_port        = htons(port);
+    cout << ">> Addr: " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;
+    return std::move(addr);
+}
+
 void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool reuse){
     // create a socket for sending to the multicast address
     if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
@@ -21,14 +31,16 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
         throw MulticastError("SSocket::init socket() SOCK_DGRAM failed");
     }
 
+    // allow multiple sockets to re-use the same port
     if (reuse) {
         u_int yes = 1;
-        int err = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
-        if (err < 0){
-            // perror("SSocket::init SO_REUSE failed");
-            // // return 1;
-            // exit(1);
-            throw MulticastError("SSocket::init SO_REUSE failed");
+        // int err = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes));
+        // int err = setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char*) &yes, sizeof(yes));
+        if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*) &yes, sizeof(yes)) < 0){
+            throw MulticastError("SSocket::init SO_REUSEADDR failed");
+        }
+        if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char*) &yes, sizeof(yes)) < 0){
+            throw MulticastError("SSocket::init SO_REUSEPORT failed");
         }
     }
 
@@ -49,22 +61,31 @@ void SSocket::init(string mc_addr_str, uint16_t mc_port, uint8_t mc_ttl, bool re
        (void*) &one, sizeof(one))) < 0) {
         // perror("SSocket::init setsockopt() IP_MULTICAST_TTL failed");
         // exit(1);
-        throw MulticastError("SSocket::init setsockopt() IP_MULTICAST_TTL failed");
+        throw MulticastError("SSocket::init setsockopt() IP_MULTICAST_LOOP failed");
     }
 
     // construct a multicast address structure
     memset(&mc_addr, 0, sizeof(mc_addr));
     mc_addr.sin_family      = AF_INET;
-    mc_addr.sin_addr.s_addr = inet_addr(mc_addr_str.c_str());
+    // mc_addr.sin_addr.s_addr = inet_addr(mc_addr_str.c_str());
+    mc_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     mc_addr.sin_port        = htons(mc_port);
+    // mc_addr = make(mc_addr_str, mc_port);
+    // mc_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
+    cout << ">>> " << htonl(INADDR_ANY) << endl;
+    cout << ">>> " << inet_addr(mc_addr_str.c_str()) << endl;
+
+    // struct sockaddr_in aaddr = make("0.0.0.0", mc_port);
     // bind to all interfaces to receive address
     struct sockaddr_in aaddr;
     memset(&aaddr, 0, sizeof(aaddr));
     aaddr.sin_family = AF_INET;
-    aaddr.sin_addr.s_addr = inet_addr("0.0.0.0"); // need to send response back
+    // aaddr.sin_addr.s_addr = inet_addr("0.0.0.0"); // need to send response back
+    aaddr.sin_addr.s_addr = htonl(INADDR_ANY); // need to send response back
     aaddr.sin_port = htons(mc_port);
     if (::bind(sock, (struct sockaddr*) &aaddr, sizeof(aaddr)) < 0) {
+    // if (::bind(sock, (struct sockaddr*) &mc_addr, sizeof(mc_addr)) < 0) {
         // perror("Listener::listen() --> bind");
         // return 1;
         throw MulticastError("Listener::listen() --> bind");
@@ -177,3 +198,34 @@ bool SSocket::send(const std::string& msg, struct sockaddr_in& addr){
     // sleep(1);
     return true;
 }
+
+bool SSocket::send(const std::string& msg, const string& saddr, int port){
+    // cout << "=> send: " << msg << " to " << inet_ntoa(addr.sin_addr) << ":" << ntohs(addr.sin_port) << endl;
+
+    struct sockaddr_in addr = make(saddr, port);
+    // memset(&addr, 0, sizeof(addr));
+    // addr.sin_family      = AF_INET;
+    // addr.sin_addr.s_addr = inet_addr(saddr.c_str());
+    // // addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // addr.sin_port        = htons(port);
+
+    if ((sendto(sock, msg.c_str(), msg.size(), 0,
+            (struct sockaddr *) &addr, sizeof(addr))) != msg.size()) {
+        // perror("sendto() sent incorrect number of bytes");
+        // // exit(1);
+        // return false;
+        throw MulticastError("sendto() sent incorrect number of bytes");
+    }
+
+    // sleep(1);
+    return true;
+}
+
+// template<class T>
+// bool SSocket::setsocketopt(int level, int name, T val, const string& msg){
+//     // u_int yes = 1;
+//     int err = setsockopt(sock, level, name, (void*) &val, sizeof(val));
+//     if (err < 0)
+//         throw MulticastError(msg);
+//     return true;
+// }

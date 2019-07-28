@@ -10,6 +10,8 @@
 #include <string>
 #include <thread>
 
+#include <ascii.hpp>
+
 /*
 https://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
 Bit -->  0                           31            Address Range:
@@ -50,7 +52,8 @@ protected:
     void printLoop();  // thread function, runs until signal
     void print();      // print once
     std::string key;   // core key
-    std::string host;  // host address
+    std::string hostname;  // host name
+    std::string address;   // host address
     std::string datum; // when did core start?
     int pid;           // core pid
     DBv services;      // bind[topic, (pid, endpt)]  conn[pid, (topic, endpt)]
