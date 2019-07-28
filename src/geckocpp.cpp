@@ -90,6 +90,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 template<typename T>
 T* connecter(string key, string topic){
     BCSocket ss(mc_port);
+    // MCSocket(mc_addr, mc_port);
     ss.bind();
     // ss.init(mc_addr, mc_port);
     int retry = 5;
@@ -161,6 +162,7 @@ void gecko::init(){
     printf(" initialized: %s\n", initialized ? "true" : "false");
     printf(" %s [%s]\n", host_name.c_str(), host_addr.c_str());
     // printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
+    printf(" broadcast port: %d\n", mc_port);
     // printf(" key: %s\n", key.c_str());
     printf("\n");
 }

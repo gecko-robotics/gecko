@@ -26,7 +26,7 @@ int main(void){
 
         Rate r(40);
 
-        while(true){
+        while(gecko::ok()){
             zmq::message_t msg = s->recv_nb();
             if(msg.size() > 0){
                 imu_st m(msg);

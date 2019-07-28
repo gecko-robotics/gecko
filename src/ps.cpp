@@ -5,9 +5,23 @@
 #include <vector>
 #include <array>
 #include <memory>
+#include <algorithm>
 
 
 using namespace std;
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+bool isHidden(unsigned char c) {
+	return (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f');
+}
+
+string clean(string& s){
+    s.erase(std::remove_if(s.begin(), s.end(), isHidden), s.end());
+    return std::move(s);
+}
 
 
 int PS::get(const string& pid){
@@ -45,9 +59,9 @@ int PS::get(const string& pid){
 
     if (toks.size() < 3) return 1;
 
-    this->pid = toks[0];
-    this->mem = toks[1];
-    this->cpu = toks[2];
+    this->pid = clean(toks[0]);
+    this->mem = clean(toks[1]);
+    this->cpu = clean(toks[2]);
 
 
 #endif
