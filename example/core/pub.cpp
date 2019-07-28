@@ -13,11 +13,12 @@ using namespace std;
 
 
 int main(int argc, char *argv[]){
+    Publisher *p = nullptr;
     try {
         gecko::init();
         printf(">> post gecko::init\n");
 
-        Publisher *p = gecko::pubBindTCP("local", "test");
+        p = gecko::pubBindTCP("local", "test");
         if (p == nullptr) {
             printf("Couldn't get publisher\n");
             exit(1);
@@ -46,6 +47,8 @@ int main(int argc, char *argv[]){
         printf("Other error\n");
         return 1;
     }
+
+    delete p;
 
     printf(">> pub bye ...\n");
 

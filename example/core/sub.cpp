@@ -16,9 +16,10 @@ using namespace std;
 
 
 int main(void){
+    Subscriber *s = nullptr;
     try {
         gecko::init();
-        Subscriber *s = gecko::subConnectTCP("local", "test");
+        s = gecko::subConnectTCP("local", "test");
         if (s == nullptr) {
             printf("Couldn't get subscriber\n");
             exit(1);
@@ -39,6 +40,8 @@ int main(void){
         cout << e.what() << endl;
         exit(1);
     }
+
+    delete s;
 
     printf(">> sub bye\n");
 

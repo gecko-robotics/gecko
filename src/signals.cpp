@@ -57,7 +57,7 @@ void SigCapture::my_handler(int s){
     printf(">> Caught signal %d\n", s);
     // cout << ">> Signal caught: " << s << endl;
     ok = false;
-    exit(1);
+    // exit(1);
 }
 
 void SigCapture::shutdown(){

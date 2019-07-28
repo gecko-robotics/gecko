@@ -222,11 +222,11 @@ int gecko::get_broadcast(){
 }
 
 bool gecko::ok(){
-    return sig.ok;
+    return global_gecko.ok;
 }
 
 void gecko::shutdown(){
-    sig.ok = false;
+    global_gecko.ok = false;
 }
 
 Subscriber* gecko::subBindTCP(string key, string topic){
