@@ -45,6 +45,7 @@ using MsgAddr = std::tuple<std::string, struct sockaddr_in>;
 struct sockaddr_in make(const std::string& saddr, int port);
 struct sockaddr_in make(int port, int iaddr);
 std::string host_ip();
+std::string print_addr(const struct sockaddr_in& addr);
 
 static
 std::map<int, std::string> debug_setsockopt = {

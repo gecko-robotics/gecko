@@ -49,12 +49,15 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     int retry = 5;
 
     BCSocket ss(mc_port);
+    ss.bind();
     // ss.init(mc_addr, mc_port);
 
     Ascii a;
     pid_t pid = getpid();
     ascii_t tmp = {key,topic,to_string(pid),p->endpoint};
     string msg = a.pack(tmp);
+
+    cout << "binder send: " << msg << endl;
 
     for (int i=0; i<retry; i++){
         ss.cast(msg);
@@ -63,6 +66,8 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
         string ans;
         struct sockaddr_in addr;
         tie(ans, addr) = ss.recv();
+
+        cout << "binder ans: " << ans << endl;
 
         if(!ans.empty()){
             ascii_t t = a.unpack(ans);
@@ -85,6 +90,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 template<typename T>
 T* connecter(string key, string topic){
     BCSocket ss(mc_port);
+    ss.bind();
     // ss.init(mc_addr, mc_port);
     int retry = 5;
 
@@ -100,12 +106,12 @@ T* connecter(string key, string topic){
         string ans;
         struct sockaddr_in addr;
         tie(ans, addr) = ss.recv();
-        // cout << "sub ans " << ans << ' ' << ans.size() << endl;
+        cout << "sub ans " << ans << ' ' << ans.size() << endl;
 
         if(!ans.empty()){
             ascii_t t = a.unpack(ans);
             if(t.size() == 3){
-                // cout << "t.back() " << t.back() << endl;
+                cout << "t.back() " << t.back() << endl;
                 if (t[0] == key && t[1] == topic) {
                     string endpt = t[2];
                     printf(">> CONNECTOR[%s]: %s\n",topic.c_str(), endpt.c_str());

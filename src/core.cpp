@@ -104,6 +104,7 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 void BeaconCoreServer::listen(bool print){
     // setup multicast
     BCSocket ss(gecko::mc_port);
+    ss.bind();
     // ss.init(mc_addr, mc_port, 1, true);
 
     // setup printing loop in another thread
@@ -119,13 +120,16 @@ void BeaconCoreServer::listen(bool print){
 
         tie(ans, addr) = ss.recv();
 
+        cout << "remote: " << print_addr(addr) << endl;
+
         if(!ans.empty()){
             ascii_t t = a.unpack(ans);
             string msg;
 
             if (t.size() == 3) msg = handle_conn(t);
             else if (t.size() == 4) msg = handle_bind(t);
-            ss.send(msg, addr);
+            // ss.send(msg, addr);
+            ss.cast(msg);
         }
     }
 }

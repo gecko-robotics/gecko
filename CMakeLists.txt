@@ -5,9 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+cmake_host_system_information(RESULT HOST QUERY HOSTNAME)
+cmake_host_system_information(RESULT CORES QUERY NUMBER_OF_LOGICAL_CORES)
+
 message(STATUS "-------------------------------------")
 message(STATUS "  Project: ${PROJECT_NAME}")
 message(STATUS "  C++ ${CMAKE_CXX_STANDARD}")
+message(STATUS "-------------------------------------")
+message(STATUS " ${HOST}: ${CORES} cores")
 message(STATUS "-------------------------------------")
 
 option(GECKO_VERBOSE "Print build debug info" ON)

@@ -43,6 +43,13 @@ string host_ip(){
     return inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0]));
 }
 
+string print_addr(const struct sockaddr_in& addr){
+    string s(inet_ntoa(addr.sin_addr));
+    s += ":";
+    s += to_string(ntohs(addr.sin_port));
+    return s;
+}
+
 // map<int, string> debug_setsockopt = {
 //     {SO_REUSEADDR,       "SO_REUSEADDR"},
 //     {IP_MULTICAST_TTL,   "IP_MULTICAST_TTL"},
