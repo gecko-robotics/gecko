@@ -3,13 +3,26 @@
 
 #include <gecko/gecko.hpp>
 #include <gecko/msgpack/msgs.hpp>
+#include <gecko/geckocpp.hpp>
 
 using namespace std;
+// using namespace gecko;
 
 
 int main(int argc, char *argv[]){
+    gecko::hello();
+
+    gecko::init();
+    gecko::set_broadcast(11311);
+
     json dict;
     readJson("../robot.json", dict);
+
+    cout << gecko::ok() << " " << gecko::is_shutdown() << endl;
+
+    Publisher *ppp = gecko::pubBindUDS("local", "hi", "/tmp/hello");
+
+    gecko::shutdown();
 
     cout << dict << endl;
 

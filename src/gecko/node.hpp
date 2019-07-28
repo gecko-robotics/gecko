@@ -10,7 +10,7 @@
 #include <string>
 // #include <sys/types.h>  // pid (type int)
 // #include <unistd.h>       // getpid
-#include "gecko/signals.hpp"    // SigCapture
+#include <gecko/signals.hpp>    // SigCapture
 // #include "transport.hpp"  // pub/sub
 // #include "network.hpp"    // hostinfo
 // #include "helpers.hpp"    // zmqtTCP

@@ -17,9 +17,7 @@ list(APPEND ALL_LIBS "")
 
 
 # Get msgpack -----------------------------------------------------
-include_directories(
-    /usr/local/include
-    ../../extlibs/cppzmq)
+include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
 find_package(PkgConfig)

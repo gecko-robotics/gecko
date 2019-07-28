@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
             port = atoi(optarg);
             break;
         case 'v':
-            verbose = true;
+            verbose = !verbose;
             break;
         case ':':
             printf("option needs a value\n");

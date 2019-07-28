@@ -19,4 +19,5 @@ public:
 
 // protected:
     static bool ok;     // global status on if a SIGINT has occured
+    bool enabled;
 };

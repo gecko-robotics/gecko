@@ -46,9 +46,8 @@ include_directories(../../extlibs/nlohmann-json/include)
 
 # Marko -----------------------------------------------------------
 include_directories(../../extlibs/marko/lib/include)
-# link_directories(extlibs/marko/build)
+link_directories(../../build/extlibs/marko)
 list(APPEND ALL_LIBS "marko")
-add_subdirectory(../../extlibs/marko)
 
 # Build Project ----------------------------------------------
 message(STATUS "libs: ${ALL_LIBS}")

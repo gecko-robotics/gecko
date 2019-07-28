@@ -5,7 +5,7 @@
 \**************************************************/
 #pragma once
 
-#include <chrono>
+#include <chrono>  // time: sec, msec, usec
 #include <thread>  // sleep_for
 #include <string>
 

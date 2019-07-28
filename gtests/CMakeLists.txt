@@ -42,6 +42,7 @@ list(APPEND gtests
     json-gtest.cpp
     db-gtest.cpp
     all-gtest.cpp
+    gecko-gtest.cpp
     # msgpack-msgs-gtest.cpp
     # msgpack-adaptor-gtest.cpp
 )

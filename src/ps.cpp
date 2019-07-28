@@ -5,14 +5,11 @@
 #include <vector>
 #include <array>
 #include <memory>
+#include <string>
 #include <algorithm>
 
 
 using namespace std;
-
-#include <iostream>
-#include <string>
-#include <algorithm>
 
 bool isHidden(unsigned char c) {
 	return (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f');

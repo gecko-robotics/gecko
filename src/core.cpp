@@ -21,7 +21,7 @@ using namespace std;
   [66008] ryan.................. 0.1%  0.0%  uds:///var/run/ryan-0
 */
 
-using namespace gecko;
+// using namespace gecko;
 
 BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     pid(getpid()), delay(delay) {
@@ -105,7 +105,6 @@ void BeaconCoreServer::listen(bool print){
     // setup multicast
     BCSocket ss(gecko::mc_port);
     ss.bind();
-    // ss.init(mc_addr, mc_port, 1, true);
 
     // setup printing loop in another thread
     if (print)
@@ -152,8 +151,8 @@ void BeaconCoreServer::print(){
     printf(" Start: %s\n", datum.c_str());
     printf(" Key: %s\n", key.c_str());
     printf(" Host name[IP]: %s[%s]\n", hostname.c_str(), address.c_str());
-    // printf(" Listening on: %s:%d\n", mc_addr.c_str(), mc_port);
-    printf(" Listening on: %d\n", mc_port);
+    // printf(" Listening on: %s:%d\n", gecko::mc_addr.c_str(), gecko::mc_port);
+    printf(" Listening on: %d\n", gecko::mc_port);
     printf(" CPU: %s   Memory: %s\n", ps.cpu.c_str(), ps.mem.c_str());
     printf("-------------\n");
     services.print();

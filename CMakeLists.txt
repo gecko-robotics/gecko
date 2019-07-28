@@ -15,7 +15,7 @@ message(STATUS "-------------------------------------")
 message(STATUS " ${HOST}: ${CORES} cores")
 message(STATUS "-------------------------------------")
 
-option(GECKO_VERBOSE "Print build debug info" ON)
+option(GECKO_VERBOSE "Print build debug info" OFF)
 if(GECKO_VERBOSE)
     set(CMAKE_VERBOSE_MAKEFILE ON)
     set(CMAKE_RULE_MESSAGES OFF)
