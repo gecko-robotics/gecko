@@ -14,6 +14,8 @@ using namespace std;
 using namespace gecko;
 
 int main(int argc, char *argv[]){
+    gecko::init();
+
     string addr;
     if (argc == 2){
         addr = argv[1];
@@ -22,13 +24,13 @@ int main(int argc, char *argv[]){
         HostInfo host;
         addr = host.address;
     }
-    
+
     try {
         Subscriber s;
         s.connect(zmqTCP(addr, 9000));
         Rate r(40);
 
-        while(true){
+        while(gecko::ok()){
             zmq::message_t msg = s.recv_nb();
             if(msg.size() > 0){
                 imu_st m(msg);

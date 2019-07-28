@@ -8,6 +8,7 @@ using namespace std;
 
 
 int main(void){
+    gecko::init();
     try {
         HostInfo host;
         Publisher p;
@@ -15,7 +16,7 @@ int main(void){
 
         Rate r(1);
 
-        while(true){
+        while(gecko::ok()){
             vec_t a(1,2,3);
             imu_st b(a,a,a);  // new timestamp
             zmq::message_t msg = b.pack();
@@ -27,7 +28,7 @@ int main(void){
     }
     catch(zmq::error_t& e) {
         cout << e.what() << endl;
-        exit(1);
+        // exit(1);
     }
 
     printf(">> pub bye ...\n");
