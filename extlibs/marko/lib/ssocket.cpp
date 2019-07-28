@@ -136,12 +136,14 @@ MsgAddr SSocket::recv(){
     char recv_str[MAX_LEN];
     memset(recv_str, 0, sizeof(recv_str));
 
-    struct sockaddr_in from_addr;
+    struct sockaddr_in from_addr = {0};
     unsigned int from_len = sizeof(from_addr);
-    memset(&from_addr, 0, sizeof(from_addr));
+    // memset(&from_addr, 0, sizeof(from_addr));
+
+    int recv_len = 0;
 
     // block waiting to receive a packet
-    if ((recvfrom(sock, recv_str, MAX_LEN, 0,
+    if ((recv_len = recvfrom(sock, recv_str, MAX_LEN, 0,
          (struct sockaddr*)&from_addr, &from_len)) < 0) {
         throw MulticastError("recvfrom() failed");
     }
@@ -151,16 +153,18 @@ MsgAddr SSocket::recv(){
     //     inet_ntoa(from_addr.sin_addr),
     //     ntohs(from_addr.sin_port));
 
-    string msg = recv_str;
+    // string msg;
+    // if (recv_len > 0) msg = recv_str;
 
-    return std::move(MsgAddr(msg, from_addr));
+    // return std::move(MsgAddr(msg, from_addr));
+    return MsgAddr({recv_str}, from_addr);
 }
 
 MsgAddr SSocket::recv_nb(long msec){
     if(ready(msec))
         return this->recv();
 
-    MsgAddr r;
+    MsgAddr r = {{""}, {0}};
     return r;
 }
 

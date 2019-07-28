@@ -11,9 +11,9 @@ using namespace std;
 
 int main(int argc, char *argv[]){
     gecko::hello();
-
-    gecko::init();
-    gecko::set_broadcast(11311);
+    //
+    // gecko::init();
+    // gecko::set_broadcast(11311);
 
     json dict;
     readJson("../robot.json", dict);

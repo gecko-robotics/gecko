@@ -60,6 +60,7 @@ private:
     // bool initialized;
 };
 
+// global shared memory
 Hobo& global_gecko = gecko::Hobo::getInstance();
 
 }; // end gecko namespace
@@ -83,9 +84,9 @@ static SigCapture sig; // this should be in init ... not global activation
 
 template<typename T>
 T* binder(string key, string topic, string path, string(*EP)(const string&)){
-
     // string addr = EP(path).endpoint;
     string addr = EP(path);
+    printf(">> address: %s\n", addr.c_str());
     // if (file.empty()) addr = zmqTCP(host_addr);  // bind to next available port
     // else addr = zmqUDS(file);
     // string addr = zmqTCP(host_addr);  // bind to next available port
@@ -93,8 +94,10 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     p->bind(addr);
     int retry = 5;
 
-    BCSocket ss(mc_port);
+    BCSocket ss(global_gecko.mc_port);
     ss.bind();
+
+    printf(">> made socket\n");
 
     Ascii a;
     pid_t pid = getpid();
@@ -109,11 +112,10 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 
         string ans;
         struct sockaddr_in addr;
-        tie(ans, addr) = ss.recv();
-
-        cout << "binder ans: " << ans << endl;
+        tie(ans, addr) = ss.recv_nb();
 
         if(!ans.empty()){
+            cout << "binder ans: " << ans << endl;
             ascii_t t = a.unpack(ans);
             if(t.size() == 4){
                 if (t.back() == "ok") {
@@ -133,7 +135,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 
 template<typename T>
 T* connecter(string key, string topic){
-    BCSocket ss(mc_port);
+    BCSocket ss(global_gecko.mc_port);
     // MCSocket(mc_addr, mc_port);
     ss.bind();
     int retry = 5;
@@ -147,14 +149,14 @@ T* connecter(string key, string topic){
         ss.cast(msg);
         printf("connect send\n");
 
-        string ans;
-        struct sockaddr_in addr;
+        string ans = {""};
+        struct sockaddr_in addr = {0};
         tie(ans, addr) = ss.recv();
-        cout << "sub ans " << ans << ' ' << ans.size() << endl;
 
         if(!ans.empty()){
+            cout << "sub ans " << ans << ' ' << ans.size() << endl;
             ascii_t t = a.unpack(ans);
-            if(t.size() == 3){
+            if(t.size() == 4 && t[3] == "ok"){
                 cout << "t.back() " << t.back() << endl;
                 if (t[0] == key && t[1] == topic) {
                     string endpt = t[2];
@@ -228,7 +230,7 @@ void gecko::shutdown(){
 }
 
 Subscriber* gecko::subBindTCP(string key, string topic){
-    return binder<Subscriber>(key, topic, host_addr, zmqTCP);
+    return binder<Subscriber>(key, topic, global_gecko.host_addr, zmqTCP);
 }
 
 Subscriber* gecko::subBindUDS(string key, string topic, string file){
@@ -244,7 +246,7 @@ Subscriber* gecko::subConnectUDS(string key, string topic){
 }
 
 Publisher* gecko::pubBindTCP(string key, string topic){
-    return binder<Publisher>(key, topic, host_addr, zmqTCP);
+    return binder<Publisher>(key, topic, global_gecko.host_addr, zmqTCP);
 }
 
 Publisher* gecko::pubBindUDS(string key, string topic, string file){

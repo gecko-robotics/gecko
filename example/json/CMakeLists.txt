@@ -17,10 +17,12 @@ list(APPEND ALL_LIBS "")
 
 
 # Get msgpack -----------------------------------------------------
-include_directories(
-    /usr/local/include
-    ../../extlibs/cppzmq)
+# include_directories(
+#     /usr/local/include
+#     ../../extlibs/cppzmq)
 link_directories(/usr/local/lib)
+link_directories(../../install/lib)
+include_directories(../../install/include)
 
 find_package(PkgConfig)
 include(../../cmake/msgpack.cmake)
@@ -47,13 +49,14 @@ include_directories(../../extlibs/nlohmann-json/include)
 # Marko -----------------------------------------------------------
 include_directories(../../extlibs/marko/lib/include)
 link_directories(../../build/extlibs/marko)
-list(APPEND ALL_LIBS "marko")
+# list(APPEND ALL_LIBS "marko")
 
 # Build Project ----------------------------------------------
-message(STATUS "libs: ${ALL_LIBS}")
+message(STATUS ">> JSON linked libraries: ${ALL_LIBS}")
 
 add_executable(pub pub.cpp)
-target_link_libraries(pub ${ALL_LIBS})
+# target_link_libraries(pub ${ALL_LIBS})
+target_link_libraries(pub gecko zmq)
 
 # add_executable(sub sub.cpp)
 # target_link_libraries(sub ${ALL_LIBS})

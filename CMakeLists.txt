@@ -89,4 +89,39 @@ add_subdirectory(tools)
 add_subdirectory(gtests)
 
 # Package Generator --------------------------------------------------
-include(cmake/package.cmake)
+# include(cmake/package.cmake)
+
+# Local Install for Testing/Dev --------------------------------------
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+file(GLOB HEADERS src/gecko/*.hpp)
+install(FILES ${HEADERS} DESTINATION include/gecko)
+
+# CppZmq -----------------------------------------------------------
+install(
+    FILES extlibs/cppzmq/zmq.hpp extlibs/cppzmq/zmq_addon.hpp
+    DESTINATION include/gecko/zmq
+)
+
+# MsgPack-Gecko -----------------------------------------------------
+if(BUILD_MSGPACK)
+    file(GLOB HEADERS extlibs/gecko-msgpack/gecko/msgpack/*.hpp)
+    install(FILES ${HEADERS} DESTINATION include/gecko/msgpack)
+endif()
+
+# Json ---------------------------------------------------------------
+# file(GLOB_RECURSE HEADERS extlibs/nlohmann-json/include/*)
+# install(FILES ${HEADERS} DESTINATION include/gecko/json)
+install(
+    DIRECTORY extlibs/nlohmann-json/include/
+    DESTINATION include/gecko/json
+)
+
+# Marko ---------------------------------------------------------------
+install(
+    DIRECTORY extlibs/marko/lib/include/
+    DESTINATION include
+)
+
+# install(TARGETS marko DESTINATION lib)

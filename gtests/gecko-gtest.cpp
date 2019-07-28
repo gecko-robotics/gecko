@@ -7,6 +7,12 @@
 
 using namespace std;
 
+/*
+WARNING: this is all in the same thread space. Changing gecko::mc_port in one
+test effects it in another test.
+*/
+
+
 TEST(gecko, init) {
     gecko::init();
     gecko::set_broadcast(9999);

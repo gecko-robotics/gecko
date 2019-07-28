@@ -93,11 +93,12 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
         Ascii a;
         msg = a.pack(data);
+        return msg;
     }
     catch (InvalidKey e){
         printf("** Invalid Topic: %s **\n", topic.c_str());
     }
-    return msg;
+    return "";
 }
 
 
@@ -117,18 +118,21 @@ void BeaconCoreServer::listen(bool print){
         string ans;
         struct sockaddr_in addr;
 
-        tie(ans, addr) = ss.recv();
-
-        cout << "remote: " << print_addr(addr) << endl;
+        tie(ans, addr) = ss.recv_nb(500);
 
         if(!ans.empty()){
+            cout << "remote: " << print_addr(addr) << endl;
+
             ascii_t t = a.unpack(ans);
             string msg;
 
             if (t.size() == 3) msg = handle_conn(t);
             else if (t.size() == 4) msg = handle_bind(t);
-            // ss.send(msg, addr);
-            ss.cast(msg);
+
+            if (msg.size() > 0){
+                // ss.send(msg, addr);
+                ss.cast(msg);
+            }
         }
     }
 }
