@@ -91,6 +91,8 @@ add_subdirectory(gtests)
 # Package Generator --------------------------------------------------
 # include(cmake/package.cmake)
 
+#=====================================================================
+
 # Local Install for Testing/Dev --------------------------------------
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
@@ -123,5 +125,4 @@ install(
     DIRECTORY extlibs/marko/lib/include/
     DESTINATION include
 )
-
-# install(TARGETS marko DESTINATION lib)
+install(TARGETS marko DESTINATION lib)
