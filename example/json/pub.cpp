@@ -10,19 +10,10 @@ using namespace std;
 
 
 int main(int argc, char *argv[]){
-    gecko::hello();
-    //
-    // gecko::init();
-    // gecko::set_broadcast(11311);
+    gecko::init();
 
     json dict;
     readJson("../robot.json", dict);
-
-    cout << gecko::ok() << " " << gecko::is_shutdown() << endl;
-
-    Publisher *ppp = gecko::pubBindUDS("local", "hi", "/tmp/hello");
-
-    gecko::shutdown();
 
     cout << dict << endl;
 
@@ -45,7 +36,7 @@ int main(int argc, char *argv[]){
 
         Rate r(1);
 
-        while(true){
+        while(gecko::ok()){
             vec_t a(1,2,3);
             imu_st b(a,a,a);  // new timestamp
             zmq::message_t msg = b.pack();
@@ -57,7 +48,7 @@ int main(int argc, char *argv[]){
     }
     catch(zmq::error_t& e) {
         cout << e.what() << endl;
-        exit(1);
+        // exit(1);
     }
 
     printf(">> pub bye ...\n");

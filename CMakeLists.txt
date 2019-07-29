@@ -86,6 +86,7 @@ endif(BUILD_MSGPACK)
 add_subdirectory(tools)
 
 # Tests --------------------------------------------------------------
+# enable_testing()
 add_subdirectory(gtests)
 
 # Package Generator --------------------------------------------------
@@ -125,4 +126,7 @@ install(
     DIRECTORY extlibs/marko/lib/include/
     DESTINATION include
 )
-install(TARGETS marko DESTINATION lib)
+install(
+    TARGETS marko
+    DESTINATION lib
+)

@@ -222,6 +222,7 @@ int gecko::get_broadcast(){
 }
 
 bool gecko::ok(){
+    if (global_gecko.enabled == false) throw Exception("gecko::init() not called");
     return global_gecko.ok;
 }
 

@@ -17,38 +17,50 @@ list(APPEND ALL_LIBS "")
 
 
 # Get msgpack -----------------------------------------------------
-# include_directories(
-#     /usr/local/include
-#     ../../extlibs/cppzmq)
+include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
-link_directories(../../install/lib)
-include_directories(../../install/include)
+# link_directories(../../install/lib)
+# include_directories(../../install/include)
+
+include_directories(
+    /usr/local/include
+    ../../install/include
+    ../../install/include/gecko/zmq
+    ../../install/include/gecko/json
+)
+
+link_directories(
+    /usr/local/lib
+    ../../install/lib
+)
+
+list(APPEND ALL_LIBS "gecko;msgpackc;marko")
 
 find_package(PkgConfig)
 include(../../cmake/msgpack.cmake)
 # include_directories(../../extlibs/gecko-msgpack)  # why????
 
 # Gecko -----------------------------------------------------------
-include_directories(
-    ../../src
-    ../../extlibs/gecko-msgpack)
-link_directories(../../build)
-
-list(APPEND ALL_LIBS "gecko;msgpackc")
+# include_directories(
+#     ../../src
+#     ../../extlibs/gecko-msgpack)
+# link_directories(../../build)
+#
+# list(APPEND ALL_LIBS "gecko;msgpackc")
 
 # Threads ---------------------------------------------------------
 include(../../cmake/threads.cmake)
 
 # ZeroMQ ----------------------------------------------------------
-include(../../cmake/zmq.cmake)
-include_directories(../../extlibs/cppzmq)
+# include(../../cmake/zmq.cmake)
+# include_directories(../../extlibs/cppzmq)
 
 # Json ------------------------------------------------------------
-include_directories(../../extlibs/nlohmann-json/include)
+# include_directories(../../extlibs/nlohmann-json/include)
 
 # Marko -----------------------------------------------------------
-include_directories(../../extlibs/marko/lib/include)
-link_directories(../../build/extlibs/marko)
+# include_directories(../../extlibs/marko/lib/include)
+# link_directories(../../build/extlibs/marko)
 # list(APPEND ALL_LIBS "marko")
 
 # Build Project ----------------------------------------------
