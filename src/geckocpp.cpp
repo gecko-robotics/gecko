@@ -3,6 +3,7 @@
 #include "gecko/log.hpp"
 #include "gecko/signals.hpp"
 #include <gecko/defaults.hpp>
+#include <gecko/exceptions.hpp>
 #include <thread>
 #include <mutex>
 #include <pwd.h>        // geteuid,getpwuid
@@ -11,6 +12,7 @@
 #include <unistd.h>     // getpid
 #include <iostream>
 #include <atomic>
+#include <exception>
 
 
 using namespace std;
@@ -222,7 +224,7 @@ int gecko::get_broadcast(){
 }
 
 bool gecko::ok(){
-    if (global_gecko.enabled == false) throw Exception("gecko::init() not called");
+    if (global_gecko.enabled == false) throw GeckoCppError("SigCapture::on() not called");
     return global_gecko.ok;
 }
 

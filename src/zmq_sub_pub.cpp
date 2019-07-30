@@ -39,24 +39,3 @@ zmq::message_t Subscriber::recv(zmq::recv_flags flags){
     // sock.recv(msg, zmq::recv_flags::none);
     return msg;
 }
-
-////////////////////////////////////////////////////////
-/*
-Will bind or connect to an address (tcp://x.x.x.x:*, where * can be replacced
-with a port number if desired)
-https://stackoverflow.com/questions/16699890/connect-to-first-free-port-with-tcp-using-0mq
-*/
-// Publisher::Publisher(string addr, bool bind): zmqBase(ZMQ_PUB)
-// {
-//     if (bind) {
-//         this->bind = true;
-//         // https://github.com/pi-hole/FTL/blob/master/socket.c#L63
-//         // setsockopt(int option_, const void *optval_, size_t optvallen_)
-//         // sock.setsockopt(SO_REUSEADDR, &(int){ 1 }, sizeof(int));
-//         sock.bind(addr);
-//     }
-//     else sock.connect(addr);
-//
-//     setEndPt();
-//     printf(">> Publisher[%s] %s\n",endpoint.c_str(), bind ? "bind" : "connect");
-// }

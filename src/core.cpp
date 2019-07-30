@@ -23,9 +23,7 @@ using namespace std;
 
 // using namespace gecko;
 
-BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
-    pid(getpid()), delay(delay) {
-
+BeaconCoreServer::BeaconCoreServer(const string& key): port(GECKOCORE_PORT){
     HostInfo hi;
 
     // if (key.size() > 0) this->key = key;
@@ -33,6 +31,8 @@ BeaconCoreServer::BeaconCoreServer(const string& key, int ttl, int delay):
     this->key = key;
     hostname = hi.hostname;
     address = hi.address;
+
+    pid = getpid();
 
     datum = time_date();
 }
@@ -44,6 +44,12 @@ BeaconCoreServer::~BeaconCoreServer(){
 void BeaconCoreServer::stop(){
     ok = false;
 }
+
+void BeaconCoreServer::set_broadcast(int p){
+    port = p;
+}
+
+void BeaconCoreServer::set_broadcast(const std::string& addr, int port){}
 
 string BeaconCoreServer::handle_bind(ascii_t& data){
     // PublishTopic [4]: {key,topic,pid,endpt}
@@ -104,7 +110,7 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 
 void BeaconCoreServer::listen(bool print){
     // setup multicast
-    BCSocket ss(gecko::mc_port);
+    BCSocket ss(port);
     ss.bind();
 
     // setup printing loop in another thread
@@ -155,8 +161,7 @@ void BeaconCoreServer::print(){
     printf(" Start: %s\n", datum.c_str());
     printf(" Key: %s\n", key.c_str());
     printf(" Host name[IP]: %s[%s]\n", hostname.c_str(), address.c_str());
-    // printf(" Listening on: %s:%d\n", gecko::mc_addr.c_str(), gecko::mc_port);
-    printf(" Listening on: %d\n", gecko::mc_port);
+    printf(" Listening on: %d\n", port);
     printf(" CPU: %s   Memory: %s\n", ps.cpu.c_str(), ps.mem.c_str());
     printf("-------------\n");
     services.print();

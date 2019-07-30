@@ -40,13 +40,15 @@ Bit -->  0                           31            Address Range:
 
 class BeaconCoreServer: public SigCapture {
 public:
-    BeaconCoreServer(const std::string& key, int ttl=1, int delay=3);
+    BeaconCoreServer(const std::string& key);
     ~BeaconCoreServer();
 
     void stop();  // shutdown core
     std::string handle_bind(ascii_t& data);
     std::string handle_conn(ascii_t& data);
     void listen(bool print=true);  // main loop to handle connections
+    void set_broadcast(const std::string& addr, int port);
+    void set_broadcast(int port);
 
 protected:
     void printLoop();  // thread function, runs until signal
@@ -59,4 +61,5 @@ protected:
     DBv services;      // bind[topic, (pid, endpt)]  conn[pid, (topic, endpt)]
     int delay;         // replace with Rate?
     std::thread prnt;
+    int port;
 };

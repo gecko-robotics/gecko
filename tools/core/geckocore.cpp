@@ -3,7 +3,8 @@
  * Copyright (c) 2014 Kevin Walchko
  * see LICENSE for full details
 \********************************************/
-#include "gecko/gecko.hpp"
+#include <gecko/gecko.hpp>
+#include <gecko/defaults.hpp>
 // #include <boost/asio.hpp>
 #include <iostream>
 #include <string>
@@ -63,8 +64,8 @@ using namespace std;
 int main(int argc, char *argv[]){
     string key;
     int opt;
-    int port = gecko::mc_port;
-    string addr = gecko::mc_addr;
+    int port = GECKOCORE_PORT;
+    string addr = GECKOCORE_ADDRESS;
     bool verbose = true;
 
     // put ':' in the starting of the

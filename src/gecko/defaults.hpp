@@ -8,11 +8,14 @@
 
 #pragma once
 
-#include <string>
+// #include <string>
 
-namespace gecko {
+// namespace gecko {
+//
+// static std::string mc_addr = {"224.3.29.110"};
+// static int mc_port = 11311;
+//
+// }
 
-static std::string mc_addr = {"224.3.29.110"};
-static int mc_port = 11311;
-
-}
+#define GECKOCORE_PORT 11311
+#define GECKOCORE_ADDRESS "224.3.29.110"

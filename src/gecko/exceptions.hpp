@@ -11,3 +11,11 @@ struct NotImplemented : public std::exception {
 protected:
     std::string msg;
 };
+
+struct GeckoCppError : public std::exception {
+    GeckoCppError(const std::string &s): msg(s) {}
+    GeckoCppError(): msg("GeckoCpp error") {}
+    const char * what () const throw () {return msg.c_str();}
+protected:
+    std::string msg;
+};
