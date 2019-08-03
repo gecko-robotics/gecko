@@ -23,7 +23,7 @@ namespace gecko {
     inline bool is_shutdown(){return !ok();} // stopping? true/false
     void shutdown(); // shutdown gecko
 
-    void hello();
+    // void hello();
     int get_broadcast();
     int* getAddress();
 

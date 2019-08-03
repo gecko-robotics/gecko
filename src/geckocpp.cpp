@@ -43,7 +43,7 @@ public:
     std::string mc_addr;
 
 private:
-    Hobo(): initialized(false), mc_port(11311), mc_addr("240.0.0.100"){
+    Hobo(): initialized(false), mc_port(GECKOCORE_PORT), mc_addr(GECKOCORE_ADDRESS){
         printf(">> Hobo constructor\n");
         on();
         initialized = true;
@@ -211,9 +211,9 @@ int* gecko::getAddress(){
     return global_gecko.getAddress();
 }
 
-void gecko::hello(){
-    cout << "ehllo" << endl;
-}
+// void gecko::hello(){
+//     cout << "ehllo" << endl;
+// }
 
 void gecko::set_broadcast(int port){
     global_gecko.mc_port = port;
