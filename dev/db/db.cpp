@@ -1,8 +1,12 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <array>
 #include <map>
 #include <exception>
 #include <stdexcept>
+#include <optional>
+#include <algorithm>
 
 using namespace std;
 
@@ -45,11 +49,18 @@ protected:
 
 // inline
 int find(const int& key, const map<int,int>& db) {
-    if (std::map<int, int>::iterator it; it == db.end())
+    // if (std::map<int, int>::iterator it = find(key); it == db.end())
+    //     throw runtime_error("find error");
+    // else
+    //     return it->second;
+
+    if (auto it = db.find(key); it == db.end())
         throw runtime_error("find error");
     else
         return it->second;
 }
+
+
 
 
 // int find(const int& k, const map<int,int>& db){
@@ -87,6 +98,11 @@ int main(){
     map<int,int> dd{{1,11},{2,22},{3,33}};
     dd.insert({4, 44});
     try {
+        auto f = [dd](int key){
+            auto it = dd.find(key);
+            return (it == dd.end() ? -1 : it->second);
+        };
+        cout << f(22) << endl;
         cout << dd[1] << endl;
         cout << dd[4] << endl;
         // cout << dd.size() << " " << dd.max_size() << endl;
@@ -96,6 +112,12 @@ int main(){
     catch (const exception& e){
         cout << "error dd: " << e.what() << endl;
     }
+
+    int a=0;
+    vector<int> v = {0,1,2,3,4,5};
+    auto ff = [&a](int d){a += d;};
+    std:for_each(v.begin(),v.end(),ff);
+    cout << a << endl; // sum(5) => 15
 
     return 0;
 }
