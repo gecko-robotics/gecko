@@ -23,7 +23,7 @@ using namespace std;
 
 // using namespace gecko;
 
-BeaconCoreServer::BeaconCoreServer(const string& key): port(GECKOCORE_PORT){
+BeaconCoreServer::BeaconCoreServer(const string& key): port(GECKOCORE_PORT), delay(3) {
     HostInfo hi;
 
     // if (key.size() > 0) this->key = key;
@@ -108,14 +108,18 @@ string BeaconCoreServer::handle_conn(ascii_t& data){
 }
 
 
-void BeaconCoreServer::listen(bool print){
+void BeaconCoreServer::listen(bool verbose){
     // setup multicast
     BCSocket ss(port);
     ss.bind();
 
     // setup printing loop in another thread
-    if (print)
+    if (verbose){
+        printf("===============================\n");
+        printf("   Starting Print Loop\n");
+        printf("===============================\n");
         prnt = thread(&BeaconCoreServer::printLoop, this);
+    }
     else
         this->print();
 
@@ -141,13 +145,14 @@ void BeaconCoreServer::listen(bool print){
             }
         }
     }
+    if(verbose) prnt.join();
 }
 
 void BeaconCoreServer::printLoop(){
     // cout << "printLoop()" << endl;
     while(ok){
-        print();
-        sleep(delay);
+        this->print();
+        gecko::sleep(delay);
     }
 }
 

@@ -22,3 +22,6 @@ foreach(src ${tools})
 
     # install(TARGETS ${name} DESTINATION bin)
 endforeach()
+
+install(TARGETS geckocore DESTINATION bin)
+install(TARGETS host uname version DESTINATION bin)

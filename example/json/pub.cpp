@@ -3,10 +3,9 @@
 
 #include <gecko/gecko.hpp>
 #include <gecko/msgpack/msgs.hpp>
-#include <gecko/geckocpp.hpp>
+// #include <gecko/geckocpp.hpp>
 
 using namespace std;
-// using namespace gecko;
 
 
 int main(int argc, char *argv[]){

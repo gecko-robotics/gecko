@@ -28,3 +28,12 @@ target_include_directories(marko
 #
 # add_executable(reply reply.cpp)
 # target_link_libraries(reply ${PROJECT_NAME})
+
+install(
+    DIRECTORY lib/include/
+    DESTINATION include/gecko/marko
+)
+install(
+    TARGETS marko
+    DESTINATION lib
+)

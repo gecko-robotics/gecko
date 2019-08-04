@@ -116,7 +116,7 @@ add_subdirectory(example/simple)
 # include(cmake/package.cmake)
 
 #=====================================================================
-if(0)
+if(1)
     # Local Install for Testing/Dev --------------------------------------
     set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
     install(TARGETS ${PROJECT_NAME} DESTINATION lib)
@@ -145,12 +145,12 @@ if(0)
     )
 
     # Marko ---------------------------------------------------------------
-    install(
-        DIRECTORY extlibs/marko/lib/include/
-        DESTINATION include
-    )
-    install(
-        TARGETS marko
-        DESTINATION lib
-    )
+    # install(
+    #     DIRECTORY extlibs/marko/lib/include/
+    #     DESTINATION include
+    # )
+    # install(
+    #     TARGETS extlibs/marko/marko
+    #     DESTINATION lib
+    # )
 endif()
