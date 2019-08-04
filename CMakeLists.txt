@@ -47,15 +47,15 @@ endif()
 find_package(PkgConfig)
 
 # Json ------------------------------------------------------------
-include_directories(extlibs/nlohmann-json/include)
+# include_directories(extlibs/nlohmann-json/include)
 
 # Threads ---------------------------------------------------------
 include(cmake/threads.cmake)
 
 # Marko -----------------------------------------------------------
-include_directories(extlibs/marko/lib/include)
+# include_directories(extlibs/marko/lib/include)
 # link_directories(extlibs/marko/build)
-list(APPEND ALL_LIBS "marko")
+# list(APPEND ALL_LIBS "marko")
 add_subdirectory(extlibs/marko)
 
 # ZeroMQ ----------------------------------------------------------
@@ -74,7 +74,18 @@ include(cmake/zmq.cmake)
 file(GLOB SOURCES src/*.cpp)
 include_directories(src)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${ALL_LIBS})
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        ${ALL_LIBS}
+        marko
+)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        # extlibs/marko/lib/include
+        extlibs/nlohmann-json/include
+        extlibs/cppzmq
+)
+
 list(APPEND ALL_LIBS ${PROJECT_NAME})
 
 # Build Gecko-MsgPack ----------------------------------------------
@@ -93,6 +104,13 @@ add_subdirectory(tools)
 # Tests --------------------------------------------------------------
 # enable_testing()
 add_subdirectory(gtests)
+
+# Examples -----------------------------------------------------------
+add_subdirectory(example/core)
+add_subdirectory(example/json)
+add_subdirectory(example/node)
+# add_subdirectory(example/opencv)
+add_subdirectory(example/simple)
 
 # Package Generator --------------------------------------------------
 # include(cmake/package.cmake)

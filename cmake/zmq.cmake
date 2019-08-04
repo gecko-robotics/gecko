@@ -12,7 +12,7 @@ if(libzmq_FOUND)
 
     # ZeroMQ CPP ------------------------------------------------------
     # git submodule add https://github.com/zeromq/cppzmq
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/../extlibs/cppzmq)
+    # include_directories(${CMAKE_CURRENT_LIST_DIR}/../extlibs/cppzmq)
     # include_directories(/usr/include)
     # message("oo> ${CMAKE_CURRENT_LIST_DIR}")
 else()
