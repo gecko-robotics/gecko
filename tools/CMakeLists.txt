@@ -1,7 +1,7 @@
 message(STATUS "Gecko Tools ----------------------")
 list(APPEND tools
-    logserver/gecko-logserver.cpp
-    topic/geckotopic.cpp
+    # logserver/gecko-logserver.cpp
+    # topic/geckotopic.cpp
     # bag/gecko-bag.cpp
     core/geckocore.cpp
     version/version.cpp
@@ -25,3 +25,4 @@ endforeach()
 
 install(TARGETS geckocore DESTINATION bin)
 install(TARGETS gecko-uname DESTINATION bin)
+# install(TARGETS gecko-ping DESTINATION bin)
