@@ -16,8 +16,12 @@
 file(GLOB SOURCES lib/*.cpp)
 
 add_library(marko SHARED ${SOURCES})
+target_include_directories(marko
+    PUBLIC
+        lib/include
+)
 
-include_directories(lib/include)
+# include_directories(lib/include)
 
 # add_executable(request request.cpp)
 # target_link_libraries(request ${PROJECT_NAME})
