@@ -13,7 +13,10 @@ My robotic framework
 - Publish/subscriber and request/reply architecture
 - Multicast to find nodes
 
-## Building
+# Building
+
+To build locally, do the following to get this repo and the submodules
+for needed libraries:
 
 ```
 git clone --recursive https://github.com/gecko-robotics/gecko.git
@@ -385,6 +388,8 @@ sub bye ...
 - [ ] Local nodes only, show performance ... or figure how to handle remote nodes
 - [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
 - [ ] Remote nodes, investigate ping, return performance info (core -> node)
+- [ ] Organize the library better, the header files are a mess
+- [ ] Create a debian package for linux
 
 Robot stuff
 - [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/
