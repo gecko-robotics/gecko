@@ -6,8 +6,8 @@ list(APPEND tools
     core/geckocore.cpp
     version/version.cpp
     version/host.cpp
-    version/uname.cpp
-    # ping-test/recv.cpp
+    version/gecko-uname.cpp
+    ping-test/gecko-ping.cpp
     # ping-test/send.cpp
 )
 
@@ -24,4 +24,4 @@ foreach(src ${tools})
 endforeach()
 
 install(TARGETS geckocore DESTINATION bin)
-install(TARGETS host uname version DESTINATION bin)
+install(TARGETS gecko-uname DESTINATION bin)

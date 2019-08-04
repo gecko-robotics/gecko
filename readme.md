@@ -395,6 +395,7 @@ sub bye ...
 - [ ] Local nodes only, show performance ... or figure how to handle remote nodes
 - [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
 - [ ] Remote nodes, investigate ping, return performance info (core -> node)
+- [ ] Ping tool: all geckocores respond with info about themselves
 
 Robot stuff
 - [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/

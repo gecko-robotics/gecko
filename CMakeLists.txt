@@ -113,7 +113,7 @@ add_subdirectory(example/node)
 add_subdirectory(example/simple)
 
 # Package Generator --------------------------------------------------
-# include(cmake/package.cmake)
+include(cmake/package.cmake)
 
 #=====================================================================
 if(1)
