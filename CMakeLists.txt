@@ -116,40 +116,41 @@ add_subdirectory(example/simple)
 # include(cmake/package.cmake)
 
 #=====================================================================
+if(0)
+    # Local Install for Testing/Dev --------------------------------------
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
+    install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
-# Local Install for Testing/Dev --------------------------------------
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+    file(GLOB HEADERS src/gecko/*.hpp)
+    install(FILES ${HEADERS} DESTINATION include/gecko)
 
-file(GLOB HEADERS src/gecko/*.hpp)
-install(FILES ${HEADERS} DESTINATION include/gecko)
+    # CppZmq -----------------------------------------------------------
+    install(
+        FILES extlibs/cppzmq/zmq.hpp extlibs/cppzmq/zmq_addon.hpp
+        DESTINATION include/gecko/zmq
+    )
 
-# CppZmq -----------------------------------------------------------
-install(
-    FILES extlibs/cppzmq/zmq.hpp extlibs/cppzmq/zmq_addon.hpp
-    DESTINATION include/gecko/zmq
-)
+    # MsgPack-Gecko -----------------------------------------------------
+    if(BUILD_MSGPACK)
+        file(GLOB HEADERS extlibs/gecko-msgpack/gecko/msgpack/*.hpp)
+        install(FILES ${HEADERS} DESTINATION include/gecko/msgpack)
+    endif()
 
-# MsgPack-Gecko -----------------------------------------------------
-if(BUILD_MSGPACK)
-    file(GLOB HEADERS extlibs/gecko-msgpack/gecko/msgpack/*.hpp)
-    install(FILES ${HEADERS} DESTINATION include/gecko/msgpack)
+    # Json ---------------------------------------------------------------
+    # file(GLOB_RECURSE HEADERS extlibs/nlohmann-json/include/*)
+    # install(FILES ${HEADERS} DESTINATION include/gecko/json)
+    install(
+        DIRECTORY extlibs/nlohmann-json/include/
+        DESTINATION include/gecko/json
+    )
+
+    # Marko ---------------------------------------------------------------
+    install(
+        DIRECTORY extlibs/marko/lib/include/
+        DESTINATION include
+    )
+    install(
+        TARGETS marko
+        DESTINATION lib
+    )
 endif()
-
-# Json ---------------------------------------------------------------
-# file(GLOB_RECURSE HEADERS extlibs/nlohmann-json/include/*)
-# install(FILES ${HEADERS} DESTINATION include/gecko/json)
-install(
-    DIRECTORY extlibs/nlohmann-json/include/
-    DESTINATION include/gecko/json
-)
-
-# Marko ---------------------------------------------------------------
-install(
-    DIRECTORY extlibs/marko/lib/include/
-    DESTINATION include
-)
-install(
-    TARGETS marko
-    DESTINATION lib
-)

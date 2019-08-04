@@ -12,8 +12,18 @@ using namespace std;
 int main(int argc, char *argv[]){
     gecko::init();
 
+    // for testing, I am going to create the data file here so I don't
+    // have to find it later when I read the data file
+    //BONUS: I am checking both read/write
+    json j = {
+        {"topic a", {"localhost", 9000}},
+        {"topic b", {"localhost", 9001}}
+    };
+
+    writeJson("robot.json", j);
+
     json dict;
-    readJson("../robot.json", dict);
+    readJson("robot.json", dict);
 
     cout << dict << endl;
 

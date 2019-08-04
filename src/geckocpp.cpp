@@ -193,7 +193,7 @@ void init(){
 
     printf("gecko --------------------------\n");
     printf(" singleton initialized: %s\n", global_gecko.initialized ? "true" : "false");
-    printf(" address: %d\n", &global_gecko);
+    printf(" address: %p\n", &global_gecko);
     printf(" %s [%s]\n", global_gecko.host_name.c_str(), global_gecko.host_addr.c_str());
     // printf(" multicast: %s:%d\n", mc_addr.c_str(), mc_port);
     printf(" broadcast port: %d\n", global_gecko.mc_port);
