@@ -17,8 +17,6 @@ TEST(gecko, init) {
     gecko::init();
     gecko::set_broadcast(9999);
     EXPECT_TRUE(gecko::get_broadcast() == 9999);
-
-    gecko::hello();
 }
 
 
@@ -35,8 +33,7 @@ void simple(int i){
 }
 
 TEST(gecko, singleton) {
-    // gecko::init();
-    // EXPECT_TRUE(gecko::get_broadcast() == 11311);
+    // This checks the singleton address is the same in different threads.
 
     std::thread t1(simple, 1);
     std::thread t2(simple, 2);
