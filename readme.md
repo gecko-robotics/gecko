@@ -24,49 +24,39 @@ cd build
 cmake ..
 ```
 
-## ZMQ
-
-### cppzmq
+## ZeroMQ [`cppzmq`]
 
 I use a high level C++ abstractin of the lower level zmq to build gecko.
 This contains a submodule of the git repo for cppzmq and requires the following
 command to set it up:
 
-### macOS
+- macOS: `brew install zeromq`
+- linux: `sudo apt install libzmq3-dev`
 
-```
-brew install zeromq
-```
-
-### Linux (Ubuntu)
+## MsgPack
 
 The `apt` package is old, so to use the current one and compile
 it for C++17 and install it to `~/.local` (to not polute my system
 libraries), I do:
 
-```
-git clone https://github.com/msgpack/msgpack-c.git
-cd msgpack-c
-mkdir build
-cd build
-cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=/home/kevin/.local ..
-make install
-```
+- linux: 
+    ```
+    git clone https://github.com/msgpack/msgpack-c.git
+    cd msgpack-c
+    mkdir build
+    cd build
+    cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=/home/kevin/.local ..
+    make install
+    ```
+- macOS: `brew install msgpack`
 
-### libzmq
-
-```
-sudo apt install libzmq3-dev
-```
-
-### boost
+## Boost
 
 I generally hate boost because it is a pain to work with. Right now you don't
 need it.
 
-```
-sudo apt install libboost-dev
-```
+- macOS: `brew install boost`
+- linux: `sudo apt install libboost-dev`
 
 
 # Gecko C++ API
