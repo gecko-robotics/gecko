@@ -18,8 +18,6 @@ void Publisher::publish(zmq::message_t& msg){
 
 ///////////////////////////////////////////////////
 
-// Subscriber::Subscriber(const string& topic): zmqBase(ZMQ_SUB){}
-
 Subscriber::Subscriber(): zmqBase(ZMQ_SUB){}
 
 
@@ -37,5 +35,6 @@ zmq::message_t Subscriber::recv(zmq::recv_flags flags){
     size_t rr = sock.recv(msg, flags).value_or(-1);
     // zmq::detail::recv_result_t r = sock.recv(&msg, zmq::recv_flags::none); //.value_or(std::nullopt);
     // sock.recv(msg, zmq::recv_flags::none);
-    return msg;
+    // if (rr == -1) return {};
+    return std::move(msg);
 }
