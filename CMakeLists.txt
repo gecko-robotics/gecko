@@ -113,6 +113,10 @@ list(APPEND ALL_LIBS ${PROJECT_NAME})
 # Build tools -------------------------------------------------------
 add_subdirectory(tools)
 
+# Gecko MsgPack ------------------------------------------------------
+add_subdirectory(extlibs/gecko-msgpack)
+include_directories(extlibs/gecko-msgpack)
+
 # Tests --------------------------------------------------------------
 # enable_testing()
 add_subdirectory(gtests)
