@@ -26,28 +26,49 @@ if(GECKO_VERBOSE)
     set(CMAKE_RULE_MESSAGES OFF)
 endif()
 
+# gecko.cmake ----------------------------------------------------
+# set(WS "${PROJECT_SOURCE_DIR}/gecko_workspace.txt")
+set(GECKO_BASE_PATH "/opt/gecko")
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+else()
+    message(STATUS ">> Setting install base path: ${GECKO_BASE_PATH}")
+    SET(CMAKE_INSTALL_PREFIX ${GECKO_BASE_PATH})
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+set(GECKO_BIN     "${GECKO_BASE_PATH}/bin")
+set(GECKO_LIB     "${GECKO_BASE_PATH}/lib")
+set(GECKO_CMAKE   "${GECKO_BASE_PATH}/lib/cmake")
+set(GECKO_INCLUDE "${GECKO_BASE_PATH}/include/gecko")
+
+# ----------------------------------------------------------------
+
 # set path for FindXXX.cmake
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND ALL_LIBS "")
+
+include_directories(/opt/gecko/include)
+link_directories(/opt/gecko/lib)
+set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake")
+# set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake;/opt/gecko/share/cmake")
 
 # Add local -----------------------------------------------------
 # include_directories(/usr/local/include)
 # link_directories(/usr/local/lib)
 
-if (NOT APPLE)
-#     set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
-#     include_directories($ENV{HOME}/.local/include)
-#     link_directories($ENV{HOME}/.local/lib)
-else()
-    include_directories(/usr/local/include)
-    link_directories(/usr/local/lib)
-endif()
+# if (NOT APPLE)
+# #     set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
+# #     include_directories($ENV{HOME}/.local/include)
+# #     link_directories($ENV{HOME}/.local/lib)
+# else()
+#     include_directories(/usr/local/include)
+#     link_directories(/usr/local/lib)
+# endif()
 
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
 # Json ------------------------------------------------------------
 # include_directories(extlibs/nlohmann-json/include)
+find_package(nlohmann_json REQUIRED)
 
 # Threads ---------------------------------------------------------
 include(cmake/threads.cmake)
@@ -60,6 +81,10 @@ add_subdirectory(extlibs/marko)
 
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
+find_package(cppzmq REQUIRED)
+if(cppzmq_FOUND)
+    message(STATUS ">> cppZMQ found: ${cppzmq_VERSION}")
+endif()
 
 # git submodule add https://github.com/zeromq/cppzmq.git
 # turn this on with cmake -DBUILD_CXXOPTS=ON
@@ -82,8 +107,10 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         # extlibs/marko/lib/include
-        extlibs/nlohmann-json/include
-        extlibs/cppzmq
+        # extlibs/nlohmann-json/include
+        # /opt/gecko/include/cppzmq
+        nlohmann_json::nlohmann_json
+        cppzmq
 )
 
 list(APPEND ALL_LIBS ${PROJECT_NAME})
@@ -91,11 +118,11 @@ list(APPEND ALL_LIBS ${PROJECT_NAME})
 # Build Gecko-MsgPack ----------------------------------------------
 # git submodule add git@github.com:gecko-robotics/gecko-msgpack.git
 # turn this on with cmake -DBUILD_MSGPACK=ON
-option(BUILD_MSGPACK "Build the message pack messages" ON)
-if(BUILD_MSGPACK)
-    include(cmake/msgpack.cmake)
-    add_subdirectory(extlibs/gecko-msgpack)
-endif(BUILD_MSGPACK)
+# option(BUILD_MSGPACK "Build the message pack messages" ON)
+# if(BUILD_MSGPACK)
+#     include(cmake/msgpack.cmake)
+#     add_subdirectory(extlibs/gecko-msgpack)
+# endif(BUILD_MSGPACK)
 
 
 # Build tools -------------------------------------------------------
@@ -113,36 +140,50 @@ add_subdirectory(example/node)
 add_subdirectory(example/simple)
 
 # Package Generator --------------------------------------------------
-include(cmake/package.cmake)
+# include(cmake/package.cmake)
 
 #=====================================================================
 if(1)
+    # this doesn't seem to execute in order
+    # install(CODE "execute_process(COMMAND ${PROJECT_SOURCE_DIR}/install_setup.sh ${GECKO_BASE_PATH})")
+
     # Local Install for Testing/Dev --------------------------------------
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
-    install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-
-    file(GLOB HEADERS src/gecko/*.hpp)
-    install(FILES ${HEADERS} DESTINATION include/gecko)
-
-    # CppZmq -----------------------------------------------------------
-    install(
-        FILES extlibs/cppzmq/zmq.hpp extlibs/cppzmq/zmq_addon.hpp
-        DESTINATION include/gecko/zmq
+    # set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install)
+    # install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+    install(TARGETS ${PROJECT_NAME}
+      ARCHIVE DESTINATION ${GECKO_LIB}  # static libraries
+      LIBRARY DESTINATION ${GECKO_LIB}  # shared libraries
+      RUNTIME DESTINATION ${GECKO_BIN}  # executables
     )
 
-    # MsgPack-Gecko -----------------------------------------------------
-    if(BUILD_MSGPACK)
-        file(GLOB HEADERS extlibs/gecko-msgpack/gecko/msgpack/*.hpp)
-        install(FILES ${HEADERS} DESTINATION include/gecko/msgpack)
-    endif()
-
-    # Json ---------------------------------------------------------------
-    # file(GLOB_RECURSE HEADERS extlibs/nlohmann-json/include/*)
-    # install(FILES ${HEADERS} DESTINATION include/gecko/json)
-    install(
-        DIRECTORY extlibs/nlohmann-json/include/
-        DESTINATION include/gecko/json
+    install(DIRECTORY src/${PROJECT_NAME}/
+      DESTINATION ${GECKO_INCLUDE}
+      FILES_MATCHING PATTERN "*.hpp"
+      PATTERN ".git" EXCLUDE
     )
+
+    # file(GLOB HEADERS src/gecko/*.hpp)
+    # install(FILES ${HEADERS} DESTINATION include/gecko)
+    #
+    # # CppZmq -----------------------------------------------------------
+    # install(
+    #     FILES extlibs/cppzmq/zmq.hpp extlibs/cppzmq/zmq_addon.hpp
+    #     DESTINATION include/gecko/zmq
+    # )
+    #
+    # # MsgPack-Gecko -----------------------------------------------------
+    # if(BUILD_MSGPACK)
+    #     file(GLOB HEADERS extlibs/gecko-msgpack/gecko/msgpack/*.hpp)
+    #     install(FILES ${HEADERS} DESTINATION include/gecko/msgpack)
+    # endif()
+    #
+    # # Json ---------------------------------------------------------------
+    # # file(GLOB_RECURSE HEADERS extlibs/nlohmann-json/include/*)
+    # # install(FILES ${HEADERS} DESTINATION include/gecko/json)
+    # install(
+    #     DIRECTORY extlibs/nlohmann-json/include/
+    #     DESTINATION include/gecko/json
+    # )
 
     # Marko ---------------------------------------------------------------
     # install(
