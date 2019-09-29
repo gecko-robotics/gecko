@@ -38,5 +38,8 @@ make install
 cd ../..
 # rm -fr cppzmq
 
+# OpenCV --------------------------------------------------------------
+echo ">> TODO: setup opencv"
+
 cd ..
 # rm -fr tmp

@@ -47,21 +47,8 @@ list(APPEND ALL_LIBS "")
 
 include_directories(/opt/gecko/include)
 link_directories(/opt/gecko/lib)
-set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake")
-# set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake;/opt/gecko/share/cmake")
-
-# Add local -----------------------------------------------------
-# include_directories(/usr/local/include)
-# link_directories(/usr/local/lib)
-
-# if (NOT APPLE)
-# #     set(msgpack_DIR $ENV{HOME}/.local/lib/cmake/msgpack)
-# #     include_directories($ENV{HOME}/.local/include)
-# #     link_directories($ENV{HOME}/.local/lib)
-# else()
-#     include_directories(/usr/local/include)
-#     link_directories(/usr/local/lib)
-# endif()
+# set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake")
+set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake;/opt/gecko/share/cmake")
 
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
@@ -69,6 +56,9 @@ find_package(PkgConfig)
 # Json ------------------------------------------------------------
 # include_directories(extlibs/nlohmann-json/include)
 find_package(nlohmann_json REQUIRED)
+if(nlohmann_json_FOUND)
+    message(STATUS ">> json found: ${nlohmann_json_VERSION}")
+endif()
 
 # Threads ---------------------------------------------------------
 include(cmake/threads.cmake)
@@ -85,15 +75,6 @@ find_package(cppzmq REQUIRED)
 if(cppzmq_FOUND)
     message(STATUS ">> cppZMQ found: ${cppzmq_VERSION}")
 endif()
-
-# git submodule add https://github.com/zeromq/cppzmq.git
-# turn this on with cmake -DBUILD_CXXOPTS=ON
-# option(BUILD_CXXOPTS "Build command line options cxxopts" OFF)
-# if(BUILD_CXXOPTS)
-#     message(STATUS ">> Compiling cxxopts")
-#     include_directories(gecko-msgpack)
-# endif(BUILD_CXXOPTS)
-
 
 # Build Gecko library ----------------------------------------------
 file(GLOB SOURCES src/*.cpp)
