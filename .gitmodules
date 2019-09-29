@@ -1,3 +1,0 @@
-[submodule "extlibs/gecko-msgpack"]
-	path = extlibs/gecko-msgpack
-	url = git@github.com:gecko-robotics/gecko-msgpack.git
