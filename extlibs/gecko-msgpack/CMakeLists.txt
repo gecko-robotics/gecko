@@ -22,8 +22,4 @@ foreach(src ${tools})
 endforeach()
 
 # Examples -----------------------------------------------------------
-# add_subdirectory(example/core)
-# add_subdirectory(example/json)
-# add_subdirectory(example/node)
-# add_subdirectory(example/opencv)
-# add_subdirectory(example/simple)
+add_subdirectory(examples)
