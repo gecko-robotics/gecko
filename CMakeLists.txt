@@ -122,7 +122,7 @@ include_directories(extlibs/gecko-msgpack)
 add_subdirectory(gtests)
 
 # Examples -----------------------------------------------------------
-# add_subdirectory(example/core)
+add_subdirectory(examples)
 # add_subdirectory(example/json)
 # add_subdirectory(example/node)
 # add_subdirectory(example/opencv)
