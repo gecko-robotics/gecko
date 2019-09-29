@@ -29,11 +29,11 @@ endif()
 # gecko.cmake ----------------------------------------------------
 # set(WS "${PROJECT_SOURCE_DIR}/gecko_workspace.txt")
 set(GECKO_BASE_PATH "/opt/gecko")
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-else()
-    message(STATUS ">> Setting install base path: ${GECKO_BASE_PATH}")
-    SET(CMAKE_INSTALL_PREFIX ${GECKO_BASE_PATH})
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+# IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+# else()
+message(STATUS ">> Setting install base path: ${GECKO_BASE_PATH}")
+set(CMAKE_INSTALL_PREFIX ${GECKO_BASE_PATH})
+# ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 set(GECKO_BIN     "${GECKO_BASE_PATH}/bin")
 set(GECKO_LIB     "${GECKO_BASE_PATH}/lib")
 set(GECKO_CMAKE   "${GECKO_BASE_PATH}/lib/cmake")
@@ -47,7 +47,8 @@ list(APPEND ALL_LIBS "")
 
 include_directories(/opt/gecko/include)
 link_directories(/opt/gecko/lib)
-# set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake")
+link_directories(/usr/local/lib)
+
 set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake;/opt/gecko/share/cmake")
 
 # Load in pkg-config support --------------------------------------
@@ -77,6 +78,8 @@ if(cppzmq_FOUND)
 endif()
 
 # Build Gecko library ----------------------------------------------
+message(STATUS ">> libs found: ${ALL_LIBS}")
+
 file(GLOB SOURCES src/*.cpp)
 include_directories(src)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
@@ -95,6 +98,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 list(APPEND ALL_LIBS ${PROJECT_NAME})
+# add_subdirectory(extlibs/gecko-msgpack)
 
 # Build Gecko-MsgPack ----------------------------------------------
 # git submodule add git@github.com:gecko-robotics/gecko-msgpack.git
@@ -114,11 +118,11 @@ add_subdirectory(tools)
 add_subdirectory(gtests)
 
 # Examples -----------------------------------------------------------
-add_subdirectory(example/core)
-add_subdirectory(example/json)
-add_subdirectory(example/node)
+# add_subdirectory(example/core)
+# add_subdirectory(example/json)
+# add_subdirectory(example/node)
 # add_subdirectory(example/opencv)
-add_subdirectory(example/simple)
+# add_subdirectory(example/simple)
 
 # Package Generator --------------------------------------------------
 # include(cmake/package.cmake)

@@ -5,8 +5,8 @@ cd tmp
 
 DIR="/opt/gecko"
 
-sudo mkdir ${DIR}
-sudo chown -R ${USER}:${USER} ${DIR}
+# sudo mkdir ${DIR}
+# sudo chown -R ${USER} ${DIR}
 
 # MsgPack ----------------------------------------------------------
 echo ">> Installing MsgPack in ${DIR}"

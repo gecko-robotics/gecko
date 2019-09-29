@@ -68,7 +68,8 @@
 
 add_executable(json-pub pub.cpp)
 # target_link_libraries(pub ${ALL_LIBS})
-target_link_libraries(json-pub gecko zmq)
+# target_link_libraries(json-pub gecko zmq)
+target_link_libraries(json-pub ${ALL_LIBS})
 
 # add_executable(sub sub.cpp)
 # target_link_libraries(sub ${ALL_LIBS})
