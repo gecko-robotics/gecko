@@ -46,24 +46,29 @@ use a `key` (ex: `dalek`, `local`, `bob`, `whatever`) that only that core will
 respond too. You can thus make it robot centric, or whatever you want centric.
 
 ```
-multiple nodes can connect to endpt
-connect: key|topic|pid
-=> conn: key|topic|endpt|ok
+Connect: multiple nodes can connect to endpt
+node -> core: key|topic|pid
+core -> node: key|topic|endpt|ok
 
-only one node can bind to an endpt
-bind: key|topic|pid|endpt
-=> bind: key|topic|endpt|ok
+Bind: only one node can bind to an endpt
+node -> core: key|topic|pid|endpt
+core -> node: key|topic|endpt|ok
 ```
 
 # Components
 
-| Component | C++ | Python | Nodejs |
-|-----------|-----|--------|--------|
-| tools     |     | gecko  |        |
-| IPC       | cppzmq | zmq | |
-| serialization | cmsgpack | cppzmq | |
+| Component | C++    | Python | Nodejs |
+|-----------|--------|--------|--------|
+| tools     |        | gecko  |        |
+| IPC       | cppzmq | zmq    |        |
+| serialization | cmsgpack | cppzmq |  |
+| visualization |    |        | gviz   |
 
 ## Tools
 
+Like `ros2`, `gecko` is a bunch of tools written in python:
+
+- `gecko core run|ping`
+- `gecko multicast send|receive`
 - `gecko bag play|record filename --loop`
 - `gecko topic echo|bw|pub topic message`
