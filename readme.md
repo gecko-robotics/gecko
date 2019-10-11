@@ -24,7 +24,7 @@ on macOS and various linux systems
 
 # Architecture
 
-![](pics/multiprocess-2.png)
+![](docs/multiprocess-4.png)
 
 - GeckoCore is a hub that tracks what computer publishes what topic and prints
 node cpu/memory usage
