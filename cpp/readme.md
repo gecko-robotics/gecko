@@ -51,23 +51,6 @@ See the `examples` folder and `extlibs/gecko-msgpack/examples` folder.
 
 # Gecko C++ API
 
-## Multicast Messages
-
-Multicast is used to talk with `geckocore` and pass information between. The
-advantage is you do not have to know the IP/Port address of a given core. You
-use a `key` (ex: `dalek`, `local`, `bob`, `whatever`) that only that core will
-respond too. You can thus make it robot centric, or whatever you want centric.
-
-```
-multiple nodes can connect to endpt
-connect: key|topic|pid
-=> conn: key|topic|endpt|ok
-
-only one node can bind to an endpt
-bind: key|topic|pid|endpt
-=> bind: key|topic|endpt|ok
-```
-
 ## `gecko`
 
 Many of these ideas are pulled from ROS
