@@ -1,21 +1,25 @@
-# Gecko
+# :lizard: Gecko
+
+[![License](https://img.shields.io/pypi/l/pygecko.svg)](https://pypi.python.org/pypi/pygecko/)
 
 ## My robot software.
 
-- Doesn't use [ROS](http://ros.org), ROS is a pain to install and maintain
+- Doesn't use [ROS](http://ros.org), ROS and ROS2 is a pain to install and maintain
 on macOS and various linux systems
     - Uses some of the same ideas, constructs, architecture ideas, APIs but
     not strictly adhering to them
+    - ROS tries to be too much
+        - `catkin`/`colcon` are crap ... simple cmake is better
+        - do not need to monkey with `env`
 - Uses [Zero MQ](http://http://zeromq.org/) as the inter-process communication
-(uses both TCP and UDS) instead of RPC-XML
+(uses both TCP and UDS) instead of RPC-XML or DDS
     - looked at Google's protobuf, but was more complex than I needed
     - using [`msgpack`](https://msgpack.org/index.html) to serialize data currently,
     but could be changed to something different  
-    - instead of `roscore` use `geckocore.py` as the message hub
+    - instead of `ros2` use `gecko.py core` as the message hub
         - produces performance data (see below)
-    - instead of `roslaunch` use `geckolaunch.py`
 - `json` - config and launch files
-- All of this runs on [Raspberry Pi 3](http://www.raspberrypi.org)
+- All of this runs on [Raspberry Pi 3](http://www.raspberrypi.org) with Raspbian
     - Also runs on macOS (UNIX)
 
 # Architecture
@@ -50,3 +54,16 @@ only one node can bind to an endpt
 bind: key|topic|pid|endpt
 => bind: key|topic|endpt|ok
 ```
+
+# Components
+
+| Component | C++ | Python | Nodejs |
+|-----------|-----|--------|--------|
+| tools     |     | gecko  |        |
+| IPC       | cppzmq | zmq | |
+| serialization | cmsgpack | cppzmq | |
+
+## Tools
+
+- `gecko bag play|record filename --loop`
+- `gecko topic echo|bw|pub topic message`
