@@ -30,7 +30,8 @@ class BeaconBase(object):
     <128 Restricted to the same continent.
     <255 Unrestricted in scope. Global.
     """
-    mcast_addr = '224.3.29.110'
+    # mcast_addr = '224.3.29.110'
+    mcast_addr = '224.0.0.1'
     mcast_port = 11311
     timeout = 2
     ttl = 1
@@ -62,7 +63,7 @@ class BeaconCoreServer(BeaconBase):
                 self.mcast_port = addr[1]
 
         # print performance to commandline
-        self.print = print
+        # self.print = print
 
         # setup service socket
         # allow multiple connections
@@ -84,8 +85,9 @@ class BeaconCoreServer(BeaconBase):
 
     def printLoop(self):
         while not self.exit:
-            if self.print:
+            if True:
                 self.print()
+                # print("hi")
             time.sleep(3)
 
     def start(self):

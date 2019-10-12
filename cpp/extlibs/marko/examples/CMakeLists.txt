@@ -17,6 +17,14 @@ message(STATUS "-------------------------------------")
 
 # add_library(marko SHARED ${SOURCES})
 
+file(GLOB SOURCES ../lib/*.cpp)
+
+add_library(marko SHARED ${SOURCES})
+target_include_directories(marko
+    PUBLIC
+        ../lib/include
+)
+
 include_directories(../lib/include)
 link_directories(build)
 

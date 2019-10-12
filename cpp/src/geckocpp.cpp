@@ -1,18 +1,18 @@
 
 #include <gecko/geckocpp.hpp>
-#include "gecko/log.hpp"
-#include "gecko/signals.hpp"
+#include <gecko/log.hpp>
+#include <gecko/signals.hpp>
 #include <gecko/defaults.hpp>
 #include <gecko/exceptions.hpp>
-#include <thread>
-#include <mutex>
-#include <pwd.h>        // geteuid,getpwuid
-#include <sys/types.h>  // umask
-#include <sys/stat.h>   // umask
-#include <unistd.h>     // getpid
-#include <iostream>
-#include <atomic>
-#include <exception>
+// #include <thread>
+// #include <mutex>
+// #include <pwd.h>        // geteuid,getpwuid
+// #include <sys/types.h>  // umask
+// #include <sys/stat.h>   // umask
+// #include <unistd.h>     // getpid
+// #include <iostream>
+// #include <atomic>
+// #include <exception>
 
 
 using namespace std;
@@ -69,15 +69,15 @@ Hobo& global_gecko = gecko::Hobo::getInstance();
 
 namespace gecko {
 
-static bool initialized = false;
-mutex g_mutex;
-static string host_name;
-static string host_addr;
+// static bool initialized = false;
+// mutex g_mutex;
+// static string host_name;
+// static string host_addr;
 // static string mc_addr = {"224.3.29.110"};
 // static int mc_port = 11311;
 // Time time;
 Logger logger;
-static SigCapture sig; // this should be in init ... not global activation
+// static SigCapture sig; // this should be in init ... not global activation
 
 //
 // template<typename T, typename EP>
@@ -88,7 +88,7 @@ template<typename T>
 T* binder(string key, string topic, string path, string(*EP)(const string&)){
     // string addr = EP(path).endpoint;
     string addr = EP(path);
-    printf(">> address: %s\n", addr.c_str());
+    printf(">> binder address: %s\n", addr.c_str());
     // if (file.empty()) addr = zmqTCP(host_addr);  // bind to next available port
     // else addr = zmqUDS(file);
     // string addr = zmqTCP(host_addr);  // bind to next available port
@@ -97,6 +97,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     int retry = 5;
 
     BCSocket ss(global_gecko.mc_port);
+    // MCSocket ss(global_gecko.mc_addr, global_gecko.mc_port);
     ss.bind();
 
     printf(">> made socket\n");
@@ -138,7 +139,7 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 template<typename T>
 T* connecter(string key, string topic){
     BCSocket ss(global_gecko.mc_port);
-    // MCSocket(mc_addr, mc_port);
+    // MCSocket ss(global_gecko.mc_addr, global_gecko.mc_port);
     ss.bind();
     int retry = 5;
 

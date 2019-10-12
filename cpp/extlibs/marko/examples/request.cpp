@@ -13,7 +13,7 @@ using namespace std;
 int main(){
 
 #if 0
-    MCSocket sock("224.3.29.110", 11311);
+    MCSocket sock("224.0.0.1", 11311);
     sock.multicastLoop(false);
     sock.timeToLive(1);
 #else
@@ -33,7 +33,7 @@ int main(){
         string s = buffer.pack(vmsg);
         sock.cast(s);
         tie(msg, remote) = sock.recv_nb();
-        cout << "request: " << msg << endl;
+        cout << "request: " << msg << " " << print_addr(remote) << endl;
         sleep(1);
     }
     cout << ">> Done ..." << endl;

@@ -12,7 +12,7 @@ using namespace std;
 int main(){
 
 #if 0
-    MCSocket sock("224.3.29.110", 11311);
+    MCSocket sock("224.0.0.1", 11311);
     sock.multicastLoop(false);
     sock.timeToLive(1);
 #else
@@ -23,7 +23,7 @@ int main(){
     sock.info();
 
     Ascii buffer;
-    vector<string> vmsg = {"hi", "ho"};
+    vector<string> vmsg = {"ho", "hi"};
 
     cout << ">> Listening" << endl;
 
@@ -32,12 +32,16 @@ int main(){
         string msg;
 
         tie(msg, remote) = sock.recv();
+        // if(sock.isEcho(remote)) continue;
+
         ascii_t mm = buffer.unpack(msg);
 
         printf("=> reply got %s from %s:%d\n",
             msg.c_str(),
             inet_ntoa(remote.sin_addr),
             ntohs(remote.sin_port));
+
+        for (const auto& s: mm) cout << s << endl;
 
         // handle echo of message
         if (mm[0] != "hi") {

@@ -39,11 +39,20 @@ int main(int argc, char *argv[]){
     }
     catch(zmq::error_t& e) {
         cout << e.what() << endl;
+        gecko::shutdown();
+        delete p;
         // exit(1);
         return 1;
     }
-    catch(...){
+    catch(exception& e){
         printf("Other error\n");
+        cout << e.what() << endl;
+        gecko::shutdown();
+        cout << "wtf1" << endl;
+        delete p;
+        cout << "wtf2" << endl;
+        // exit(1);
+        cout << "wtf3" << endl;
         return 1;
     }
 
