@@ -19,7 +19,7 @@ To build locally, do the following to get this repo and set things up
 for needed libraries:
 
 ```
-git clone --recursive https://github.com/gecko-robotics/gecko.git
+git clone https://github.com/gecko-robotics/gecko.git
 cd gecko
 ./build_extlibs.sh
 mkdir build
@@ -30,9 +30,7 @@ make
 
 ## ZeroMQ [`cppzmq`]
 
-I use a high level C++ abstractin of the lower level zmq to build gecko.
-This contains a submodule of the git repo for cppzmq and requires the following
-command to set it up:
+I use a high level C++ abstraction of the lower level zmq to build gecko.
 
 - macOS: `brew install zeromq`
 - linux: `sudo apt install libzmq3-dev`

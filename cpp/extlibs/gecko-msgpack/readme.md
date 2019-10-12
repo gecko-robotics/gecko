@@ -17,20 +17,6 @@ The version of `msgpack` that comes with linux is old. Download and install a cu
 brew install msgpack
 ```
 
-## Linux
-
-This will install the message formats into `gecko` in `/usr/local`.
-
-```
-cd gecko
-mkdir build
-cd build
-cmake ..
-make
-make package
-sudo dpkg -i gecko-x.x.x-linux.deb
-```
-
 ## Messages
 
 Message formats are pulled from ROS. There are both common messages and time
@@ -127,15 +113,6 @@ int main(){
     return 0;
 }
 ```
-
-# To Do
-
-- Build message specific tools
-    - echo
-    - bag
-
-- Add more messages
-- Document how to add new messages
 
 # MIT License
 
