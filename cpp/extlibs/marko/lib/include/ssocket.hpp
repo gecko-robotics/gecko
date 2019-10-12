@@ -25,6 +25,7 @@ inline constexpr int NO_ERROR = 0;
 
 // [[deprecated("use SocketError instead")]]
 // __attribute__((deprecated("use SocketError instead")))
+// [[deprecated]]
 struct MulticastError : public std::exception {
     MulticastError(const std::string &s): msg("Multicast Error: " + s) {}
     MulticastError(): msg("Multicast Error") {}

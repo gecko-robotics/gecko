@@ -96,8 +96,8 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
     p->bind(addr);
     int retry = 5;
 
-    BCSocket ss(global_gecko.mc_port);
-    // MCSocket ss(global_gecko.mc_addr, global_gecko.mc_port);
+    // BCSocket ss(global_gecko.mc_port);
+    MCSocket ss(global_gecko.mc_addr, global_gecko.mc_port);
     ss.bind();
 
     printf(">> made socket\n");
@@ -138,8 +138,8 @@ T* binder(string key, string topic, string path, string(*EP)(const string&)){
 
 template<typename T>
 T* connecter(string key, string topic){
-    BCSocket ss(global_gecko.mc_port);
-    // MCSocket ss(global_gecko.mc_addr, global_gecko.mc_port);
+    // BCSocket ss(global_gecko.mc_port);
+    MCSocket ss(global_gecko.mc_addr, global_gecko.mc_port);
     ss.bind();
     int retry = 5;
 

@@ -92,8 +92,8 @@ if __name__ == "__main__":
     elif mode == 'multicast':
         print("multicast")
     elif mode == 'core':
-        # run_core(args['key'])
-        print("core")
+        if args["mode"] == "run": run_core(args['key'])
+        # print("core")
     elif mode == "launch":
         print("launch")
     elif mode == "service":
