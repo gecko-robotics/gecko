@@ -29,6 +29,7 @@ on macOS and various linux systems
 - Programming languages
     - C++17
     - Python 3.7
+    - bash scripts for building, but might move to `zsh` because of macOS
 - GeckoCore is a hub that tracks what computer publishes what topic and prints
 node cpu/memory usage
     - Actually, when gecko processes start up, they tell geckocore their pid
@@ -99,19 +100,6 @@ Like `ros2`, `gecko` is a bunch of tools written in python:
     use the data without gecko
 - `gecko topic echo|bw|pub topic message`
 
-## Linux Packaging with CMake
-
-This will install the message formats into `gecko` in `/usr/local`.
-
-```
-cd gecko
-mkdir build
-cd build
-cmake ..
-make
-make package
-sudo dpkg -i gecko-x.x.x-linux.deb
-```
 
 # MIT License
 

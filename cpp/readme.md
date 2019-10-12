@@ -1,4 +1,4 @@
-# :lizard: Gecko
+# :lizard: Gecko C++
 
 My robotic framework
 
@@ -335,6 +335,20 @@ sub bye ...
 sub bye ...
 sub bye ...
 sub bye ...
+```
+
+# Linux Packaging with CMake
+
+This will install the message formats into `gecko` in `/usr/local`.
+
+```
+cd gecko
+mkdir build
+cd build
+cmake ..
+make
+make package
+sudo dpkg -i gecko-x.x.x-linux.deb
 ```
 
 # ToDo
