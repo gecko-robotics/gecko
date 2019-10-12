@@ -4,6 +4,7 @@ mkdir tmp
 cd tmp
 
 DIR="/opt/gecko"
+# DIR=$(pwd)/extlibs/system
 
 # sudo mkdir ${DIR}
 # sudo chown -R ${USER} ${DIR}

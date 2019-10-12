@@ -7,7 +7,7 @@ list(APPEND tools
     # version/version.cpp
     # version/host.cpp
     # version/gecko-uname.cpp
-    # ping-test/gecko-ping.cpp
+    ping-test/gecko-ping.cpp
     # ping-test/send.cpp
 )
 

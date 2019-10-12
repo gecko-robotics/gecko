@@ -57,12 +57,12 @@ core -> node: key|topic|endpt|ok
 
 # Components
 
-| Component | C++    | Python | Nodejs |
-|-----------|--------|--------|--------|
-| tools     |        | gecko  |        |
-| IPC       | cppzmq | zmq    |        |
-| serialization | cmsgpack | cppzmq |  |
-| visualization |    |        | gviz   |
+| Component     | C++    | Python | Nodejs |
+|---------------|--------|--------|--------|
+| tools         |        | gecko  |        |
+| IPC           | cppzmq | zmq    |        |
+| serialization |msgpackc|msgpack |        |
+| visualization |        |        |        |
 
 ## Tools
 
@@ -71,4 +71,7 @@ Like `ros2`, `gecko` is a bunch of tools written in python:
 - `gecko core run|ping`
 - `gecko multicast send|receive`
 - `gecko bag play|record filename --loop`
+    - bag will use the python library [the-collector]() and store data using
+    `pickle` so any python jupyter notebook or tools can use the data without
+    gecko
 - `gecko topic echo|bw|pub topic message`

@@ -48,12 +48,12 @@ setup(
     ],
     install_requires=[
         'pyyaml',         # config files
-        'psutil',
+        'psutil',         # core performance reporting
         'simplejson',     # config files
         'msgpack',        # efficient message serialization through zmq
         'pyzmq',          # connecting to different processes and computers
         # 'bjoern',         # http server, multiple connections
-        # 'the_collector',  # saving data
+        'the_collector',  # saving data
         'colorama',       # log messages
         'numpy',          # basic image stuff ... remove/optional?
         'build_utils'     # installing and building the library
@@ -69,16 +69,16 @@ setup(
     },
     scripts=[
         'bin/geckocore.py',
-        'bin/pycore.py',
-        'bin/geckolaunch.py',
+        'bin/gecko.py',
+        # 'bin/geckolaunch.py',
         # 'bin/mjpeg_server.py',  # why? use opencvutils instead
         # 'bin/bag_play.py',
         # 'bin/bag_record.py',
         # 'bin/camera_calibrate.py',
         # 'bin/image_view.py',
         # 'bin/service.py',  # fix
-        'bin/gecko_log_display.py',
-        'bin/geckotopic.py',
+        # 'bin/gecko_log_display.py',
+        # 'bin/geckotopic.py',
         'bin/twist_keyboard.py'
         # 'bin/video.py',
         # 'bin/webserver.py'
