@@ -8,20 +8,28 @@
 # https://pymotw.com/2/socket/multicast.html
 #
 import socket
+import select
 import struct
-# import threading
 import time
 import sys
-# import ipaddress  # kjw
-# from pygecko.pycore.ip import GetIP  # dup?
-# from pygecko.pycore.transport import Ascii  # , Json, Pickle  # dup?
-# import os
-# import psutil
-# import multiprocessing as mp
 
 
-class BeaconBase(object):
+class MultiCastError(Exception):
+    pass
+
+
+class MultiCastSocket:
     """
+    Multicast: 224.0.0.0 - 239.255.255.255
+    
+    224.0.0.1 is the all-hosts group. If you ping that group, all multicast
+    capable hosts on the network should answer, as every multicast capable host
+    must join that group at start-up on all it's multicast capable interfaces.
+
+    group: (address, port)
+    timeout: seconds to wait, 0 is blocking
+    echo: 0 disable loopback, 1 enable loopback
+
     https://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
     TTL  Scope
     ----------------------------------------------------------------------
@@ -32,35 +40,24 @@ class BeaconBase(object):
     <128 Restricted to the same continent.
     <255 Unrestricted in scope. Global.
     """
-    # mcast_addr = '224.3.29.110'
-    mcast_addr = '224.0.0.1'
-    mcast_port = 11311
-    timeout = 2
-    ttl = 1
+    sock = None
 
-    def __init__(self, ttl=2):
-        self.group = (self.mcast_addr, self.mcast_port)
+    def __init__(self, ttl=1, group=None, timeout=None, echo=1):
+        if group and len(group) == 2:
+            self.mcast_addr = group[0]
+            self.mcast_port = group[1]
+            self.group = group
+        else:
+            # self.mcast_addr = '224.0.0.1'
+            # self.mcast_port = 11311
+            # self.group = ('224.0.0.1', 11311)
+            raise MultiCastError("invalid group address")
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
         packed_ttl = struct.pack('b', ttl)
         self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_TTL, packed_ttl)
-        self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, 1)
-        # self.key = key
-        # self.host_ip = GetIP().get()
-        # self.pid = mp.current_process().pid
-
-
-class BeaconCoreServer(BeaconBase):
-    def __init__(self, ttl=1, addr=None, print=True, timeout=None):
-        BeaconBase.__init__(self, ttl=ttl)
-
-        if addr:
-            if len(addr) == 2:
-                self.mcast_addr = addr[0]
-                self.mcast_port = addr[1]
-
-        # print performance to commandline
-        # self.print = print
+        self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, echo)
 
         # setup service socket
         # allow multiple connections
@@ -69,6 +66,7 @@ class BeaconCoreServer(BeaconBase):
         try:
             self.sock.bind(('', self.mcast_port))
             self.sock.settimeout(timeout)
+            # self.sock.setblocking(0)
         except OSError as e:
             print("*** {} ***".format(e))
             raise
@@ -77,36 +75,67 @@ class BeaconCoreServer(BeaconBase):
         self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     def __del__(self):
+        if self.sock is None: return
         mreq = struct.pack("=4sl", socket.inet_aton(self.mcast_addr), socket.INADDR_ANY)
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_DROP_MEMBERSHIP, mreq)
         self.sock.close()
+
+    def info(self):
+        print(">> Multicast: {}:{}".format(*self.group))
 
     def sendto(self, msg, address):
         self.sock.sendto(msg.encode("utf-8"), address)
 
     def cast(self, msg):
-        self.sock.sendto(msg.encode("utf-8"), (self.mcast_addr, self.mcast_port))
+        self.sock.sendto(msg.encode("utf-8"), self.group)
 
     def recv(self):
-        return self.sock.recvfrom(128)
+        try:
+            ret = self.sock.recvfrom(128)
+        except socket.timeout:
+            ret = (None, None)
+        return ret
 
+    def recv_nb(self, tout=1):
+        inputs = [self.sock]
+        readable, _, _ = select.select(inputs, [], [], tout)
+        # print("how many:", len(readable))
+        ret = (None, None)
+        for s in readable:
+            if s == self.sock:
+                ret = self.sock.recvfrom(128)
+            else:
+                print("not my sock")
+
+        return ret
+
+
+if len(sys.argv) != 2:
+    print("Usage: ./mc.py message")
 
 msg = sys.argv[1]
-mc = BeaconCoreServer(1)
+mc = MultiCastSocket(group=('224.0.0.1', 11311), ttl=2, timeout=0)
+mc.info()
 
-try:
-    while True:
-        mc.cast(msg)
-        print(">> beacon sent: {}".format(msg))
-        data, address = mc.recv()
+while True:
+    try:
+        if msg != "no": mc.cast(msg)
+        # time.sleep(3)
+        # print(">> beacon sent: {}".format(msg))
+        # data, address = mc.recv()
+        data, address = mc.recv_nb()
+        if data is None:
+            print("timeout")
+            continue
+
         data = data.decode("utf-8")
         if data != msg:
             print(">> {} from {}".format(data, address))
         else:
             print("** echo")
-        time.sleep(1)
-
-except KeyboardInterrupt:
-    print("ctrl-z")
-# except Exception as e:
-#     print("***", e, "***")
+        if msg != "no": time.sleep(3)
+    except KeyboardInterrupt:
+        print("ctrl-z")
+        break
+    # except Exception as e:
+    #     print("***", e, "***")
