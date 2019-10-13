@@ -4,8 +4,9 @@
 # see LICENSE for full details
 ##############################################
 from collections import namedtuple
-from gecko.messages.id import GeckoMsgFlags
+from pygecko.messages.id import GeckoMsgFlags
 
+Log = namedtuple('Log', 'level name text')
 
 class vec_t(namedtuple('vec_t', 'x y z')):
     __slots__ = ()
@@ -29,14 +30,6 @@ class wrench_t(namedtuple('wrench_t', 'force torque')):
     def __new__(cls, f, t):
         cls.id = GeckoMsgFlags.wrench
         return cls.__bases__[0].__new__(cls, f, t)
-
-
-class pose_t(namedtuple('pose_t', 'position orientation')):
-    __slots__ = ()
-
-    def __new__(cls, p, o):
-        cls.id = GeckoMsgFlags.pose
-        return cls.__bases__[0].__new__(cls, p, o)
 
 
 class twist_t(namedtuple('twist_t', 'linear angular')):

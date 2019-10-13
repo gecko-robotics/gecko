@@ -11,8 +11,8 @@ from argparse import RawTextHelpFormatter
 import sys
 import socket
 from pprint import pprint
-from pygecko.pycore.mbeacon import BeaconCoreServer
-from pygecko.pycore.transport import Ascii
+from pygecko.core.core import CoreServer
+from pygecko.core.transport import Ascii
 
 bag_help = """
     bag help
@@ -74,7 +74,7 @@ def run_core(key):
     if key is None:
         key = socket.gethostname().lower().split('.')[0]
 
-    bs = BeaconCoreServer(key=key, handler=Ascii)
+    bs = CoreServer(key=key, handler=Ascii)
     bs.start()
     bs.run()
 

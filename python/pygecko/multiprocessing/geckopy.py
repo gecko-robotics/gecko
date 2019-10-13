@@ -7,19 +7,20 @@
 from pygecko.transport.zmq_sub_pub import Pub, Sub
 # from pygecko.transport.srv import cService, cServiceProxy
 # from pygecko.transport.zmq_req_rep import Req
-from pygecko.transport.helpers import zmqTCP
-from pygecko.transport.helpers import zmqUDS
-from pygecko.transport.helpers import get_ip
+from pygecko.transport.zmq_base import zmqTCP
+from pygecko.transport.zmq_base import zmqUDS
+from pygecko.transport.zmq_base import get_ip
 # from pygecko.gecko_enums import Status
 # from pygecko.gecko_enums import ZmqType
-from pygecko.messages import Log
+from pygecko.messages.std_msgs import Log
 from pygecko.multiprocessing.sig import SignalCatch  # capture signals in processes
+from pygecko.core.transport import Ascii
 from colorama import Fore, Style
 import time
-# import os
+import socket
 import multiprocessing as mp
 
-from pygecko.transport.beacon import BeaconFinder
+from pygecko.core.mcsocket import MultiCastSocket
 
 # Holly crap namespace and pickle use a lot of cpu!
 # zmq hs only 23%, but syncmanager is 77%
@@ -40,6 +41,84 @@ from pygecko.transport.beacon import BeaconFinder
 # | subscribe[19340].............. cpu: 13.7%    mem: 0.10%
 
 g_geckopy = None
+
+# class CoreTalker:
+class BeaconFinder:
+    """
+    Find Services using the magic of multicast
+
+    pid = 123456
+    proc_name = "my-cool-process"
+
+    key = hostname
+    finder = BeaconFinder(key)
+    msg = finder.search(msg)
+    """
+    def __init__(self, key, ttl=2, handler=Ascii):
+        # BeaconBase.__init__(self, key=key, ttl=ttl)
+        self.key = key
+        self.group = ("224.0.0.1", 11311)
+        self.sock = MultiCastSocket(group=self.group, ttl=ttl, timeout=2)
+        self.handler = handler()
+
+    def send(self, msg):
+        """
+        Search for services using multicast sends out a request for services
+        of the specified name and then waits and gathers responses. This sends
+        one mdns ping. As soon as a responce is received, the function returns.
+        """
+        # serviceName = 'GeckoCore'
+        # self.sock.settimeout(self.timeout)
+        # msg = self.handler.dumps((self.key, serviceName, str(pid), processname,))
+        # msg['key'] = self.key
+
+        key = msg[0]
+        if key != self.key:
+            raise Exception("invalid key:", key)
+
+        topic = msg[1]
+
+        msg = self.handler.dumps(msg)
+        # print("msg:", msg)
+        # self.sock.sendto(msg, self.group)
+        self.sock.cast(msg)
+        servicesFound = None
+        time.sleep(0.01)
+        # while True:
+        # try:
+        # data = returned message info
+        # server = ip:port, which is x.x.x.x:9990
+        data, server = self.sock.recv()
+
+        if data is None:
+            return None
+
+        if msg == data:
+            print("send echo:", data, server)
+            return None
+
+        print("beconfinder recv data:", data, server)
+
+        if data:
+            data = self.handler.loads(data)
+
+            if len(data) == 4:
+                # data = self.handler.loads(data.decode("utf-8"))
+                # print("wtf:", data)
+                # print('>> Search:', data, server)
+                if data[3] == "ok" and data[0] == self.key and data[1] == topic:
+                    servicesFound = data
+                else:
+                    print("FAIL:", data)
+                # break
+        # if len(data) == 2:
+        #     servicesFound = (zmqTCP(server[0], data[0]), zmqTCP(server[0], data[1]),)
+        #     break
+        # except socket.timeout:
+        #     print("*** timeout ***")
+        #     break
+        # print(">> search done")
+        return servicesFound
 
 
 class Rate(object):
@@ -181,7 +260,7 @@ def shutdown():
 
 def ok():
     """
-    Returns true if it is time to shutdown.
+    Returns false if it is time to shutdown.
     """
     global g_geckopy
     return not g_geckopy.kill
@@ -223,14 +302,14 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
         # print(p)
         # print(msg)
     else:
-        addr = g_geckopy.proc_ip
-        addr = zmqTCP(addr)
+        # addr = g_geckopy.proc_ip
+        addr = zmqTCP(g_geckopy.proc_ip)
         port = p.bind(addr, queue_size=queue_size, random=True)
         msg = (key, topic, str(pid), zmqTCP(g_geckopy.proc_ip, port))
 
     retry = 5
 
-    for _ in range(retry):
+    for i in range(retry):
         data = bf.send(msg)
         print(">> bind raw:", data)
 
@@ -239,6 +318,7 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
             continue
 
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and (data[3] == "ok"):
+            print("geckopy.Binder SUCCESS", i)
             return p
     return None
 
@@ -264,7 +344,7 @@ def Connector(key, topic, Proto, queue_size=5):
     Creates a publisher that can either connect or bind to an address.
 
     conn -> (key, topic, pid)
-    conn <- (key, topic, endpt) py
+    conn <- (key, topic, endpt, ok) py
     conn <- (key, topic, endpt, ok) cpp
 
     key: geckocore key
@@ -289,10 +369,10 @@ def Connector(key, topic, Proto, queue_size=5):
             continue
 
         # current python [FIXME]
-        if (len(data) == 3) and (data[0] == key) and (data[1] == topic):
-            p = Proto()
-            p.connect(data[2])
-            return p
+        # if (len(data) == 3) and (data[0] == key) and (data[1] == topic):
+        #     p = Proto()
+        #     p.connect(data[2])
+        #     return p
 
         # c++
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and data[3] == "ok":

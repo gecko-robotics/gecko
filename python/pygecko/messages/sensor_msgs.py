@@ -4,7 +4,7 @@
 # see LICENSE for full details
 ##############################################
 from collections import namedtuple
-from gecko.messages.id import GeckoMsgFlags
+from pygecko.messages.id import GeckoMsgFlags
 import time
 
 
@@ -23,6 +23,9 @@ class imu_st(namedtuple('imu_st', 'linear_accel angular_vel magnetic_field times
 
 
 class joystick_st(namedtuple('joystick_st', 'axes buttons type timestamp')):
+    """
+    Joystick: axes buttons type timestamp
+    """
     __slots__ = ()
 
     def __new__(cls, a, b, t, ts=None):
@@ -35,7 +38,7 @@ class joystick_st(namedtuple('joystick_st', 'axes buttons type timestamp')):
 
 class lidar_st(namedtuple('lidar_st', 'data timestamp')):
     """
-    Inertial measurement unit
+    Laser range finder
     """
     __slots__ = ()
 
@@ -95,3 +98,16 @@ except ImportError:
 
         def uncompress(self):
             raise Exception("image_st::uncompress: cv2 not installed")
+
+
+# Services -----------------------------------------------------------
+
+class camera_info_t(namedtuple('camera_info_t', 'size distortion D K R P')):
+    """
+    Camera information
+    """
+    __slots__ = ()
+
+    def __new__(cls, s, d, D, K, R, P):
+        cls.id = GeckoMsgFlags.camera_info
+        return cls.__bases__[0].__new__(cls, s, d, D, K, R, P)

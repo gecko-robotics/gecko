@@ -11,6 +11,7 @@ GeckoMsgFlags = IntFlag(
         'imu':       10,
         'joystick':  11,
         'image':     12,
+        'camera_info': 13,
         'lidar':     20
     }
 )

@@ -4,49 +4,22 @@
 # see LICENSE for full details
 ##############################################
 #
-# https://pymotw.com/2/socket/multicast.html
 #
-import socket
-import struct
 import threading
 import time
-# import ipaddress  # kjw
-from pygecko.pycore.ip import get_ip  # dup?
-from pygecko.pycore.transport import Ascii  # , Json, Pickle  # dup?
-# import os
+from pygecko.core.ip import get_ip
+from pygecko.core.transport import Ascii
+from pygecko.core.mcsocket import MultiCastSocket
+from pygecko.core.mcsocket import MultiCastError
 import psutil
 import multiprocessing as mp
 
 
-class BeaconBase(object):
-    """
-    https://www.tldp.org/HOWTO/Multicast-HOWTO-2.html
-    TTL  Scope
-    ----------------------------------------------------------------------
-       0 Restricted to the same host. Won't be output by any interface.
-       1 Restricted to the same subnet. Won't be forwarded by a router.
-     <32 Restricted to the same site, organization or department.
-     <64 Restricted to the same region.
-    <128 Restricted to the same continent.
-    <255 Unrestricted in scope. Global.
-    """
-    # mcast_addr = '224.3.29.110'
+class CoreServer:
     mcast_addr = '224.0.0.1'
     mcast_port = 11311
     timeout = 2
     ttl = 1
-
-    def __init__(self, key, ttl=1):
-        self.group = (self.mcast_addr, self.mcast_port)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_TTL, ttl)
-        self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, 1)
-        self.key = key
-        self.host_ip = get_ip()
-        self.pid = mp.current_process().pid
-
-
-class BeaconCoreServer(BeaconBase):
     services = {}  # services
     perf = {}
     exit = False
@@ -55,27 +28,41 @@ class BeaconCoreServer(BeaconBase):
     print = True
 
     def __init__(self, key, handler=Ascii, ttl=1, addr=None, print=True):
-        BeaconBase.__init__(self, key=key, ttl=ttl)
 
         if addr is not None:
             if len(addr) == 2:
                 self.mcast_addr = addr[0]
                 self.mcast_port = addr[1]
 
+        # BeaconBase.__init__(self, key=key, ttl=ttl)
+        self.group = (self.mcast_addr, self.mcast_port)
+
+        try:
+            self.sock = MultiCastSocket(group=self.group, ttl=ttl, timeout=1)
+        except MultiCastError as e:
+            print("*** {} ***".format(e))
+            raise e
+        # self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        # self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_TTL, ttl)
+        # self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, 1)
+        self.key = key
+        self.host_ip = get_ip()
+        self.pid = mp.current_process().pid
+
         # print performance to commandline
         # self.print = print
 
         # setup service socket
         # allow multiple connections
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        try:
-            self.sock.bind(('0.0.0.0', self.mcast_port))
-        except OSError as e:
-            print("*** {} ***".format(e))
-            raise
+        # self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # try:
+        #     self.sock.bind(('0.0.0.0', self.mcast_port))
+        # except OSError as e:
+        #     print("*** {} ***".format(e))
+        #     raise
 
-        mreq = struct.pack("=4sl", socket.inet_aton(self.mcast_addr), socket.INADDR_ANY)
-        self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+        # mreq = struct.pack("=4sl", socket.inet_aton(self.mcast_addr), socket.INADDR_ANY)
+        # self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
         # setup server data
         self.handler = handler()  # serialization method
@@ -127,7 +114,7 @@ class BeaconCoreServer(BeaconBase):
                     pids.pop(ps.pid)
                     if bind: self.services.pop(topic)
             except Exception as e:
-                print("***", e)
+                print("*** printProcess: {} ***".format(e))
                 pids.pop(ps.pid)
                 if bind: self.services.pop(topic)
         # except:
@@ -155,16 +142,21 @@ class BeaconCoreServer(BeaconBase):
 
         print(" ")
 
-    def handle_sub(self, data):
+    def handle_conn(self, data):
         # print("handle_sub")
         # print(data)
         # print(self.services.keys())
+        print("handle_conn:", data)
+        print("handle_conn 0:", data[0])
+        print("handle_conn 1:", data[1])
+        print("handle_conn 2:", data[2])
+
         ret = None
         topic = data[1]
         pid = int(data[2])
         if topic in self.services.keys():
             endpt = self.services[topic]
-            ret = (self.key, topic, endpt,)
+            ret = (self.key, topic, endpt, "ok")
             # self.perf[topic] = pid
             # self.subs.append((topic,pid,))
             # self.subs[pid] = topic
@@ -178,7 +170,12 @@ class BeaconCoreServer(BeaconBase):
 
         return ret
 
-    def handle_pub(self, data):
+    def handle_bind(self, data):
+        print("handle_bind:", data)
+        print("handle_bind 0:", data[0])
+        print("handle_bind 1:", data[1])
+        print("handle_bind 2:", data[2])
+        print("handle_bind 3:", data[3])
         topic = data[1]
         pid = int(data[2])
         endpt = data[3]
@@ -193,44 +190,73 @@ class BeaconCoreServer(BeaconBase):
 
         return (self.key, topic, endpt, "ok",)
 
-    def callback(self, data, address):
-        # print(">> Key: {}".format(self.key))
-        # print(">> Address: {}".format(address))
-        # print(">> Data: {} size: {}".format(data, len(data)))
+    # def callback(self, data, address):
+    #     # print(">> Key: {}".format(self.key))
+    #     # print(">> Address: {}".format(address))
+    #     # print(">> Data: {} size: {}".format(data, len(data)))
+    #
+    #     msg = None
+    #
+    #     if self.key == data[0]:
+    #         if len(data) == 3:
+    #             msg = self.handle_conn(data)
+    #         elif len(data) == 4:
+    #             if data[3] != "ok":
+    #                 msg = self.handle_bind(data)
+    #         else:
+    #             print("*** wtf ***")
+    #
+    #     if msg:
+    #         msg  = self.handler.dumps(msg)
+    #         # self.sock.sendto(msg, address)
+    #         self.sock.cast(msg)
+    #     # else:
+    #     #     printf("** Invalid key:", data)
+    #
+    #     # return ret
 
-        ret = None
+    def run(self):  # FIXME: remove
+        self.listen()
 
-        if self.key == data[0]:
-            if len(data) == 3: ret = self.handle_sub(data)
-            elif len(data) == 4: ret = self.handle_pub(data)
-            else: print("*** wtf ***")
-        # else:
-        #     printf("** Invalid key:", data)
-
-        return ret
-
-    def run(self):
+    def listen(self):
         # self.sock.setblocking(0)
 
         while not self.exit:
             try:
-                data, address = self.sock.recvfrom(1024)
-                data = self.handler.loads(data)
+                data, address = self.sock.recv()
+                print("run:", address, data)
+                if data:
+                    data = self.handler.loads(data)
 
-                if self.key == data[0]:
-                    msg = self.callback(data, address)
-                    if msg:
-                        msg  = self.handler.dumps(msg)
-                        self.sock.sendto(msg, address)
+                    if self.key == data[0]:
+                        # self.callback(data, address)
+                        msg = None
+                        if self.key == data[0]:
+                            if len(data) == 3:
+                                msg = self.handle_conn(data)
+                            elif len(data) == 4:
+                                if data[3] != "ok":
+                                    msg = self.handle_bind(data)
+                            else:
+                                print("*** wtf ***")
+
+                        if msg:
+                            msg  = self.handler.dumps(msg)
+                            # self.sock.sendto(msg, address)
+                            self.sock.cast(msg)
+                        time.sleep(0.01)
+                        # if msg:
+                        #     msg  = self.handler.dumps(msg)
+                        #     self.sock.sendto(msg, address)
                         # print(">> beacon sent: {}".format(msg))
 
             except KeyboardInterrupt:
                 print("ctrl-z")
                 self.exit = True
                 return
-            except Exception as e:
-                print("***", e, "***")
-                continue
+            # except Exception as e:
+            #     print("*** run: {} ***".format(e))
+            #     continue
 
 
 ######################################################

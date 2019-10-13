@@ -7,7 +7,7 @@
 ##############################################
 
 from pygecko.multiprocessing import geckopy
-from pygecko.multiprocessing import GeckoSimpleProcess
+from pygecko.multiprocessing.process import GeckoSimpleProcess
 import time
 
 threads_alive = 0
@@ -20,9 +20,8 @@ def chew_up_cpu(interval):
     while (time.time() - start) < interval: 5*5
 
 
-
 def publisher(**kwargs):
-    geckopy.init_node(**kwargs)
+    geckopy.init_node()
     rate = geckopy.Rate(2)
 
     p = geckopy.pubBinderTCP(
@@ -31,8 +30,6 @@ def publisher(**kwargs):
     )
     if p is None:
         print("publisher is None")
-        # global threads_alive
-        # threads_alive -= 1
         return
 
     start = time.time()
@@ -44,7 +41,10 @@ def publisher(**kwargs):
         geckopy.logdebug('[{}] published msg'.format(cnt))
         cnt += 1
         rate.sleep()
+        print(geckopy.is_shutdown())
     print('pub bye ...')
+    print(geckopy.is_shutdown())
+
 
 def subscriber(**kwargs):
     geckopy.init_node(**kwargs)
@@ -58,8 +58,6 @@ def subscriber(**kwargs):
     )
     if s is None:
         print("subscriber is None")
-        # global threads_alive
-        # threads_alive -= 1
         return
 
     while not geckopy.is_shutdown():
@@ -85,7 +83,8 @@ if __name__ == '__main__':
     # until the program ends
     procs = []
 
-    for topic in ['ryan', 'mike', 'sammie', 'scott']:
+    # for topic in ['ryan', 'mike', 'sammie', 'scott']:
+    for topic in ['ryan']:
         # threads_alive += 1
 
         # info to pass to processes
@@ -98,23 +97,25 @@ if __name__ == '__main__':
         p.start(func=publisher, name='pub_{}'.format(topic), kwargs=args)
         procs.append(p)
 
-        s = GeckoSimpleProcess()
-        s.start(func=subscriber, name='sub_{}'.format(topic), kwargs=args)
-        procs.append(s)
+        # s = GeckoSimpleProcess()
+        # s.start(func=subscriber, name='sub_{}'.format(topic), kwargs=args)
+        # procs.append(s)
 
-        s = GeckoSimpleProcess()
-        s.start(func=subscriber, name='sub_{}_2'.format(topic), kwargs=args)
-        procs.append(s)
+        # s = GeckoSimpleProcess()
+        # s.start(func=subscriber, name='sub_{}_2'.format(topic), kwargs=args)
+        # procs.append(s)
 
+    # while not geckopy.is_shutdown():
     while True:
         try:
             time.sleep(1)
-            # print(">> Threads alive:", threads_alive)
-            # if threads_alive == 0:
-            #     break
-            for i in range(len(procs)):
-                if (not procs[i].is_alive()):
-                    procs.pop(i)
+            for p in procs:
+                if not p.is_alive():
+                    procs.remove(p)
+                    p.join(1)
+                    print("dead:", p)
+            if len(procs) == 0:
+                break
 
         except KeyboardInterrupt:
             print('main process got ctrl-c')
@@ -123,3 +124,7 @@ if __name__ == '__main__':
             print(e)
             print("bye ...")
             break
+        finally:
+            for p in procs:
+                procs.remove(p)
+                p.join(1)

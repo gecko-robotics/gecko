@@ -3,9 +3,7 @@
 # Copyright (c) 2018 Kevin Walchko
 # see LICENSE for full details
 ##############################################
-from __future__ import print_function
 import multiprocessing as mp
-# from pygecko.transport.helpers import zmqTCP
 
 
 class GeckoSimpleProcess(object):
@@ -48,7 +46,6 @@ class GeckoSimpleProcess(object):
             self.ps = mp.Process(name=name, target=func, kwargs=kwargs)
         else:
             self.ps = mp.Process(name=name, target=func)
-        #     kwargs = {"host": "localhost"}  # FIXME: is this really setting default ... if not, where is it done?
 
         self.ps = mp.Process(name=name, target=func, kwargs=kwargs)
         self.ps.start()
