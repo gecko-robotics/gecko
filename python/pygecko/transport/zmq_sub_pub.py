@@ -9,13 +9,13 @@
 # see http://zeromq.org for more info
 # http://zguide.zeromq.org/py:all
 
-from __future__ import print_function
-from __future__ import division
+# from __future__ import print_function
+# from __future__ import division
 import zmq
 import time
 from pygecko.transport.zmq_base import Base
 from pygecko.transport.zmq_base import ZMQError
-from pygecko.transport.protocols import MsgPack
+from pygecko.messages.protocols import MsgPack
 
 
 class Pub(Base):

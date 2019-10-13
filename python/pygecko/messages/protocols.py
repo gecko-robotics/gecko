@@ -8,9 +8,9 @@
 
 import pickle
 # from collections import OrderedDict
-from pygecko.messages import vec_t, quaternion_t, wrench_t, pose_t, twist_t
-from pygecko.messages import joystick_st, imu_st, lidar_st, image_st
-from pygecko.messages import GeckoMsgs, GeckoMsgFlags as gmf
+from pygecko.messages.std_msgs import vec_t, quaternion_t, wrench_t, pose_t, twist_t
+from pygecko.messages.sensor_msgs import joystick_st, imu_st, lidar_st, image_st
+from pygecko.messages.id import GeckoMsgs, GeckoMsgFlags as gmf
 import numpy as np
 
 

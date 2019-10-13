@@ -8,17 +8,46 @@
 #
 # see http://zeromq.org for more info
 # http://zguide.zeromq.org/py:all
-from __future__ import print_function
-from __future__ import division
+# from __future__ import print_function
+# from __future__ import division
 import zmq
 # import time
 # import socket as Socket
 # from pygecko.transport.protocols import Pickle
-from pygecko.transport.protocols import MsgPack
+from pygecko.messages.protocols import MsgPack
+from pygecko.pycore.ip import get_ip
 
 
 class ZMQError(Exception):
     pass
+
+
+def zmq_version():
+    """
+    What version of the zmq (C++) library is python tied to?
+    """
+    return 'Using ZeroMQ version: {0!s}'.format((zmq.zmq_version()))
+
+
+def zmqTCP(host, port=None):
+    """
+    Set the zmq address as TCP: tcp://host:port
+    """
+    if host == 'localhost':
+        # host = GetIP().get()
+        host = get_ip()
+    if port:
+        ret = 'tcp://{}:{}'.format(host, port)
+    else:
+        ret = 'tcp://{}'.format(host)
+    return ret
+
+
+def zmqUDS(mnt_pt):
+    """
+    Set the zmq address as a Unix Domain Socket: ipc://file
+    """
+    return 'ipc://{}'.format(mnt_pt)
 
 
 class Base(object):

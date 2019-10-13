@@ -14,7 +14,7 @@ cmake ..
 ```
 ## Examples
 
-There are 2 examples in the source directory.
+There are 3 examples in the source directory.
 
 
 # MIT License

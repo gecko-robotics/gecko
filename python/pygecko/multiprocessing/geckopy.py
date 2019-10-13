@@ -9,7 +9,7 @@ from pygecko.transport.zmq_sub_pub import Pub, Sub
 # from pygecko.transport.zmq_req_rep import Req
 from pygecko.transport.helpers import zmqTCP
 from pygecko.transport.helpers import zmqUDS
-from pygecko.transport.helpers import GetIP
+from pygecko.transport.helpers import get_ip
 # from pygecko.gecko_enums import Status
 # from pygecko.gecko_enums import ZmqType
 from pygecko.messages import Log
@@ -94,9 +94,9 @@ class GeckoPy(SignalCatch):
         #     if host == 'localhost':
         #         host = GetIP().get()
         # else:
-        host = GetIP().get()  # FIXME: kwargs should provide this
+        # host = GetIP().get()  # FIXME: kwargs should provide this
         # self.req_addr = zmqTCP(host, 11311)  # set/get topic addrs
-        self.proc_ip = host  # this ip address
+        self.proc_ip = get_ip()  # this ip address
 
         print("----------------------------------")
         print("GeckoPy")

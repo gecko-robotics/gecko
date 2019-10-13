@@ -11,7 +11,7 @@ import struct
 import threading
 import time
 # import ipaddress  # kjw
-from pygecko.pycore.ip import GetIP  # dup?
+from pygecko.pycore.ip import get_ip  # dup?
 from pygecko.pycore.transport import Ascii  # , Json, Pickle  # dup?
 # import os
 import psutil
@@ -42,7 +42,7 @@ class BeaconBase(object):
         self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_TTL, ttl)
         self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, 1)
         self.key = key
-        self.host_ip = GetIP().get()
+        self.host_ip = get_ip()
         self.pid = mp.current_process().pid
 
 
