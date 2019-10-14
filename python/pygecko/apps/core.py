@@ -224,7 +224,7 @@ class CoreServer:
         while not self.exit:
             try:
                 data, address = self.sock.recv()
-                print("run:", address, data)
+                # print("run:", address, data)
                 if data:
                     data = self.handler.loads(data)
 
@@ -237,8 +237,8 @@ class CoreServer:
                             elif len(data) == 4:
                                 if data[3] != "ok":
                                     msg = self.handle_bind(data)
-                            else:
-                                print("*** wtf ***")
+                            # else:
+                            #     print("*** wtf ***")
 
                         if msg:
                             msg  = self.handler.dumps(msg)
