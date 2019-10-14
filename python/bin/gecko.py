@@ -8,12 +8,14 @@
 
 import argparse
 from argparse import RawTextHelpFormatter
-# import sys
+import time
 import socket
 from pprint import pprint
 from pygecko.apps.core import CoreServer
 # from pygecko.apps.core import Ascii
 from pygecko.network.transport import Ascii
+from pygecko.network.mcsocket import MultiCastSocket
+from colorama import Fore, Style
 
 bag_help = """
     bag help
@@ -48,7 +50,7 @@ def handleArgs():
     # Multicast --------------------------------------------------------------
     m_p = subparsers.add_parser('multicast', description='multicast help')
     m_p.set_defaults(which='multicast')
-    m_p.add_argument("mode", help="send or receive")
+    m_p.add_argument("mode", help="a, b or c")
     # m_p.add_argument("topic")
 
     # Core ------------------------------------------------------------------
@@ -81,13 +83,50 @@ def run_core(key):
     bs.run()
 
 
+def run_multicast(address, port, msg):
+    mc = MultiCastSocket(group=(address, port), ttl=2, timeout=1)
+    # print(">>", mc.info())
+
+    while True:
+        try:
+            # if msg != "receive": mc.cast(msg.encode("utf-8"))
+            mc.cast(msg.encode("utf-8"))
+            time.sleep(1)
+            # print(">> beacon sent: {}".format(msg))
+            data = msg
+            while data == msg:
+                data, address = mc.recv()
+                if data:
+                    data = data.decode("utf-8")
+                time.sleep(0.005)
+                # print("==>", data, data == msg)
+            # data, address = mc.recv_nb()
+            if data is None:
+                # print("timeout")
+                # time.sleep(1)
+                continue
+
+            # data = data.decode("utf-8")
+            # if data != msg:
+            print(">> " +Fore.CYAN + msg + Style.RESET_ALL + " -> " + Fore.GREEN + data + Style.RESET_ALL + " from:", address)
+            # else:
+            #     print(Fore.YELLOW + "*** see echo ***" + Style.RESET_ALL)
+            # if msg != "receive":
+            # time.sleep(1)
+
+        except KeyboardInterrupt:
+            print("ctrl-z")
+            break
+        # except Exception as e:
+        #     print("***", e, "***")
+
 def run_bag():
     pass
 
 
 if __name__ == "__main__":
     args = handleArgs()
-    pprint(args)
+    # pprint(args)
     # print(sys.argv[1])
     # exit(0)
 
@@ -98,6 +137,12 @@ if __name__ == "__main__":
         print("topic")
     elif mode == 'multicast':
         print("multicast")
+        msg = args['mode']
+        if msg not in ["a", "b", "c"]:
+            print("multicast: invalid mode:", msg)
+            print("multicast mode must be either 'a' or 'b'")
+            exit(1)
+        run_multicast("224.0.0.1", 11311, msg)
     elif mode == 'core':
         if args["mode"] == "run": run_core(args['key'])
         # print("core")

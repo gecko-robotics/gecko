@@ -58,19 +58,37 @@ node cpu/memory usage
     - messages can be simple or timestamped
     - Python: messages are `namedtuples`
 
-# Transport
+# Transport IPC
 
-1. Binder opens a random port for data
-    1. Note: either a publisher or a subscriber can bind to a port
-1. Binder tells GeckoCore the topic and address/port
-1. GeckoCore acknowledges the binder
-1. A connector wants to connect to a topic and asks GeckoCore for the address/port
+Endpoint protocols:
+
+- Transmisison Control Protocol (TCP): `tcp://host:port`
+- Unix Domain Sockets (UDS): `ipc://path/to/file`
+
+## Publisher and Subscriber
+
+1. Start a GeckoCore instance
+    1. The `key` defaults to host name, but can be set to any string
+    1. The idea is every robot (computer) can have a core running
+1. *Binder:* only 1 per port, can be either pub or sub
+    1. Binders can use either TCP or UDS
+    1. Binder opens a random port for data for TCP
+    1. *Note:* either a publisher or a subscriber can bind to an endpoint
+    1. A multicast message is sent to core
+1. GeckoCore acknowledges the binder with an `ok` message
+1. *Connecter:* can be many per endpoint, can be pub or sub
+    1. First connector sends a multicast message to core asking for the endpoint
+    for a topic
+    1. Only 1 service can publish a topic and it exists on only 1 endpoint
 1. GeckoCore:
-    1. If topic is found, return the address/port and an ok status
-    1. If topic is *not* found, returns None
-1. Connector connects to the binder with the given address/port
-    1. *Binder:* only 1 per port, can be either pub or sub
-    1. *Connecter:* can be many per port, can be pub or sub
+    1. If topic is found, return the endpoint and an `ok` message
+    1. If topic is *not* found, returns `None`
+
+## Request and Reply
+
+In work
+
+## Core
 
 This is the main message hub. GeckoCore also is passed the PIDs for processes on the
 local machine and prints performance data on each process:
@@ -174,7 +192,9 @@ python 3.
 Like `ros2`, `gecko` is a bunch of tools written in python:
 
 - `gecko core run|ping`
-- `gecko multicast send|receive`
+- `gecko multicast a|b|c`
+    - send multicast messages (just simple a, b, or c) between computers to
+    test connectivity 
 - `gecko bag play|record filename --loop`
     - bag will use the python library [the-collector](https://github.com/MomsFriendlyRobotCompany/the_collector)
     and store data using `pickle` so any python jupyter notebook or tools can
