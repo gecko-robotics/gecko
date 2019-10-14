@@ -8,7 +8,7 @@
 import threading
 import time
 from pygecko.network.ip import get_ip
-from pygecko.network.transport import Ascii
+# from pygecko.network.transport import Ascii
 from pygecko.network.mcsocket import MultiCastSocket
 from pygecko.network.mcsocket import MultiCastError
 import psutil
@@ -27,14 +27,13 @@ class CoreServer:
     subs = {}
     print = True
 
-    def __init__(self, key, handler=Ascii, ttl=1, addr=None, print=True):
+    def __init__(self, key, handler, ttl=2, addr=None, print=True):
 
         if addr is not None:
             if len(addr) == 2:
                 self.mcast_addr = addr[0]
                 self.mcast_port = addr[1]
 
-        # BeaconBase.__init__(self, key=key, ttl=ttl)
         self.group = (self.mcast_addr, self.mcast_port)
 
         try:
@@ -42,27 +41,10 @@ class CoreServer:
         except MultiCastError as e:
             print("*** {} ***".format(e))
             raise e
-        # self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        # self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_TTL, ttl)
-        # self.sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_LOOP, 1)
+
         self.key = key
         self.host_ip = get_ip()
         self.pid = mp.current_process().pid
-
-        # print performance to commandline
-        # self.print = print
-
-        # setup service socket
-        # allow multiple connections
-        # self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # try:
-        #     self.sock.bind(('0.0.0.0', self.mcast_port))
-        # except OSError as e:
-        #     print("*** {} ***".format(e))
-        #     raise
-
-        # mreq = struct.pack("=4sl", socket.inet_aton(self.mcast_addr), socket.INADDR_ANY)
-        # self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
         # setup server data
         self.handler = handler()  # serialization method
@@ -74,7 +56,6 @@ class CoreServer:
         while not self.exit:
             if True:
                 self.print()
-                # print("hi")
             time.sleep(3)
 
     def start(self):
@@ -157,10 +138,7 @@ class CoreServer:
         if topic in self.services.keys():
             endpt = self.services[topic]
             ret = (self.key, topic, endpt, "ok")
-            # self.perf[topic] = pid
-            # self.subs.append((topic,pid,))
-            # self.subs[pid] = topic
-            self.subs[pid] = (psutil.Process(pid), topic,)
+            # self.subs[pid] = (psutil.Process(pid), topic,)
 
             print(">> CONN[{}] {}:{}".format(pid, topic, endpt))
         # else:
@@ -181,45 +159,16 @@ class CoreServer:
         endpt = data[3]
 
         self.services[topic] = endpt
-        # self.perf[topic] = pid
-        # self.pubs.append((topic,pid,))
-        # self.pubs[pid] = topic
-        self.pubs[pid] = (psutil.Process(pid), topic,)
+        # self.pubs[pid] = (psutil.Process(pid), topic,)
 
         print(">> BIND[{}] {}:{}".format(pid, topic, endpt))
 
         return (self.key, topic, endpt, "ok",)
 
-    # def callback(self, data, address):
-    #     # print(">> Key: {}".format(self.key))
-    #     # print(">> Address: {}".format(address))
-    #     # print(">> Data: {} size: {}".format(data, len(data)))
-    #
-    #     msg = None
-    #
-    #     if self.key == data[0]:
-    #         if len(data) == 3:
-    #             msg = self.handle_conn(data)
-    #         elif len(data) == 4:
-    #             if data[3] != "ok":
-    #                 msg = self.handle_bind(data)
-    #         else:
-    #             print("*** wtf ***")
-    #
-    #     if msg:
-    #         msg  = self.handler.dumps(msg)
-    #         # self.sock.sendto(msg, address)
-    #         self.sock.cast(msg)
-    #     # else:
-    #     #     printf("** Invalid key:", data)
-    #
-    #     # return ret
-
     def run(self):  # FIXME: remove
         self.listen()
 
     def listen(self):
-        # self.sock.setblocking(0)
 
         while not self.exit:
             try:
@@ -229,7 +178,6 @@ class CoreServer:
                     data = self.handler.loads(data)
 
                     if self.key == data[0]:
-                        # self.callback(data, address)
                         msg = None
                         if self.key == data[0]:
                             if len(data) == 3:
