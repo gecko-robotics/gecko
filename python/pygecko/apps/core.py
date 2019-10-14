@@ -7,10 +7,10 @@
 #
 import threading
 import time
-from pygecko.core.ip import get_ip
-from pygecko.core.transport import Ascii
-from pygecko.core.mcsocket import MultiCastSocket
-from pygecko.core.mcsocket import MultiCastError
+from pygecko.network.ip import get_ip
+from pygecko.network.transport import Ascii
+from pygecko.network.mcsocket import MultiCastSocket
+from pygecko.network.mcsocket import MultiCastError
 import psutil
 import multiprocessing as mp
 

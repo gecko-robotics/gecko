@@ -30,12 +30,20 @@ Json --------------------------------------------------------
 
 
 class Ascii(object):
-    """Simple ASCII format to send info"""
+    """
+    Simple ASCII format to send info
+    """
     def dumps(self, data):
         return "|".join(data).encode('utf-8')
 
     def loads(self, msg):
         return msg.decode('utf-8').split("|")
+
+    def pack(self, data):
+        return self.dumps(data)
+
+    def unpack(self, data):
+        return self.loads(data)
 
 
 # class Json(object):

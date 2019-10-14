@@ -15,7 +15,7 @@ import zmq
 # import socket as Socket
 # from pygecko.transport.protocols import Pickle
 from pygecko.messages.protocols import MsgPack
-from pygecko.core.ip import get_ip
+from pygecko.network.ip import get_ip
 
 
 class ZMQError(Exception):

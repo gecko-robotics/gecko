@@ -1,28 +1,22 @@
-from __future__ import print_function
 import time
 import os
 from collections import namedtuple
 from multiprocessing import Event
-# from enum import IntFlag
-# import time
 from math import pi
-# import numpy as np
 
-from pygecko.pycore.mbeacon import BeaconCoreServer
-from pygecko.pycore.transport import Ascii
+from pygecko.apps.core import CoreServer
+from pygecko.network.transport import Ascii
 
 from pygecko.multiprocessing import geckopy
-from pygecko.transport import Pub, Sub
-from pygecko.transport import zmqTCP
-from pygecko.transport import zmqUDS
-# from pygecko.transport import GeckoCore
-from pygecko.multiprocessing import GeckoSimpleProcess
+from pygecko.transport.zmq_sub_pub import Pub, Sub
+from pygecko.multiprocessing.process import GeckoSimpleProcess
 
-from pygecko import FileJson, FileYaml
+from pygecko.file_storage import FileJson, FileYaml
 
-from pygecko.transport.protocols import MsgPack
-from pygecko.messages import vec_t, quaternion_t, wrench_t, twist_t, pose_t
-from pygecko.messages import imu_st, lidar_st, joystick_st, image_st
+from pygecko.messages.protocols import MsgPack
+from pygecko.messages.std_msgs import vec_t, quaternion_t, wrench_t, twist_t
+from pygecko.messages.nav_msgs import pose_t
+from pygecko.messages.sensor_msgs import imu_st, lidar_st, joystick_st, image_st
 
 # Fake cv2 things for testing
 import pygecko.fake.fake_camera as pcv2
@@ -113,7 +107,7 @@ def msg_zmq(args):
     # start message hub
     # core = GeckoCore()
     # core.start()
-    bs = BeaconCoreServer(key='test', handler=Ascii)
+    bs = CoreServer(key='test', handler=Ascii)
     bs.start()
     bs.run()
 
@@ -256,7 +250,7 @@ def zmq_pub_sub(args):
 
 def test_pub_sub():
 
-    bs = BeaconCoreServer(key='test', handler=Ascii)
+    bs = CoreServer(key='test', handler=Ascii)
     core = GeckoSimpleProcess()
     core.start(func=bs.run, name='geckocore')
 

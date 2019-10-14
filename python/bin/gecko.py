@@ -8,11 +8,12 @@
 
 import argparse
 from argparse import RawTextHelpFormatter
-import sys
+# import sys
 import socket
 from pprint import pprint
-from pygecko.core.core import CoreServer
-from pygecko.core.transport import Ascii
+from pygecko.apps.core import CoreServer
+# from pygecko.apps.core import Ascii
+from pygecko.network.transport import Ascii
 
 bag_help = """
     bag help
@@ -70,6 +71,7 @@ def handleArgs():
     args = vars(parser.parse_args())
     return args
 
+
 def run_core(key):
     if key is None:
         key = socket.gethostname().lower().split('.')[0]
@@ -77,6 +79,11 @@ def run_core(key):
     bs = CoreServer(key=key, handler=Ascii)
     bs.start()
     bs.run()
+
+
+def run_bag():
+    pass
+
 
 if __name__ == "__main__":
     args = handleArgs()

@@ -5,7 +5,7 @@
 # Copyright (c) 2018 Kevin Walchko
 # see LICENSE for full details
 ##############################################
-# 
+#
 from pygecko.multiprocessing import geckopy
 from colorama import Fore, Style
 import argparse
@@ -29,14 +29,14 @@ def format_print(topic, msg):
     print(Style.BRIGHT + color + '>> {}:'.format(msg.name[:8]) + Style.RESET_ALL + msg.text)
     # print(">> {}: {}".format(topic, msg))
 
-if __name__ == "__main__":
-    args = handleArgs()
-    topic = args['topic']
-
-    kwargs = {
-        'host': args['host']
-    }
-
-    geckopy.init_node(**kwargs)
-    geckopy.Subscriber([topic], format_print)
-    geckopy.spin()
+# if __name__ == "__main__":
+#     args = handleArgs()
+#     topic = args['topic']
+#
+#     kwargs = {
+#         'host': args['host']
+#     }
+#
+#     geckopy.init_node(**kwargs)
+#     geckopy.Subscriber([topic], format_print)
+#     geckopy.spin()

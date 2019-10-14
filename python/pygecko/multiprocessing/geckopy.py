@@ -3,125 +3,20 @@
 # Copyright (c) 2018 Kevin Walchko
 # see LICENSE for full details
 ##############################################
-# from pygecko.transport.zmq_base import ZMQError
 from pygecko.transport.zmq_sub_pub import Pub, Sub
-# from pygecko.transport.srv import cService, cServiceProxy
-# from pygecko.transport.zmq_req_rep import Req
 from pygecko.transport.zmq_base import zmqTCP
 from pygecko.transport.zmq_base import zmqUDS
-from pygecko.transport.zmq_base import get_ip
-# from pygecko.gecko_enums import Status
-# from pygecko.gecko_enums import ZmqType
-# from pygecko.messages.std_msgs import Log
-from pygecko.multiprocessing.sig import SignalCatch  # capture signals in processes
-from pygecko.core.transport import Ascii
 import time
 import multiprocessing as mp
+
+from .mc_core_socket import BeaconFinder
+from .singleton import GeckoPySingleton
 
 from colorama import Fore, Back, Style
 import logging
 import logging.handlers
 
-from pygecko.core.mcsocket import MultiCastSocket
-
-# Holly crap namespace and pickle use a lot of cpu!
-# zmq hs only 23%, but syncmanager is 77%
-# ns == msg image True
-# +------------------------------
-# | Alive processes: 11
-# +------------------------------
-# | subscribe[19339].............. cpu: 12.2%    mem: 0.10%
-# | subscribe[19343].............. cpu: 13.7%    mem: 0.10%
-# | SyncManager-1[19327].......... cpu: 77.4%    mem: 0.19%
-# | subscribe[19338].............. cpu: 12.5%    mem: 0.10%
-# | subscribe[19341].............. cpu: 13.6%    mem: 0.10%
-# | publish[19336]................ cpu: 8.7%    mem: 0.40%
-# | GeckoCore[19328].............. cpu: 23.3%    mem: 0.11%
-# | subscribe[19344].............. cpu: 13.8%    mem: 0.10%
-# | subscribe[19342].............. cpu: 13.7%    mem: 0.11%
-# | publish[19337]................ cpu: 8.8%    mem: 0.40%
-# | subscribe[19340].............. cpu: 13.7%    mem: 0.10%
-
 g_geckopy = None
-
-# class CoreTalker:
-class BeaconFinder:
-    """
-    Find Services using the magic of multicast
-
-    pid = 123456
-    proc_name = "my-cool-process"
-
-    key = hostname
-    finder = BeaconFinder(key)
-    msg = finder.search(msg)
-    """
-    def __init__(self, key, ttl=2, handler=Ascii):
-        # BeaconBase.__init__(self, key=key, ttl=ttl)
-        self.key = key
-        self.group = ("224.0.0.1", 11311)
-        self.sock = MultiCastSocket(group=self.group, ttl=ttl, timeout=2)
-        self.handler = handler()
-
-    def send(self, msg):
-        """
-        Search for services using multicast sends out a request for services
-        of the specified name and then waits and gathers responses. This sends
-        one mdns ping. As soon as a responce is received, the function returns.
-        """
-        # serviceName = 'GeckoCore'
-        # self.sock.settimeout(self.timeout)
-        # msg = self.handler.dumps((self.key, serviceName, str(pid), processname,))
-        # msg['key'] = self.key
-
-        key = msg[0]
-        if key != self.key:
-            raise Exception("invalid key:", key)
-
-        topic = msg[1]
-
-        msg = self.handler.dumps(msg)
-        # print("msg:", msg)
-        # self.sock.sendto(msg, self.group)
-        self.sock.cast(msg)
-        servicesFound = None
-        time.sleep(0.01)
-        # while True:
-        # try:
-
-        # data = returned message info
-        # server = ip:port, which is x.x.x.x:9990
-        data, server = self.sock.recv()
-
-        if data is None:
-            return None
-
-        if msg == data:
-            print("send echo:", data, server)
-            return None
-
-        print("beconfinder recv data:", data, server)
-
-        if data:
-            data = self.handler.loads(data)
-
-            if len(data) == 4:
-                # data = self.handler.loads(data.decode("utf-8"))
-                # print("wtf:", data)
-                # print('>> Search:', data, server)
-                if data[3] == "ok" and data[0] == self.key and data[1] == topic:
-                    servicesFound = data
-                else:
-                    print("FAIL:", topic, data)
-                # break
-        # if len(data) == 2:
-        #     servicesFound = (zmqTCP(server[0], data[0]), zmqTCP(server[0], data[1]),)
-        #     break
-        # except socket.timeout:
-        #     print("*** timeout ***")
-        #     break
-        # print(">> search done")
-        return servicesFound
 
 
 class Rate(object):
@@ -150,70 +45,6 @@ class Rate(object):
         self.last_time = time.time()
 
 
-class GeckoPy(SignalCatch):
-    """
-    This class setups a function in a new process.
-    """
-    def __init__(self, **kwargs):
-        """
-        kwargs: can have a lot of things in it. Some common keys are:
-            core_outaddr: tcp or uds address of geckocore outputs
-            core_inaddr: tcp or uds address of geckocore inputs
-            queue: multiprocessing.Queue for log messages
-        """
-        # geckopy info
-        self.kill_signals()  # have to setup signals in new process
-        # self.subs = []   # subscriber nodes
-        # self.srvs = []   # services
-        # self.hooks = []  # functions to call on shutdown
-        self.name = mp.current_process().name
-        # self.pid = mp.current_process().pid
-        self.logpub = None
-
-        self.binders = {}  # topic/endpt
-
-        # hard code for now
-        # if 'host' in kwargs.keys():
-        #     host = kwargs.pop('host')
-        #     if host == 'localhost':
-        #         host = GetIP().get()
-        # else:
-        # host = GetIP().get()  # FIXME: kwargs should provide this
-        # self.req_addr = zmqTCP(host, 11311)  # set/get topic addrs
-        self.proc_ip = get_ip()  # this ip address
-
-        print("----------------------------------")
-        print("GeckoPy [{}]".format(self))
-        print("-----------")
-        print("  Process:", self.name)
-        print("  PID:", mp.current_process().pid)
-        print("  Host: {}".format(self.proc_ip))
-        print("----------------------------------")
-
-    # def __del__(self):
-    #     if len(self.hooks) > 0:
-    #         for h in self.hooks:
-    #             h()
-
-    def __format_print(self, topic, msg):
-        # print(msg.level)
-        # msg format: {proc_name, level, text}
-        if msg.level == 'DEBUG': color = Fore.CYAN
-        elif msg.level == 'WARN': color = Fore.YELLOW
-        elif msg.level == 'ERROR': color = Fore.RED
-        else: color = Fore.GREEN
-
-        # shorten proc names??
-        print(Style.BRIGHT + color + '>> {}:'.format(msg.name[:10]) + Style.RESET_ALL + msg.text)
-        # print(">> {}: {}".format(topic, msg))
-
-    def log(self, topic, msg):
-        if self.logpub is None:
-            self.__format_print(topic, msg)
-        else:
-            self.logpub.publish(msg)
-
-
 def init_node(**kwargs):
     """
     Initializes the node and sets up some global variables.
@@ -221,7 +52,7 @@ def init_node(**kwargs):
     # this gets created inside a new process, so it should be ok
     global g_geckopy
     if g_geckopy is None:
-        g_geckopy = GeckoPy(**kwargs)
+        g_geckopy = GeckoPySingleton(**kwargs)
         # print("Created geckopy >> {}".format(g_geckopy))
 
 
@@ -439,6 +270,151 @@ def getLogger(name, filename=None, level=logging.DEBUG):
 
 
 
+
+#############################################################################
+#
+# class GeckoPySingleton(SignalCatch):
+#     """
+#     This class setups a function in a new process.
+#     """
+#     def __init__(self, **kwargs):
+#         """
+#         kwargs: can have a lot of things in it. Some common keys are:
+#             core_outaddr: tcp or uds address of geckocore outputs
+#             core_inaddr: tcp or uds address of geckocore inputs
+#             queue: multiprocessing.Queue for log messages
+#         """
+#         # geckopy info
+#         self.kill_signals()  # have to setup signals in new process
+#         # self.subs = []   # subscriber nodes
+#         # self.srvs = []   # services
+#         # self.hooks = []  # functions to call on shutdown
+#         self.name = mp.current_process().name
+#         # self.pid = mp.current_process().pid
+#         self.logpub = None
+#
+#         self.binders = {}  # topic/endpt
+#
+#         # hard code for now
+#         # if 'host' in kwargs.keys():
+#         #     host = kwargs.pop('host')
+#         #     if host == 'localhost':
+#         #         host = GetIP().get()
+#         # else:
+#         # host = GetIP().get()  # FIXME: kwargs should provide this
+#         # self.req_addr = zmqTCP(host, 11311)  # set/get topic addrs
+#         self.proc_ip = get_ip()  # this ip address
+#
+#         print("----------------------------------")
+#         print("GeckoPy [{}]".format(self))
+#         print("-----------")
+#         print("  Process:", self.name)
+#         print("  PID:", mp.current_process().pid)
+#         print("  Host: {}".format(self.proc_ip))
+#         print("----------------------------------")
+#
+#     # def __del__(self):
+#     #     if len(self.hooks) > 0:
+#     #         for h in self.hooks:
+#     #             h()
+#
+#     # def __format_print(self, topic, msg):
+#     #     # print(msg.level)
+#     #     # msg format: {proc_name, level, text}
+#     #     if msg.level == 'DEBUG': color = Fore.CYAN
+#     #     elif msg.level == 'WARN': color = Fore.YELLOW
+#     #     elif msg.level == 'ERROR': color = Fore.RED
+#     #     else: color = Fore.GREEN
+#     #
+#     #     # shorten proc names??
+#     #     print(Style.BRIGHT + color + '>> {}:'.format(msg.name[:10]) + Style.RESET_ALL + msg.text)
+#     #     # print(">> {}: {}".format(topic, msg))
+#     #
+#     # def log(self, topic, msg):
+#     #     if self.logpub is None:
+#     #         self.__format_print(topic, msg)
+#     #     else:
+#     #         self.logpub.publish(msg)
+
+
+# # class CoreTalker:
+# class BeaconFinder:
+#     """
+#     Find Services using the magic of multicast
+#
+#     pid = 123456
+#     proc_name = "my-cool-process"
+#
+#     key = hostname
+#     finder = BeaconFinder(key)
+#     msg = finder.search(msg)
+#     """
+#     def __init__(self, key, ttl=2, handler=Ascii):
+#         # BeaconBase.__init__(self, key=key, ttl=ttl)
+#         self.key = key
+#         self.group = ("224.0.0.1", 11311)
+#         self.sock = MultiCastSocket(group=self.group, ttl=ttl, timeout=2)
+#         self.handler = handler()
+#
+#     def send(self, msg):
+#         """
+#         Search for services using multicast sends out a request for services
+#         of the specified name and then waits and gathers responses. This sends
+#         one mdns ping. As soon as a responce is received, the function returns.
+#         """
+#         # serviceName = 'GeckoCore'
+#         # self.sock.settimeout(self.timeout)
+#         # msg = self.handler.dumps((self.key, serviceName, str(pid), processname,))
+#         # msg['key'] = self.key
+#
+#         key = msg[0]
+#         if key != self.key:
+#             raise Exception("invalid key:", key)
+#
+#         topic = msg[1]
+#
+#         msg = self.handler.dumps(msg)
+#         # print("msg:", msg)
+#         # self.sock.sendto(msg, self.group)
+#         self.sock.cast(msg)
+#         servicesFound = None
+#         time.sleep(0.01)
+#         # while True:
+#         # try:
+#
+#         # data = returned message info
+#         # server = ip:port, which is x.x.x.x:9990
+#         data, server = self.sock.recv()
+#
+#         if data is None:
+#             return None
+#
+#         if msg == data:
+#             print("send echo:", data, server)
+#             return None
+#
+#         print("beconfinder recv data:", data, server)
+#
+#         if data:
+#             data = self.handler.loads(data)
+#
+#             if len(data) == 4:
+#                 # data = self.handler.loads(data.decode("utf-8"))
+#                 # print("wtf:", data)
+#                 # print('>> Search:', data, server)
+#                 if data[3] == "ok" and data[0] == self.key and data[1] == topic:
+#                     servicesFound = data
+#                 else:
+#                     print("FAIL:", topic, data)
+#                 # break
+#         # if len(data) == 2:
+#         #     servicesFound = (zmqTCP(server[0], data[0]), zmqTCP(server[0], data[1]),)
+#         #     break
+#         # except socket.timeout:
+#         #     print("*** timeout ***")
+#         #     break
+#         # print(">> search done")
+#         return servicesFound
 
 
     # """
