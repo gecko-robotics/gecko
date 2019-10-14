@@ -12,89 +12,6 @@
 - From pypi: `pip install pygecko`
 - Local for development: `pip install -e .`
 
-## `geckocore.py`
-
-![](pics/multiprocess-3.png)
-
-1. Binder opens a random port for data
-    1. Note: either a publisher or a subscriber can bind to a port
-1. Binder tells GeckoCore the topic and address/port
-1. GeckoCore acknowledges the binder
-1. A connector wants to connect to a topic and asks GeckoCore for the address/port
-1. GeckoCore:
-    1. If topic is found, return the address/port and an ok status
-    1. If topic is *not* found, returns None
-1. Connector connects to the binder with the given address/port
-    1. *Binder:* only 1 per port, can be either pub or sub
-    1. *Connecter:* can be many per port, can be pub or sub
-
-This is the main message hub. GeckoCore also is passed the PIDs for processes on the
-local machine and prints performance data on each process:
-
-```bash
-+========================================
-| Processes Performance
-| [24790] GeckoCore............. cpu:  0.3%  mem:  0.0%
-| [24793] pub_ryan.............. cpu:  0.1%  mem:  0.0%
-| [24795] pub_mike.............. cpu:  0.1%  mem:  0.0%
-| [24796] sub_mike.............. cpu: 20.5%  mem:  0.0%
-| [24797] pub_sammie............ cpu:  0.1%  mem:  0.0%
-| [24798] sub_sammie............ cpu: 20.5%  mem:  0.0%
-+------------------------------
-| ESTABLISHED Connections
-| pub_mike............ 192.168.86.22:50551 --> 192.168.86.22:50557
-| sub_mike............ 192.168.86.22:50557 --> 192.168.86.22:50551
-| pub_sammie.......... 192.168.86.22:50554 --> 192.168.86.22:50558
-| sub_sammie.......... 192.168.86.22:50558 --> 192.168.86.22:50554
-+------------------------------
-| LISTEN Connections
-| GeckoCore........... 192.168.86.22:11311
-| pub_ryan............ 192.168.86.22:50548
-| pub_mike............ 192.168.86.22:50551
-| pub_sammie.......... 192.168.86.22:50554
-+========================================
-| Published Topics <topic>@tcp://<ip>:<port>
-|  1: ryan@tcp://192.168.86.22:50548
-|  2: mike@tcp://192.168.86.22:50551
-|  3: sammie@tcp://192.168.86.22:50554
-+========================================
-```
-
-```bash
-========================================
- Geckocore [65975]
--------------
- Key: local
- Host IP: 10.0.1.57
- Listening on: 224.3.29.110:11311
--------------
-Known Services [6]
- * hello:........................ tcp://10.0.1.57:65303
- * hey there:.................... tcp://10.0.1.57:65304
- * ryan:......................... tcp://10.0.1.57:65310
- * mike:......................... tcp://10.0.1.57:65311
- * sammie:....................... tcp://10.0.1.57:65312
- * scott:........................ tcp://10.0.1.57:65313
-
-Binders [6]
- [65993] hello................. cpu:  0.0%  mem:  0.0%
- [65994] hey there............. cpu:  0.0%  mem:  0.0%
- [66008] ryan.................. cpu:  0.1%  mem:  0.0%
- [66010] mike.................. cpu:  0.1%  mem:  0.0%
- [66012] sammie................ cpu:  0.1%  mem:  0.0%
- [66014] scott................. cpu:  0.1%  mem:  0.0%
-
-Connections [8]
- [65995] hello................. cpu: 20.7%  mem:  0.0%
- [65996] hello................. cpu: 20.9%  mem:  0.0%
- [65997] hey there............. cpu: 21.0%  mem:  0.0%
- [65998] hey there............. cpu: 20.8%  mem:  0.0%
- [66011] mike.................. cpu: 19.0%  mem:  0.0%
- [66013] sammie................ cpu: 19.0%  mem:  0.0%
- [66015] scott................. cpu: 19.4%  mem:  0.0%
- [66009] ryan.................. cpu: 18.7%  mem:  0.0%
-```
-
 ## `geckolaunch.py`
 
 `geckolaunch.py` allows you to launch a bunch of processes quickly using a launch
@@ -121,24 +38,27 @@ file. A launch file is just a simple json file where each line takes the form:
 }
 ```
 
+# Basic User API
+
 ## `geckopy`
 
 See the examples, but this acts like a `rospy` and helps make writing
 pub/sub processes easy. See the `/examples` folder to see it in action.
 
-- **init_node:** this sets up the the process for communications with `geckocore`
-- **logxxx:** prints log messages
+- **init_node():** this sets up the the process for communications with `geckocore`
+- **is_shutdown():** returns `True` if node is signalled to exit
+- **ok():** returns `True` if node is running
+- **getLogger(name, file):** prints log messages to `stdout` or file
     ```python
     from pygecko import geckopy
-    geckopy.loginfo('this is a info message')  # just send a string
-    geckopy.logwarn('this is a warning message')
-    geckopy.logerror('this is a error message')
-    geckopy.logdebug('this is a debug message')
+    logger = geckopy.getLogger(__name__, "bob.txt")
+    logger.info('this is a info message')  # just send a string
+    logger.warning('this is a warning message')
+    logger.error('this is a error message')
+    logger.critical('this is a critical message')
+    logger.debug('this is a debug message')
     ```
-- **Subscriber:** creates a subscriber and appends the callback function to an
-array in geckopy
-- **Publisher:** creates a publisher and returns it
-- **Rate:** given a frequency of how often a loop should run (i.e., 10Hz), the
+- **Rate(Hz):** given a frequency of how often a loop should run (i.e., 10Hz), the
 returned object will dynamically set the sleep interval to achieve the rate. Ex:
     ```python
     from pygecko import geckopy
@@ -146,16 +66,30 @@ returned object will dynamically set the sleep interval to achieve the rate. Ex:
     while True:
         rate.sleep()
     ```
+- **Publisher Helpers:** return a publisher object, or `None` on failure
+    - pubBinderTCP(key, topic, queue_size=5)
+    - pubBinderUDS(key, topic, queue_size=5)
+    - pubConnectTCP(key, topic, queue_size=5)
+    - pubConnectUDS(key, topic, queue_size=5)
+- **Subscriber Helpers:** return a subscriber object, or `None` on failure
+    - subBinderTCP(key, topic, queue_size=5)
+    - subBinderUDS(key, topic, queue_size=5)
+    - subConnectTCP(key, topic, queue_size=5)
+    - subConnectUDS(key, topic, queue_size=5)
 
-# Basic User API
+## `zmq`
 
-- geckopy.*
-    - init_node(kwargs)
-    - logX(test, topic='log')
-        - X: Error, Debug, Info, Warning
-    - is_shutdown()
-    - Publisher(topics, addr=None, queue_size=10, bind=True)
-    - Subscriber(topics, callback=None, addr=None, bind=False)
+Generally you will use the `geckopy` helpers to get pub/sub. However, if you
+already know the address and don't need core, you can create one directly. This
+is most useful for testing.
+
+- **Subscriber:** creates a subscriber and returns it
+    - Sub.connect(self, addr, hwm=None, queue_size=10)
+    - Sub.bind(self, addr, hwm=None, queue_size=10, random=False)
+- **Publisher:** creates a publisher and returns it
+    - Pub.connect(self, addr, hwm=None, queue_size=10)
+    - Pub.bind(self, addr, hwm=None, queue_size=10, random=False)
+
 
 # Change Log
 
