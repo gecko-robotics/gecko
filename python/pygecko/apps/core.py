@@ -11,21 +11,24 @@ from pygecko.network.ip import get_ip
 # from pygecko.network.transport import Ascii
 from pygecko.network.mcsocket import MultiCastSocket
 from pygecko.network.mcsocket import MultiCastError
-import psutil
+# import psutil
 import multiprocessing as mp
+from colorama import Fore, Style
 
 
 class CoreServer:
     mcast_addr = '224.0.0.1'
     mcast_port = 11311
     timeout = 2
-    ttl = 1
+    ttl = 2
     services = {}  # services
     perf = {}
     exit = False
     pubs = {}
     subs = {}
     print = True
+    bind = {}
+    conn = {}
 
     def __init__(self, key, handler, ttl=2, addr=None, print=True):
 
@@ -127,10 +130,10 @@ class CoreServer:
         # print("handle_sub")
         # print(data)
         # print(self.services.keys())
-        print("handle_conn:", data)
-        print("handle_conn 0:", data[0])
-        print("handle_conn 1:", data[1])
-        print("handle_conn 2:", data[2])
+        # print("handle_conn:", data)
+        # print("handle_conn 0:", data[0])
+        # print("handle_conn 1:", data[1])
+        # print("handle_conn 2:", data[2])
 
         ret = None
         topic = data[1]
@@ -140,7 +143,7 @@ class CoreServer:
             ret = (self.key, topic, endpt, "ok")
             # self.subs[pid] = (psutil.Process(pid), topic,)
 
-            print(">> CONN[{}] {}:{}".format(pid, topic, endpt))
+            print(Fore.CYAN + ">> CONN[{}] {}:{}".format(pid, topic, endpt) + Style.RESET_ALL)
         # else:
         #     print("*** handle_sub FAILURE ***")
 
@@ -149,11 +152,11 @@ class CoreServer:
         return ret
 
     def handle_bind(self, data):
-        print("handle_bind:", data)
-        print("handle_bind 0:", data[0])
-        print("handle_bind 1:", data[1])
-        print("handle_bind 2:", data[2])
-        print("handle_bind 3:", data[3])
+        # print("handle_bind:", data)
+        # print("handle_bind 0:", data[0])
+        # print("handle_bind 1:", data[1])
+        # print("handle_bind 2:", data[2])
+        # print("handle_bind 3:", data[3])
         topic = data[1]
         pid = int(data[2])
         endpt = data[3]
@@ -161,7 +164,7 @@ class CoreServer:
         self.services[topic] = endpt
         # self.pubs[pid] = (psutil.Process(pid), topic,)
 
-        print(">> BIND[{}] {}:{}".format(pid, topic, endpt))
+        print(Fore.MAGENTA + ">> BIND[{}] {}:{}".format(pid, topic, endpt) + Style.RESET_ALL)
 
         return (self.key, topic, endpt, "ok",)
 
