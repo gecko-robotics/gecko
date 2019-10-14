@@ -1,0 +1,15 @@
+2019-10-13 20:36:51 DEBUG: debug message 2
+2019-10-13 20:36:51 INFO: info message
+2019-10-13 20:36:51 WARNING: warning message
+2019-10-13 20:36:51 ERROR: error message
+2019-10-13 20:36:51 CRITICAL: critical message
+2019-10-13 20:50:52 DEBUG: debug message 2
+2019-10-13 20:50:52 INFO: info message
+2019-10-13 20:50:52 WARNING: warning message
+2019-10-13 20:50:52 ERROR: error message
+2019-10-13 20:50:52 CRITICAL: critical message
+2019-10-13 20:51:03 DEBUG: debug message 2
+2019-10-13 20:51:03 INFO: info message
+2019-10-13 20:51:03 WARNING: warning message
+2019-10-13 20:51:03 ERROR: error message
+2019-10-13 20:51:03 CRITICAL: critical message

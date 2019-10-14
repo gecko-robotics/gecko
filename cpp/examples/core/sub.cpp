@@ -18,7 +18,7 @@ int main(void){
     Subscriber *s = nullptr;
     try {
         gecko::init();
-        s = gecko::subConnectTCP("local", "test");
+        s = gecko::subConnectTCP("local", "ryan");
         if (s == nullptr) {
             printf("Couldn't get subscriber\n");
             exit(1);

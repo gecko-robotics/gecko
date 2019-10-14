@@ -10,7 +10,7 @@ from pygecko.multiprocessing import geckopy
 from pygecko.multiprocessing.process import GeckoSimpleProcess
 import time
 
-threads_alive = 0
+# threads_alive = 0
 
 
 def chew_up_cpu(interval):
@@ -23,47 +23,48 @@ def chew_up_cpu(interval):
 def publisher(**kwargs):
     geckopy.init_node()
     rate = geckopy.Rate(2)
+    logger = geckopy.getLogger(__name__)
 
     p = geckopy.pubBinderTCP(
         kwargs.get('key'),
         kwargs.get('topic')
     )
     if p is None:
-        print("publisher is None")
+        logger.error("publisher is None")
         return
 
     start = time.time()
     cnt = 0
-    while not geckopy.is_shutdown():
+    while geckopy.ok():
         msg = {'time': time.time() - start}
         p.publish(msg)  # topic msg
 
-        geckopy.logdebug('[{}] published msg'.format(cnt))
+        logger.debug('[{}] published msg'.format(cnt))
         cnt += 1
         rate.sleep()
-        print(geckopy.is_shutdown())
+        # print(geckopy.is_shutdown())
     print('pub bye ...')
-    print(geckopy.is_shutdown())
+    # print(geckopy.is_shutdown())
 
 
 def subscriber(**kwargs):
     geckopy.init_node(**kwargs)
     rate = geckopy.Rate(2)
+    logger = geckopy.getLogger(__name__)
 
     topic = kwargs.get('topic')
-    # c = Callback(topic)
     s = geckopy.subConnectTCP(
         kwargs.get('key'),
         kwargs.get('topic')
     )
     if s is None:
-        print("subscriber is None")
+        logger.error("subscriber is None")
         return
 
     while not geckopy.is_shutdown():
         msg = s.recv_nb()
         if msg:
-            geckopy.loginfo("{}: {}".format(topic,msg))
+            logger.info("{}: {}".format(topic, msg))
         chew_up_cpu(.1)
         rate.sleep()
 
@@ -97,13 +98,13 @@ if __name__ == '__main__':
         p.start(func=publisher, name='pub_{}'.format(topic), kwargs=args)
         procs.append(p)
 
-        # s = GeckoSimpleProcess()
-        # s.start(func=subscriber, name='sub_{}'.format(topic), kwargs=args)
-        # procs.append(s)
+        s = GeckoSimpleProcess()
+        s.start(func=subscriber, name='sub_{}'.format(topic), kwargs=args)
+        procs.append(s)
 
-        # s = GeckoSimpleProcess()
-        # s.start(func=subscriber, name='sub_{}_2'.format(topic), kwargs=args)
-        # procs.append(s)
+        s = GeckoSimpleProcess()
+        s.start(func=subscriber, name='sub_{}_2'.format(topic), kwargs=args)
+        procs.append(s)
 
     # while not geckopy.is_shutdown():
     while True:

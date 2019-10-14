@@ -15,10 +15,12 @@ from pygecko.transport.zmq_base import get_ip
 from pygecko.messages.std_msgs import Log
 from pygecko.multiprocessing.sig import SignalCatch  # capture signals in processes
 from pygecko.core.transport import Ascii
-from colorama import Fore, Style
 import time
-import socket
 import multiprocessing as mp
+
+from colorama import Fore, Back, Style
+import logging
+import logging.handlers
 
 from pygecko.core.mcsocket import MultiCastSocket
 
@@ -86,6 +88,7 @@ class BeaconFinder:
         time.sleep(0.01)
         # while True:
         # try:
+
         # data = returned message info
         # server = ip:port, which is x.x.x.x:9990
         data, server = self.sock.recv()
@@ -109,7 +112,7 @@ class BeaconFinder:
                 if data[3] == "ok" and data[0] == self.key and data[1] == topic:
                     servicesFound = data
                 else:
-                    print("FAIL:", data)
+                    print("FAIL:", topic, data)
                 # break
         # if len(data) == 2:
         #     servicesFound = (zmqTCP(server[0], data[0]), zmqTCP(server[0], data[1]),)
@@ -164,8 +167,10 @@ class GeckoPy(SignalCatch):
         # self.srvs = []   # services
         # self.hooks = []  # functions to call on shutdown
         self.name = mp.current_process().name
-        self.pid = mp.current_process().pid
+        # self.pid = mp.current_process().pid
         self.logpub = None
+
+        self.binders = {}  # topic/endpt
 
         # hard code for now
         # if 'host' in kwargs.keys():
@@ -178,10 +183,10 @@ class GeckoPy(SignalCatch):
         self.proc_ip = get_ip()  # this ip address
 
         print("----------------------------------")
-        print("GeckoPy")
+        print("GeckoPy [{}]".format(self))
         print("-----------")
         print("  Process:", self.name)
-        print("  PID:", self.pid)
+        print("  PID:", mp.current_process().pid)
         print("  Host: {}".format(self.proc_ip))
         print("----------------------------------")
 
@@ -220,28 +225,28 @@ def init_node(**kwargs):
         # print("Created geckopy >> {}".format(g_geckopy))
 
 
-def loginfo(text, topic='log'):
-    global g_geckopy
-    msg = Log('INFO', g_geckopy.name, text)
-    g_geckopy.log(topic, msg)
+# def loginfo(text, topic='log'):
+#     global g_geckopy
+#     msg = Log('INFO', g_geckopy.name, text)
+#     g_geckopy.log(topic, msg)
+#
 
-
-def logdebug(text, topic='log'):
-    global g_geckopy
-    msg = Log('DEBUG', g_geckopy.name, text)
-    g_geckopy.log(topic, msg)
-
-
-def logwarn(text, topic='log'):
-    global g_geckopy
-    msg = Log('WARN', g_geckopy.name, text)
-    g_geckopy.log(topic, msg)
-
-
-def logerror(text, topic='log'):
-    global g_geckopy
-    msg = Log('ERROR', g_geckopy.name, text)
-    g_geckopy.log(topic, msg)
+# def logdebug(text, topic='log'):
+#     global g_geckopy
+#     msg = Log('DEBUG', g_geckopy.name, text)
+#     g_geckopy.log(topic, msg)
+#
+#
+# def logwarn(text, topic='log'):
+#     global g_geckopy
+#     msg = Log('WARN', g_geckopy.name, text)
+#     g_geckopy.log(topic, msg)
+#
+#
+# def logerror(text, topic='log'):
+#     global g_geckopy
+#     msg = Log('ERROR', g_geckopy.name, text)
+#     g_geckopy.log(topic, msg)
 
 
 def is_shutdown():
@@ -295,9 +300,9 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
     pid = mp.current_process().pid
 
     if fname:
-        addr = zmqUDS(fname)
-        p.bind(addr, queue_size=queue_size)
-        msg = (key, topic, str(pid), addr)
+        endpt = zmqUDS(fname)
+        p.bind(endpt, queue_size=queue_size)
+        msg = (key, topic, str(pid), endpt)
 
         # print(p)
         # print(msg)
@@ -305,7 +310,8 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
         # addr = g_geckopy.proc_ip
         addr = zmqTCP(g_geckopy.proc_ip)
         port = p.bind(addr, queue_size=queue_size, random=True)
-        msg = (key, topic, str(pid), zmqTCP(g_geckopy.proc_ip, port))
+        endpt = zmqTCP(g_geckopy.proc_ip, port)
+        msg = (key, topic, str(pid), endpt)
 
     retry = 5
 
@@ -319,7 +325,9 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
 
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and (data[3] == "ok"):
             print("geckopy.Binder SUCCESS", i)
+            g_geckopy.binders[topic] = endpt
             return p
+
     return None
 
 
@@ -360,7 +368,14 @@ def Connector(key, topic, Proto, queue_size=5):
     retry = 5
     data = None
 
-    for _ in range(retry):
+    if topic in g_geckopy.binders:
+        endpt = g_geckopy.binders[topic]
+        p = Proto()
+        p.connect(endpt)
+        print("geckopy.Connector SUCCESS")
+        return p
+
+    for i in range(retry):
         data = bf.send(msg)
         print(">> conn raw: ", data)
 
@@ -378,6 +393,7 @@ def Connector(key, topic, Proto, queue_size=5):
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and data[3] == "ok":
             p = Proto()
             p.connect(data[2])
+            print("geckopy.Connector SUCCESS", i)
             return p
 
     return None
@@ -397,6 +413,55 @@ def subConnectTCP(key, topic, queue_size=5):
 
 def subConnectUDS(key, topic, queue_size=5):
     return Connector(key, topic, Sub, queue_size)
+
+
+class CustomFormatter(logging.Formatter):
+    """Logging Formatter to add colors and count warning / errors"""
+
+    # grey = Fore.CYAN
+    # yellow = Fore.YELLOW
+    # red = Fore.RED
+    # bold_red = Fore.MAGENTA + Style.BRIGHT
+    reset = Style.RESET_ALL
+    # format = "%(asctime)s [%(levelname)s]:  %(message)s "
+
+    FORMATS = {
+        logging.DEBUG:    Back.GREEN + Fore.WHITE + "[%(asctime)s DBUG>" + reset + " %(message)s",
+        logging.INFO:     Back.BLUE + Fore.WHITE + "[%(asctime)s INFO>" + reset + " %(message)s",
+        logging.WARNING:  Back.YELLOW + Fore.WHITE + "[%(asctime)s WARN>" + reset + " %(message)s",
+        logging.ERROR:    Back.RED + Fore.WHITE + "[%(asctime)s ERR>" + reset + " %(message)s",
+        logging.CRITICAL: Back.MAGENTA + Fore.WHITE + "[%(asctime)s CRIT>" + reset + " %(message)s"
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt, datefmt="%H:%M:%S")
+        return formatter.format(record)
+
+
+def getLogger(name, filename=None, level=logging.DEBUG):
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    ch = logging.StreamHandler()
+    ch.setFormatter(CustomFormatter())
+    logger.addHandler(ch)
+
+    if filename:
+        fh = logging.FileHandler(filename)
+        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+
+    return logger
+
+
+
+
+
+
+
+
 
     # """
     # Creates a publisher that can either connect or bind to an address.
