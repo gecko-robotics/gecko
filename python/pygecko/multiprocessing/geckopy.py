@@ -12,7 +12,7 @@ from pygecko.transport.zmq_base import zmqUDS
 from pygecko.transport.zmq_base import get_ip
 # from pygecko.gecko_enums import Status
 # from pygecko.gecko_enums import ZmqType
-from pygecko.messages.std_msgs import Log
+# from pygecko.messages.std_msgs import Log
 from pygecko.multiprocessing.sig import SignalCatch  # capture signals in processes
 from pygecko.core.transport import Ascii
 import time
@@ -225,30 +225,6 @@ def init_node(**kwargs):
         # print("Created geckopy >> {}".format(g_geckopy))
 
 
-# def loginfo(text, topic='log'):
-#     global g_geckopy
-#     msg = Log('INFO', g_geckopy.name, text)
-#     g_geckopy.log(topic, msg)
-#
-
-# def logdebug(text, topic='log'):
-#     global g_geckopy
-#     msg = Log('DEBUG', g_geckopy.name, text)
-#     g_geckopy.log(topic, msg)
-#
-#
-# def logwarn(text, topic='log'):
-#     global g_geckopy
-#     msg = Log('WARN', g_geckopy.name, text)
-#     g_geckopy.log(topic, msg)
-#
-#
-# def logerror(text, topic='log'):
-#     global g_geckopy
-#     msg = Log('ERROR', g_geckopy.name, text)
-#     g_geckopy.log(topic, msg)
-
-
 def is_shutdown():
     """
     Returns true if it is time to shutdown.
@@ -418,12 +394,7 @@ def subConnectUDS(key, topic, queue_size=5):
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
 
-    # grey = Fore.CYAN
-    # yellow = Fore.YELLOW
-    # red = Fore.RED
-    # bold_red = Fore.MAGENTA + Style.BRIGHT
     reset = Style.RESET_ALL
-    # format = "%(asctime)s [%(levelname)s]:  %(message)s "
 
     FORMATS = {
         logging.DEBUG:    Back.GREEN + Fore.WHITE + "[%(asctime)s DBUG>" + reset + " %(message)s",
@@ -440,13 +411,20 @@ class CustomFormatter(logging.Formatter):
 
 
 def getLogger(name, filename=None, level=logging.DEBUG):
+    """
+    name: logger name to get
+    filename: name of log file to append to. If None (default), no file.
+    level: minimum level to log to (debug is the lowest)
+    """
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
+    # stdout -----------------------------------
     ch = logging.StreamHandler()
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
 
+    # file -------------------------------------
     if filename:
         fh = logging.FileHandler(filename)
         formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")

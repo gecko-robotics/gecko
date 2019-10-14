@@ -10,8 +10,6 @@ from pygecko.multiprocessing import geckopy
 from pygecko.multiprocessing.process import GeckoSimpleProcess
 import time
 
-# threads_alive = 0
-
 
 def chew_up_cpu(interval):
     # chew up some cpu
@@ -86,8 +84,6 @@ if __name__ == '__main__':
 
     # for topic in ['ryan', 'mike', 'sammie', 'scott']:
     for topic in ['ryan']:
-        # threads_alive += 1
-
         # info to pass to processes
         args = {
             "key": "local",
@@ -106,7 +102,6 @@ if __name__ == '__main__':
         s.start(func=subscriber, name='sub_{}_2'.format(topic), kwargs=args)
         procs.append(s)
 
-    # while not geckopy.is_shutdown():
     while True:
         try:
             time.sleep(1)
