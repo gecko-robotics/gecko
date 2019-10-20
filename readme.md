@@ -58,6 +58,29 @@ node cpu/memory usage
     - messages can be simple or timestamped
     - Python: messages are `namedtuples`
 
+# Organization
+
+Gecko libraries are stored in stored in `/opt/gecko` to keep them separated from
+system libraries:
+
+```
+/opt/gecko
+     +- bin/
+     +- include/  # gecko dependencies
+     +- lib/      # gecko dependencies
+     +- <gecko_version>  # core gecko includes/libraries
+     |   +- bin/
+     |   +- include/
+     |   +- lib/
+     +- modules/  # additions to core or hw drivers or other sw
+     |   +- <driver_a>  # these are modular and simple rm to remove
+     |       +- include/
+     |       +- lib/
+     |       +- config/   # any sort of configuration files or cmake
+     +- share/
+         +- cmake/
+```
+
 # Transport IPC
 
 Endpoint protocols:
@@ -194,7 +217,7 @@ Like `ros2`, `gecko` is a bunch of tools written in python:
 - `gecko core run|ping`
 - `gecko multicast a|b|c`
     - send multicast messages (just simple a, b, or c) between computers to
-    test connectivity 
+    test connectivity
 - `gecko bag play|record filename --loop`
     - bag will use the python library [the-collector](https://github.com/MomsFriendlyRobotCompany/the_collector)
     and store data using `pickle` so any python jupyter notebook or tools can
