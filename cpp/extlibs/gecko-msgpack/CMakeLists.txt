@@ -23,3 +23,12 @@ endforeach()
 
 # Examples -----------------------------------------------------------
 add_subdirectory(examples)
+
+install(
+    DIRECTORY gecko
+    DESTINATION include
+)
+# install(
+#     TARGETS marko
+#     DESTINATION lib
+# )

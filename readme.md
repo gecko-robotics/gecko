@@ -74,13 +74,14 @@ system libraries:
      |   +- bin/
      |   +- include/
      |   +- lib/
+     |       +- cmake/   # gecko cmake
      +- modules/  # additions to core or hw drivers or other sw
-     |   +- <driver_a>  # these are modular and simple rm to remove
+     |   +- <driver_a>   # these are modular and simple rm to remove
      |       +- include/
      |       +- lib/
-     |       +- config/   # any sort of configuration files or cmake
+     |       +- config/  # any sort of configuration files or cmake
      +- share/
-         +- cmake/
+         +- cmake/  # gecko dependency cmake
 ```
 
 ## Python

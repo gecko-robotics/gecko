@@ -28,7 +28,8 @@ endif()
 
 # gecko.cmake ----------------------------------------------------
 # set(WS "${PROJECT_SOURCE_DIR}/gecko_workspace.txt")
-set(GECKO_BASE_PATH "/opt/gecko")
+set(GECKO_VERSION "gecko")
+set(GECKO_BASE_PATH "/opt/gecko/${GECKO_VERSION}")
 # IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 # else()
 message(STATUS ">> Setting install base path: ${GECKO_BASE_PATH}")
