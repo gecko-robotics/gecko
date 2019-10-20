@@ -60,6 +60,8 @@ node cpu/memory usage
 
 # Organization
 
+## C++
+
 Gecko libraries are stored in stored in `/opt/gecko` to keep them separated from
 system libraries:
 
@@ -80,6 +82,10 @@ system libraries:
      +- share/
          +- cmake/
 ```
+
+## Python
+
+Use `pip` to manage software
 
 # Transport IPC
 
