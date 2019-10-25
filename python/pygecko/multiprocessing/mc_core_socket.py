@@ -55,10 +55,10 @@ class BeaconFinder:
             return None
 
         if msg == data:
-            print("send echo:", data, server)
+            # print("send echo:", data, server)
             return None
 
-        print("beconfinder recv data:", data, server)
+        # print("beconfinder recv data:", data, server)
 
         if data:
             data = self.handler.loads(data)
@@ -69,14 +69,7 @@ class BeaconFinder:
                 # print('>> Search:', data, server)
                 if data[3] == "ok" and data[0] == self.key and data[1] == topic:
                     servicesFound = data
-                else:
-                    print("FAIL:", topic, data)
+                # else:
+                #     print("FAIL:", topic, data)
                 # break
-        # if len(data) == 2:
-        #     servicesFound = (zmqTCP(server[0], data[0]), zmqTCP(server[0], data[1]),)
-        #     break
-        # except socket.timeout:
-        #     print("*** timeout ***")
-        #     break
-        # print(">> search done")
         return servicesFound

@@ -9,6 +9,7 @@
 from pygecko.multiprocessing import geckopy
 from pygecko.multiprocessing.process import GeckoSimpleProcess
 import time
+# import json
 
 
 def chew_up_cpu(interval):
@@ -31,10 +32,11 @@ def publisher(**kwargs):
         logger.error("publisher is None")
         return
 
-    start = time.time()
+    # start = time.time()
     cnt = 0
     while geckopy.ok():
-        msg = {'time': time.time() - start}
+        # msg = json.dumps({'time': time.time() - start})
+        msg = b"hello"
         p.publish(msg)  # topic msg
 
         logger.debug('[{}] published msg'.format(cnt))
@@ -62,7 +64,7 @@ def subscriber(**kwargs):
     while not geckopy.is_shutdown():
         msg = s.recv_nb()
         if msg:
-            logger.info("{}: {}".format(topic, msg))
+            logger.info("{}: {}".format(topic, msg.decode("utf-8")))
         chew_up_cpu(.1)
         rate.sleep()
 

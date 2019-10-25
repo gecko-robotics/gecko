@@ -57,7 +57,7 @@ def subscriber(**kwargs):
     while not geckopy.is_shutdown():
         msg = s.recv_nb()
         if msg:
-            geckopy.loginfo("{}: {}".format(topic,msg))
+            geckopy.loginfo("{}: {}".format(topic, msg))
         chew_up_cpu(.1)
         rate.sleep()
 

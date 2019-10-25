@@ -68,7 +68,7 @@ setup(
         'tag': SetGitTag
     },
     scripts=[
-        'bin/geckocore.py',
+        # 'bin/geckocore.py',
         'bin/gecko.py',
         # 'bin/geckolaunch.py',
         # 'bin/mjpeg_server.py',  # why? use opencvutils instead

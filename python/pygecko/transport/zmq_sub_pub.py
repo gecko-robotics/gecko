@@ -15,20 +15,22 @@ import zmq
 import time
 from pygecko.transport.zmq_base import Base
 from pygecko.transport.zmq_base import ZMQError
-from pygecko.messages.protocols import MsgPack
+# from pygecko.messages.protocols import MsgPack
+# MsgPack = None
 
 
 class Pub(Base):
     """
     Simple publisher
     """
-    def __init__(self, serialize=MsgPack):
+    def __init__(self):
         """
         Publishes messages on a topic.
 
         in: pack - function to serialize messages if needed
         """
-        Base.__init__(self, zmq.PUB, serialize=serialize)
+        # Base.__init__(self, zmq.PUB, serialize=serialize)
+        Base.__init__(self, zmq.PUB)
 
         # try:
         #     # self.socket = self.ctx.socket(zmq.PUB)
@@ -59,7 +61,8 @@ class Pub(Base):
         # else:
         #     jmsg = msgpack.packb(msg, use_bin_type=True, strict_types=True)
 
-        jmsg = self.packer.pack(msg)
+        # jmsg = self.packer.pack(msg)  # original
+
         # print(">> packed msg pub: [{}] {}".format(len(jmsg), jmsg))
         # jmsg = zlib.compress(jmsg, -1)  # set to default level
         # print(">> compressed msg pub: [{}] {}".format(len(jmsg), jmsg))
@@ -72,7 +75,7 @@ class Pub(Base):
         #     # done = self.socket.send(jmsg)
         # print('pub >>', topic.encode('ascii'))
         # self.socket.send_multipart([jmsg])
-        self.socket.send(jmsg)
+        self.socket.send(msg)
 
     # def raw_pub(self, topic, msg):
     #     # done = True
@@ -88,12 +91,13 @@ class Sub(Base):
     """
     # unpack = None
 
-    def __init__(self, topics=None, serialize=MsgPack):
+    def __init__(self, topics=None):
         """
         topics: an array of topics, ex ['hello', 'cool messages'] or None to subscribe to all messages
         unpack: a function to deserialize messages if necessary
         """
-        Base.__init__(self, zmq.SUB, serialize=serialize)
+        # Base.__init__(self, zmq.SUB, serialize=serialize)
+        Base.__init__(self, zmq.SUB)
         # self.cb_func = cb_func
 
         try:
@@ -143,7 +147,7 @@ class Sub(Base):
         msg = None
         try:
             # topic, jmsg = self.socket.recv_multipart(flags=flags)
-            jmsg = self.socket.recv(flags=flags)
+            msg = self.socket.recv(flags=flags)
 
             # print(">> sub.recv compressed: [{}] {}".format(len(jmsg), jmsg))
 
@@ -153,7 +157,9 @@ class Sub(Base):
             # else:
             #     msg = msgpack.unpackb(jmsg, raw=False)
             # print(">> sub.recv packed: [{}] {}".format(len(jmsg), jmsg))
-            msg = self.packer.unpack(jmsg)
+
+            # msg = self.packer.unpack(jmsg) # original
+
             # print(">> sub.recv unpacked:", msg)
             # if self.cb_func:
             #     self.cb_func(topic, msg)

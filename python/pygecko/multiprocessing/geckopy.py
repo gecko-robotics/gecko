@@ -124,14 +124,14 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
 
     for i in range(retry):
         data = bf.send(msg)
-        print(">> bind raw:", data)
+        # print(">> bind raw:", data)
 
         if data is None:
             time.sleep(0.5)
             continue
 
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and (data[3] == "ok"):
-            print("geckopy.Binder SUCCESS", i)
+            # print("geckopy.Binder SUCCESS", i)
             g_geckopy.binders[topic] = endpt
             return p
 
@@ -179,12 +179,12 @@ def Connector(key, topic, Proto, queue_size=5):
         endpt = g_geckopy.binders[topic]
         p = Proto()
         p.connect(endpt)
-        print("geckopy.Connector SUCCESS")
+        # print("geckopy.Connector SUCCESS")
         return p
 
     for i in range(retry):
         data = bf.send(msg)
-        print(">> conn raw: ", data)
+        # print(">> conn raw: ", data)
 
         if data is None:
             time.sleep(0.5)
@@ -200,7 +200,7 @@ def Connector(key, topic, Proto, queue_size=5):
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and data[3] == "ok":
             p = Proto()
             p.connect(data[2])
-            print("geckopy.Connector SUCCESS", i)
+            # print("geckopy.Connector SUCCESS", i)
             return p
 
     return None
