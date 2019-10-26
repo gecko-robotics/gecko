@@ -7,18 +7,20 @@
 #include <iostream>  // cout endl
 #include <stdio.h>   // printf
 #include <gecko/gecko.hpp>
-#include "msgs.pb.h"
+// #include <msgs.pb.h>
+#include <helper_pb.h>
 
 using namespace std;
 using namespace gecko;
+using namespace geckopb;
 
-template <class MSG>
-MSG protobufUnpack(zmq::message_t& msg){
-    string m(reinterpret_cast<const char*>(msg.data()), msg.size());
-    MSG v;
-    v.ParseFromString(m);
-    return std::move(v);
-}
+// template <class MSG>
+// MSG protobufUnpack(zmq::message_t& msg){
+//     string m(reinterpret_cast<const char*>(msg.data()), msg.size());
+//     MSG v;
+//     v.ParseFromString(m);
+//     return std::move(v);
+// }
 
 int main(int argc, char *argv[]){
     gecko::init();

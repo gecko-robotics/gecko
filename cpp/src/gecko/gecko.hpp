@@ -43,7 +43,7 @@
 
 #include <unistd.h>           // sleep, usleep
 
-// broadcast/multicast stuff
+// broadcast/multicast stuff - Marko lib
 #include <ascii.hpp>
 #include <bsocket.hpp>
 #include <mcsocket.hpp>

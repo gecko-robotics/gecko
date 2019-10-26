@@ -2,17 +2,21 @@
 #include <stdio.h>
 
 #include <gecko/gecko.hpp>
-#include "msgs.pb.h"
+// #include <msgs.pb.h>
+#include <helper_pb.h>
+
 
 using namespace std;
+using namespace gecko;
+using namespace geckopb;
 
-template <class MSG>
-zmq::message_t protobufPack(MSG& m){
-    string s;
-    m.SerializeToString(&s);
-    zmq::message_t msg(static_cast<void*>(s.data()), s.size());
-    return std::move(msg);
-}
+// template <class MSG>
+// zmq::message_t protobufPack(MSG& m){
+//     string s;
+//     m.SerializeToString(&s);
+//     zmq::message_t msg(static_cast<void*>(s.data()), s.size());
+//     return std::move(msg);
+// }
 
 int main(void){
     GOOGLE_PROTOBUF_VERIFY_VERSION;
