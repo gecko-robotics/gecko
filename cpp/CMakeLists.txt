@@ -66,12 +66,10 @@ endif()
 include(cmake/threads.cmake)
 
 # Marko -----------------------------------------------------------
-# include_directories(extlibs/marko/lib/include)
-# link_directories(extlibs/marko/build)
-# list(APPEND ALL_LIBS "marko")
-
-add_subdirectory(extlibs/protobuf)
 add_subdirectory(extlibs/marko)
+
+# Protobuf ------------------------------------------------------
+add_subdirectory(extlibs/protobuf)
 
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
@@ -120,59 +118,7 @@ add_subdirectory(tools)
 # add_subdirectory(extlibs/gecko-msgpack)
 # include_directories(extlibs/gecko-msgpack)
 
-
-# Protobuf ------------------------------------------------------
-
-# find_package(Protobuf REQUIRED)
-# if ( Protobuf_FOUND )
-#     # include_directories(${Protobuf_INCLUDE_DIRS})
-#     # include_directories(${CMAKE_CURRENT_BINARY_DIR})
-#     message( STATUS "Protobuf version : ${Protobuf_VERSION}" )
-#     message( STATUS "Protobuf include path : ${Protobuf_INCLUDE_DIRS}" )
-#     message( STATUS "Protobuf libraries : ${Protobuf_LIBRARIES}" )
-#     message( STATUS "Protobuf compiler libraries : ${Protobuf_PROTOC_LIBRARIES}")
-#     message( STATUS "Protobuf lite libraries : ${Protobuf_LITE_LIBRARIES}")
-#
-#     set(BASE_MSG "./extlibs/protobuf")
-#     set(MSG_PROTOS
-#         # ${BASE_MSG}/standard_msgs.proto
-#         # ${BASE_MSG}/nav_msgs.proto
-#         # ${BASE_MSG}/sensor_msgs.proto
-#         ${BASE_MSG}/msgs.proto
-#     )
-#
-#     # protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${MSG_PROTOS})
-#     execute_process(COMMAND
-#
-#     message(STATUS "[>>] ${PROTO_SRCS} \n${PROTO_HDRS} \n${BASE_MSG}/${MSG_PROTOS}")
-#
-#     # add_library(proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
-#     # file(GLOB PROTO_SRCS build/proto/*.pb.cc)
-#     # file(GLOB PROTO_HDRS build/proto/*.pb.h)
-#     add_library(proto
-#         SHARED
-#             ${PROTO_SRCS}
-#             ${PROTO_HDRS}
-#     )
-#     target_include_directories(proto
-#         PUBLIC
-#             ${CMAKE_CURRENT_BINARY_DIR}
-#             ${Protobuf_INCLUDE_DIRS}
-#     )
-#     target_link_libraries(
-#         proto
-#         ${Protobuf_LIBRARIES}
-#     )
-#
-#     list(APPEND ALL_LIBS proto)
-#
-# else()
-#     message( WARNING "Protobuf package not found -> set PROTOBUF_ROOT variable")
-# endif()
-
-
 # Tests --------------------------------------------------------------
-# enable_testing()
 add_subdirectory(gtests)
 
 # Examples -----------------------------------------------------------

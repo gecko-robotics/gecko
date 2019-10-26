@@ -30,7 +30,7 @@
 # target_link_libraries(reply ${PROJECT_NAME})
 
 # Protobuf ------------------------------------------------------
-find_package(Protobuf REQUIRED)
+find_package(Protobuf 3 REQUIRED)
 if ( Protobuf_FOUND )
     # include_directories(${Protobuf_INCLUDE_DIRS})
     # include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -49,17 +49,38 @@ if ( Protobuf_FOUND )
     # )
     set(CWD ${CMAKE_CURRENT_SOURCE_DIR})
     message(STATUS ">>> ${CWD}")
-    execute_process(COMMAND "protoc" "--proto_path=./ --cpp_out=./ msgs.proto"
-        WORKING_DIRECTORY ${CWD}
+    # execute_process(COMMAND "protoc" "--proto_path=${CWD} --cpp_out=${CWD} ${CWD}/msgs.proto"
+    #     WORKING_DIRECTORY ${CWD}
+    # )
+    find_program(PROTOC NAMES protoc)
+    if (NOT EXISTS ${PROTOC})
+      message(FATAL_ERROR "The protoc program was not found")
+    endif()
+    message(STATUS "Found protoc program: " ${PROTOC})
+
+    set(ABSProtoFiles "${CWD}/msgs.proto")
+    list(APPEND PROTOC_FLAGS "--proto_path=${CWD}" "--cpp_out=${CWD}")
+
+    # TODO: automate this with glob
+    set(PROTO_SRCS "${CWD}/msgs.pb.cc")
+    set(PROTO_HDRS "${CWD}/msgs.pb.h")
+
+    add_custom_command(
+        OUTPUT ${PROTO_SRCS} ${PROTO_HDRS}
+        COMMAND ${PROTOC} ${PROTOC_FLAGS} ${ABSProtoFiles}
+        COMMENT "Generating proto messages for matrix_io ..."
     )
+
+
+
     # protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${MSG_PROTOS})
     # execute_process(COMMAND
 
     # message(STATUS "[>>] ${PROTO_SRCS} \n${PROTO_HDRS} \n${BASE_MSG}/${MSG_PROTOS}")
 
     # add_library(proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
-    file(GLOB PROTO_SRCS *.pb.cc)
-    file(GLOB PROTO_HDRS *.pb.h helper_pb.h)
+    # file(GLOB PROTO_SRCS *.pb.cc)
+    # file(GLOB PROTO_HDRS *.pb.h helper_pb.h)
     add_library(proto
         SHARED
             ${PROTO_SRCS}
@@ -81,7 +102,7 @@ if ( Protobuf_FOUND )
     list(APPEND ALL_LIBS proto)
 
     install(
-        FILES ${PROTO_HDRS}
+        FILES ${PROTO_HDRS} helper_pb.h gecko_pb.h
         DESTINATION include/gecko/protobuf
     )
     install(

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <msgs.pb.h>
+#include <gecko/protobuf/msgs.pb.h>
 #include <zmq.hpp>
 
 namespace geckopb {

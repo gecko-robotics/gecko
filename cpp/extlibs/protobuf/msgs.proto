@@ -116,13 +116,19 @@ message CameraInfo {
     repeated double P = 7 [packed=true];
 }
 
+message LaserPt {
+    double angle = 1;
+    double range = 2;
+    double intensity = 3;
+}
+
 message LaserScan {
     double timestamp = 1;  // unix timestamp
     double angle_increment = 2;
     double range_min = 3;
     double range_max = 4;
-    repeated double ranges = 5 [packed=true];
-    repeated double intensities = 6 [packed=true];
+    repeated double range = 5 [packed=true];
+    repeated double intensity = 6 [packed=true];
 }
 
 message NavSatFix {
