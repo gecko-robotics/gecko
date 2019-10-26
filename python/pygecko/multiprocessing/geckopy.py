@@ -190,13 +190,6 @@ def Connector(key, topic, Proto, queue_size=5):
             time.sleep(0.5)
             continue
 
-        # current python [FIXME]
-        # if (len(data) == 3) and (data[0] == key) and (data[1] == topic):
-        #     p = Proto()
-        #     p.connect(data[2])
-        #     return p
-
-        # c++
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and data[3] == "ok":
             p = Proto()
             p.connect(data[2])

@@ -1,4 +1,4 @@
-# import time
+import time
 # import os
 # from collections import namedtuple
 # from multiprocessing import Event
@@ -7,7 +7,7 @@
 # from pygecko.apps.core import CoreServer
 # from pygecko.network.transport import Ascii
 #
-# from pygecko.multiprocessing import geckopy
+from pygecko.multiprocessing import geckopy
 # from pygecko.transport.zmq_sub_pub import Pub, Sub
 # from pygecko.multiprocessing.process import GeckoSimpleProcess
 #
@@ -91,18 +91,18 @@
 #
 # def test_yaml():
 #     file_func(FileYaml, 'test.yml')
-#
-#
-# def test_rate():
-#     rate = geckopy.Rate(10)
-#     start = time.time()
-#     for _ in range(10):
-#         rate.sleep()
-#     stop = time.time()
-#     # print(stop - start)
-#     assert (stop - start) + 0.05 > 1.0
-#
-#
+
+
+def test_rate():
+    rate = geckopy.Rate(10)
+    start = time.time()
+    for _ in range(10):
+        rate.sleep()
+    stop = time.time()
+    # print(stop - start)
+    assert (stop - start) + 0.05 > 1.0
+
+
 # def msg_zmq(args):
 #     # start message hub
 #     # core = GeckoCore()

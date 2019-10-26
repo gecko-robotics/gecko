@@ -50,15 +50,15 @@ setup(
         'pyyaml',         # config files
         'psutil',         # core performance reporting
         'simplejson',     # config files
-        'msgpack',        # efficient message serialization through zmq
+        # 'msgpack',        # efficient message serialization through zmq
         'pyzmq',          # connecting to different processes and computers
         # 'bjoern',         # http server, multiple connections
         'the_collector',  # saving data
         'colorama',       # log messages
-        'numpy',          # basic image stuff ... remove/optional?
+        # 'numpy',          # basic image stuff ... remove/optional?
         'build_utils'     # installing and building the library
     ],
-    url="https://github.com/MomsFriendlyRobotCompany/{}".format(PACKAGE_NAME),
+    url="https://github.com/gecko-robotics/{}".format(PACKAGE_NAME),
     long_description=README,
     long_description_content_type='text/markdown',
     packages=[PACKAGE_NAME],
