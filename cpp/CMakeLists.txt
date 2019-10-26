@@ -69,7 +69,7 @@ include(cmake/threads.cmake)
 add_subdirectory(extlibs/marko)
 
 # Protobuf ------------------------------------------------------
-add_subdirectory(extlibs/protobuf)
+# add_subdirectory(extlibs/protobuf)
 
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
@@ -149,6 +149,11 @@ if(1)
       DESTINATION ${GECKO_INCLUDE}
       FILES_MATCHING PATTERN "*.hpp"
       PATTERN ".git" EXCLUDE
+    )
+
+    install(
+        FILES cmake/gecko.cmake
+        DESTINATION ${GECKO_CMAKE}/gecko
     )
 
     # file(GLOB HEADERS src/gecko/*.hpp)
