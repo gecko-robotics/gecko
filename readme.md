@@ -45,7 +45,8 @@ node cpu/memory usage
     - GeckoCore is optional, if you know the TCP/UDS address, you can tell the
     pub/sub or req/rep where the endpoint is. GeckoCore is just there to make
     things easier and provide performance info
-- Serialization is done with `msgpack`
+- Serialization can be done with your favorite library, there are examples with
+`msgpack` and `protobuf`
 - Tools
     - bag: save data for replay later
     - topic: display pub/sub
@@ -251,4 +252,4 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
 FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
