@@ -39,7 +39,7 @@ matrix:
           #   system_site_packages: true
           script:
             - ls
-            - cd python/tests
+            - cd tests
             - python -m nose -v test.py
           install:
             - cd python
