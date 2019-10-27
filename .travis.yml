@@ -16,17 +16,20 @@ matrix:
             - cmake ..
             - make
             - ./gtest/all-gtest
-        - language: python
-          python:
-            - "3.6"
-            - "3.7"
-            - "3.8"
-          virtualenv:
-            system_site_packages: true
-          script:
-            - ls
-            - cd python/tests
-            - python -m nose -v test.py
+        # - language: python
+        #   python:
+        #     - "3.6"
+        #     - "3.7"
+        #     - "3.8"
+        #   # virtualenv:
+        #   #   system_site_packages: true
+        #   script:
+        #     - ls
+        #     - cd python/tests
+        #     - python -m nose -v test.py
+        #   install:
+        #     - pip install -U pip setuptools wheel build_utils nose
+        #     - pip install .
 
 # matrix:
 #   include:
