@@ -13,6 +13,25 @@ matrix:
                   - libzmq3-dev
           arch:
               - amd64
+              # - arm64
+          script:
+            - ls
+            - cd cpp
+            - ./build_extlibs.sh
+            - mkdir build
+            - cd build
+            - cmake ..
+            - make
+            - ls
+            - ./gtests/all-gtest
+        - language: cpp
+          addons:
+              apt:
+                packages:
+                  - cmake
+                  - libzmq3-dev
+          arch:
+              # - amd64
               - arm64
           script:
             - ls
