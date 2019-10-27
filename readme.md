@@ -4,6 +4,7 @@
 
 ## My robot software.
 
+- Supported OS'es: macOS, Linux Ubuntu, Linux Raspbian
 - Doesn't use [ROS](http://ros.org), ROS and ROS2 is a pain to install and maintain
 on macOS and various linux systems
     - Uses some of the same ideas, constructs, architecture ideas, APIs but
@@ -45,49 +46,31 @@ node cpu/memory usage
     - GeckoCore is optional, if you know the TCP/UDS address, you can tell the
     pub/sub or req/rep where the endpoint is. GeckoCore is just there to make
     things easier and provide performance info
-- Serialization can be done with your favorite library, there are examples with
-`msgpack` and `protobuf`
 - Tools
-    - bag: save data for replay later
-    - topic: display pub/sub
-    - service: display req/rep
-    - launch: run multiple nodes at once
-- Messages
-    - std_msgs: vector, quaternion, twist, wrench, string
-    - sensor_msgs: image, imu, lidar, joy
-    - nav_msgs: path, odemetry
-    - messages can be simple or timestamped
-    - Python: messages are `namedtuples`
+    - gecko bag: save data for replay later
+    - gecko topic: display pub/sub
+    - gecko service: display req/rep
+    - gecko launch: run multiple nodes at once
+    
+# Serialization
+
+- [gecko-msgpack]()
+- [gecko-protobuf]()
 
 # Organization
 
 ## C++
 
-Gecko libraries are stored in stored in `/opt/gecko` to keep them separated from
-system libraries:
-
-```
-/opt/gecko
-     +- bin/
-     +- include/  # gecko dependencies
-     +- lib/      # gecko dependencies
-     +- <gecko_version>  # core gecko includes/libraries
-     |   +- bin/
-     |   +- include/
-     |   +- lib/
-     |       +- cmake/   # gecko cmake
-     +- modules/  # additions to core or hw drivers or other sw
-     |   +- <driver_a>   # these are modular and simple rm to remove
-     |       +- include/
-     |       +- lib/
-     |       +- config/  # any sort of configuration files or cmake
-     +- share/
-         +- cmake/  # gecko dependency cmake
-```
+Libraries are stored in `/opt/gecko`.
 
 ## Python
 
-Use `pip` to manage software
+Use `pip` to manage libraries and run-time software
+
+## Nodejs
+
+This is a future effort ... I want to have a webserver running that can
+provide visual feedback on robot
 
 # Transport IPC
 
@@ -119,75 +102,6 @@ Endpoint protocols:
 
 In work
 
-## Core
-
-This is the main message hub. GeckoCore also is passed the PIDs for processes on the
-local machine and prints performance data on each process:
-
-```bash
-+========================================
-| Processes Performance
-| [24790] GeckoCore............. cpu:  0.3%  mem:  0.0%
-| [24793] pub_ryan.............. cpu:  0.1%  mem:  0.0%
-| [24795] pub_mike.............. cpu:  0.1%  mem:  0.0%
-| [24796] sub_mike.............. cpu: 20.5%  mem:  0.0%
-| [24797] pub_sammie............ cpu:  0.1%  mem:  0.0%
-| [24798] sub_sammie............ cpu: 20.5%  mem:  0.0%
-+------------------------------
-| ESTABLISHED Connections
-| pub_mike............ 192.168.86.22:50551 --> 192.168.86.22:50557
-| sub_mike............ 192.168.86.22:50557 --> 192.168.86.22:50551
-| pub_sammie.......... 192.168.86.22:50554 --> 192.168.86.22:50558
-| sub_sammie.......... 192.168.86.22:50558 --> 192.168.86.22:50554
-+------------------------------
-| LISTEN Connections
-| GeckoCore........... 192.168.86.22:11311
-| pub_ryan............ 192.168.86.22:50548
-| pub_mike............ 192.168.86.22:50551
-| pub_sammie.......... 192.168.86.22:50554
-+========================================
-| Published Topics <topic>@tcp://<ip>:<port>
-|  1: ryan@tcp://192.168.86.22:50548
-|  2: mike@tcp://192.168.86.22:50551
-|  3: sammie@tcp://192.168.86.22:50554
-+========================================
-```
-
-```bash
-========================================
- Geckocore [65975]
--------------
- Key: local
- Host IP: 10.0.1.57
- Listening on: 224.3.29.110:11311
--------------
-Known Services [6]
- * hello:........................ tcp://10.0.1.57:65303
- * hey there:.................... tcp://10.0.1.57:65304
- * ryan:......................... tcp://10.0.1.57:65310
- * mike:......................... tcp://10.0.1.57:65311
- * sammie:....................... tcp://10.0.1.57:65312
- * scott:........................ tcp://10.0.1.57:65313
-
-Binders [6]
- [65993] hello................. cpu:  0.0%  mem:  0.0%
- [65994] hey there............. cpu:  0.0%  mem:  0.0%
- [66008] ryan.................. cpu:  0.1%  mem:  0.0%
- [66010] mike.................. cpu:  0.1%  mem:  0.0%
- [66012] sammie................ cpu:  0.1%  mem:  0.0%
- [66014] scott................. cpu:  0.1%  mem:  0.0%
-
-Connections [8]
- [65995] hello................. cpu: 20.7%  mem:  0.0%
- [65996] hello................. cpu: 20.9%  mem:  0.0%
- [65997] hey there............. cpu: 21.0%  mem:  0.0%
- [65998] hey there............. cpu: 20.8%  mem:  0.0%
- [66011] mike.................. cpu: 19.0%  mem:  0.0%
- [66013] sammie................ cpu: 19.0%  mem:  0.0%
- [66015] scott................. cpu: 19.4%  mem:  0.0%
- [66009] ryan.................. cpu: 18.7%  mem:  0.0%
-```
-
 ## Multicast Messages
 
 Multicast is used to talk with `geckocore` and pass information between. The
@@ -218,6 +132,22 @@ python 3.
 | serialization | X   | X      |        |
 | visualization |     |        |        |
 
+# Sensors and Hardware
+
+Gecko libraries (publishers and/or subscribers) are made for the following:
+
+| Sensor  | Python | C++ |
+|---------|--------|-----|
+| ydlidar |        | X   |
+| nxp imu | X      |     |
+| rplidar |        |     |
+| tfmini  |        |     |
+| PiCamera|        |     |
+
+| Hardware     | Python | C++ |
+|--------------|--------|-----|
+| Raspberry Pi | X      |     |
+
 ## Tools
 
 Like `ros2`, `gecko` is a bunch of tools written in python:
@@ -231,7 +161,30 @@ Like `ros2`, `gecko` is a bunch of tools written in python:
     and store data using `pickle` so any python jupyter notebook or tools can
     use the data without gecko
 - `gecko topic echo|bw|pub topic message`
+- `gecko log ??`
 
+# ToDo
+
+- [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
+- [ ] `geckotopic` echo/pub/list/find tools
+- [ ] Look at yaml library: https://github.com/jbeder/yaml-cpp/
+- [x] Add submodule for [nlohmann-json](https://github.com/nlohmann/json)
+- [ ] Add json file setup
+- [ ] Add json file `geckolaunch`
+- [ ] Local nodes only, show performance ... or figure how to handle remote nodes
+- [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
+- [ ] Remote nodes, investigate ping, return performance info (core -> node)
+- [ ] Ping tool: all geckocores respond with info about themselves
+- [ ] Create a debian package for linux
+- [ ] Look at cross-compiling with docker for arm and building debian packages for simpiler install
+
+Robot stuff
+- [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/
+- [ ] AI vision using http://cocodataset.org/#home
+- [ ] AI https://skymind.ai/wiki/convolutional-network
+- [ ] https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
+- [ ] Look into NN with https://keras.io/
+- [ ] Does https://openai.com/ help with anything?
 
 # MIT License
 
