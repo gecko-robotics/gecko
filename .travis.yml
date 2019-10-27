@@ -1,13 +1,13 @@
 language: cpp
 os: linux
 sudo: false
-arch:
-    - amd64
-    - arm64
 
 matrix:
     include:
         - language: cpp
+          arch:
+              - amd64
+              - arm64
           script:
             - ls
             - ./build_extlibs.sh
