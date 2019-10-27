@@ -42,9 +42,10 @@ matrix:
             - cd python/tests
             - python -m nose -v test.py
           install:
+            - cd python
             - ls
             - pip install -U pip setuptools wheel build_utils nose
-            - pip install -e .
+            - pip install .
 
 # matrix:
 #   include:
