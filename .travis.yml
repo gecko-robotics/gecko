@@ -8,9 +8,9 @@ matrix:
         - language: cpp
           addons:
               apt:
-                  packages:
-                      - cmake
-                      -libzmq3-dev
+                packages:
+                  - cmake
+                  - libzmq3-dev
           arch:
               - amd64
               - arm64
