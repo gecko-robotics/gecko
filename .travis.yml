@@ -10,6 +10,7 @@ matrix:
         - language: cpp
           script:
             - ls
+            - ./build_extlibs.sh
             - cd cpp
             - mkdir build
             - cd build
