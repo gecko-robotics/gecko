@@ -1,27 +1,53 @@
-language: cpp
-sudo: false
 matrix:
-  include:
-    - os: osx
-      osx_image: xcode10.2
-      addons:
-          homebrew:
-            packages:
-            - python
-            - zeromq
-            - msgpack
-            - cmake
-            - boost
-            update: true
+    include:
+        - name "c++"
+        language: cpp
+        os: linux
+        arch:
+            - amd64
+            - arm64
+        script:
+            - ls
+            - cd cpp
+            - mkdir build
+            - cd build
+            - cmake ..
+            - make
+            - ./gtest/all-gtest
+        - name "python"
+        language: python
+        os: linux
+        arch:
+            - amd64
+            - arm64
+        script:
+            - ls
+            - cd python/tests
+            - python -m nose -v test.py
 
-before_install:
-    - eval "${MATRIX_EVAL}"
+sudo: false
+# matrix:
+#   include:
+#     - os: osx
+#       osx_image: xcode10.2
+#       addons:
+#           homebrew:
+#             packages:
+#             - python
+#             - zeromq
+#             - msgpack
+#             - cmake
+#             - boost
+#             update: true
 
-script:
-    - ls
+# before_install:
+#     - eval "${MATRIX_EVAL}"
 
-after_success:
-    - echo "yeah!!"
+# script:
+#     - ls
+#
+# after_success:
+#     - echo "yeah!!"
 
 
 # notifications:
