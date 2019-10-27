@@ -5,25 +5,25 @@ sudo: false
 
 matrix:
     include:
-        - language: cpp
-          addons:
-              apt:
-                packages:
-                  - cmake
-                  - libzmq3-dev
-          arch:
-              - amd64
-              - arm64
-          script:
-            - ls
-            - cd cpp
-            - ./build_extlibs.sh
-            - mkdir build
-            - cd build
-            - cmake ..
-            - make
-            - ls
-            - ./gtests/all-gtest
+        # - language: cpp
+        #   addons:
+        #       apt:
+        #         packages:
+        #           - cmake
+        #           - libzmq3-dev
+        #   arch:
+        #       - amd64
+        #       - arm64
+        #   script:
+        #     - ls
+        #     - cd cpp
+        #     - ./build_extlibs.sh
+        #     - mkdir build
+        #     - cd build
+        #     - cmake ..
+        #     - make
+        #     - ls
+        #     - ./gtests/all-gtest
         - language: python
           addons:
               apt:
@@ -42,8 +42,9 @@ matrix:
             - cd python/tests
             - python -m nose -v test.py
           install:
+            - ls
             - pip install -U pip setuptools wheel build_utils nose
-            - pip install .
+            - pip install -e .
 
 # matrix:
 #   include:
