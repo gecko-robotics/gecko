@@ -41,6 +41,7 @@ matrix:
             - ls
             - echo "<< script >>"
             - cd tests
+            - pip list
             - python3 -m nose -v test.py
           install:
             - cd python
@@ -49,7 +50,7 @@ matrix:
             - pip3 --version
             - python3 --version
             - pip3 install -U pip setuptools wheel build_utils nose
-            - pip3 install .
+            - pip3 install -e .
 
 # matrix:
 #   include:
