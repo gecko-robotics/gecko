@@ -1,11 +1,15 @@
+language: cpp
+
+sudo: false
+
+arch:
+    - amd64
+    - arm64
+
 matrix:
     include:
-        - name "linux c++"
+        - os: linux
         language: cpp
-        os: linux
-        arch:
-            - amd64
-            - arm64
         script:
             - ls
             - cd cpp
@@ -14,18 +18,13 @@ matrix:
             - cmake ..
             - make
             - ./gtest/all-gtest
-        - name "linux python"
+        - os: linux
         language: python
-        os: linux
-        arch:
-            - amd64
-            - arm64
         script:
             - ls
             - cd python/tests
             - python -m nose -v test.py
 
-sudo: false
 # matrix:
 #   include:
 #     - os: osx
