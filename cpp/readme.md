@@ -7,11 +7,34 @@ My robotic framework
 - C++17 syntax
     - Apple LLVM version 10.0.1 (clang-1001.0.46.4)
     - c++ (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0
-- [msgpack](https://msgpack.org/index.html)
 - [json](https://github.com/nlohmann/json)
 - [Google Test](https://github.com/google/googletest)
 - Publish/subscriber and request/reply architecture
 - Multicast to find nodes
+
+# Organization
+
+Gecko libraries are stored in stored in `/opt/gecko` to keep them separated from
+system libraries:
+
+```
+/opt/gecko
+     +- bin/
+     +- include/  # gecko dependencies
+     +- lib/      # gecko dependencies
+     +- <gecko_version>  # core gecko includes/libraries
+     |   +- bin/
+     |   +- include/
+     |   +- lib/
+     |       +- cmake/   # gecko cmake
+     +- modules/  # additions to core or hw drivers or other sw
+     |   +- <driver_a>   # these are modular and simple rm to remove
+     |       +- include/
+     |       +- lib/
+     |       +- config/  # any sort of configuration files or cmake
+     +- share/
+         +- cmake/  # gecko dependency cmake
+```
 
 # Building
 
@@ -21,27 +44,22 @@ for needed libraries:
 ```
 git clone https://github.com/gecko-robotics/gecko.git
 cd gecko
-./build_extlibs.sh
+./build_extlibs
+cd cpp
 mkdir build
 cd build
 cmake ..
-make
+make install
 ```
 
-## ZeroMQ [`cppzmq`]
+## Packaging
 
-I use a high level C++ abstraction of the lower level zmq to build gecko.
+Need to test this more, but could do:
 
-- macOS: `brew install zeromq`
-- linux: `sudo apt install libzmq3-dev`
-
-## Boost
-
-I generally hate boost because it is a pain to work with. Right now you don't
-need it.
-
-- macOS: `brew install boost`
-- linux: `sudo apt install libboost-dev`
+```
+make package
+sudo dpkg -i gecko-x.x.x-linux.deb
+```
 
 # Examples
 
@@ -55,7 +73,6 @@ Many of these ideas are pulled from ROS
 
 - `gecko::init()` setups the system
 - `gecko::Rate(hz)` returns a rate object
-- returns publisher/subscriber (see variations below)
 - `gecko::is_shuttingdown()` or `gecko::ok()` returns the process status (true/false)
 - `gecko::log(level, string)` prints log info
 
@@ -81,16 +98,18 @@ connect.
 
 # Examples
 
-The examples below create a simple pub/sub service. Note, they use `msgpack` for
-data serialization. That is not part of this library. Please build/install `gecko-msgpack`
-to use this.
+The examples below create a simple pub/sub service. The message
+format defaults to a `zmq::message_t` which is a binary string. You
+change this to:
+
+- msgpack (gecko-msgpack)
+- protobuf (gecko-msgpack)
 
 ## Subscriber
 
 ```cpp
 #include <string>
 #include <gecko/gecko.hpp>
-#include <gecko/msgpack/msgs.hpp>
 
 using namespace std;
 
@@ -103,7 +122,7 @@ void sub()
     while (gecko::ok())
     {
         zmq::message_t msg = s.recv();
-        imu_t m(msg);
+        string s(msg.data(), msg.size())
         // do something with it ...
     }
 }
@@ -120,7 +139,6 @@ int main(){
 #include <string>
 #include <iostream>
 #include <gecko/gecko.hpp>
-#include <gecko/msgpack/msgs.hpp>
 
 using namespace std;
 
@@ -133,9 +151,8 @@ void pub()
 
     while (gecko::ok())
     {
-        vec_t a(1,2,3);
-        imu_t b(a,a,a);  // create new timestamp
-        zmq::message_t msg = b.pack();
+        string s{"hello there"};
+        zmq::message_t msg(s.data(), s.size());
 
         p.publish(msg);
 
@@ -149,238 +166,6 @@ int main(){
     return 0;
 }
 ```
-
-## Performance
-
-`geckocore` has a thread that prints out performance information of all
-processes that have talked to it.
-
-```
-========================================
- Geckocore [96103]
--------------
- Start: 09-06-2019 09:03:49
- Key: local
- Host IP: 10.0.1.70
- Listening on: 224.3.29.110:11311
- CPU: 0.0   Memory: 0.0
---------------------
- Binder [4]
- Topic                           CPU  MEM  EndPt
- > mike[97311]...................0.0  0.0  tcp://10.0.1.70:51175
- > ryan[97305]...................0.0  0.0  tcp://10.0.1.70:51174
- > sammie[97315].................0.0  0.0  tcp://10.0.1.70:51176
- > scott[97320]..................0.0  0.0  tcp://10.0.1.70:51177
---------------------
- Connector [8]
- Topic                           CPU  MEM  EndPt
- > ryan[97307]...................20.5 0.0  tcp://10.0.1.70:51174
- > ryan[97308]...................22.2 0.0  tcp://10.0.1.70:51174
- > mike[97312]...................20.5 0.0  tcp://10.0.1.70:51175
- > mike[97313]...................16.5 0.0  tcp://10.0.1.70:51175
- > sammie[97316].................23.7 0.0  tcp://10.0.1.70:51176
- > sammie[97318].................22.0 0.0  tcp://10.0.1.70:51176
- > scott[97321]..................25.8 0.0  tcp://10.0.1.70:51177
- > scott[97323]..................25.9 0.0  tcp://10.0.1.70:51177
-```
-
-There are 4 publishers and 8 subscribers (2 per topic):
-
-```
-(cv) kevin@Logan tcp $ ./tcp.py
-----------------------------------
-GeckoPy
------------
-  Process: pub_ryan
-  PID: 97305
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_ryan
-  PID: 97307
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_ryan_2
-  PID: 97308
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: pub_mike
-  PID: 97311
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_mike
-  PID: 97312
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_mike_2
-  PID: 97313
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: pub_sammie
-  PID: 97315
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_sammie
-  PID: 97316
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_sammie_2
-  PID: 97318
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: pub_scott
-  PID: 97320
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_scott
-  PID: 97321
-  Host: 10.0.1.70
-----------------------------------
-----------------------------------
-GeckoPy
------------
-  Process: sub_scott_2
-  PID: 97323
-  Host: 10.0.1.70
-----------------------------------
->> bind raw: ['local', 'ryan', '97305', 'ok']
->> pub_ryan:[0] published msg
->> conn raw:  ['']
->> conn raw:  ['local', 'ryan', 'tcp://10.0.1.70:51174', 'ok']
-[>] Receiving messages on ALL topics...
->> conn raw:  ['local', 'ryan', 'tcp://10.0.1.70:51174', 'ok']
-[>] Receiving messages on ALL topics...
->> bind raw: ['local', 'mike', '97311', 'ok']
->> pub_mike:[0] published msg
->> conn raw:  ['local', 'mike', 'tcp://10.0.1.70:51175', 'ok']
-[>] Receiving messages on ALL topics...
->> conn raw:  ['local', 'mike', 'tcp://10.0.1.70:51175', 'ok']
-[>] Receiving messages on ALL topics...
->> bind raw: ['local', 'sammie', '97315', 'ok']
->> pub_sammie:[0] published msg
->> conn raw:  ['']
->> conn raw:  ['local', 'sammie', 'tcp://10.0.1.70:51176', 'ok']
-[>] Receiving messages on ALL topics...
->> conn raw:  ['local', 'sammie', 'tcp://10.0.1.70:51176', 'ok']
-[>] Receiving messages on ALL topics...
->> bind raw: ['local', 'scott', '97320', 'ok']
->> pub_scott:[0] published msg
->> conn raw:  ['local', 'scott', 'tcp://10.0.1.70:51177', 'ok']
-[>] Receiving messages on ALL topics...
->> conn raw:  ['local', 'scott', 'tcp://10.0.1.70:51177', 'ok']
-[>] Receiving messages on ALL topics...
->> pub_ryan:[1] published msg
->> sub_ryan:ryan: {'time': 0.4579482078552246}
->> sub_ryan_2:ryan: {'time': 0.4579482078552246}
->> pub_mike:[1] published msg
->> sub_mike:mike: {'time': 0.4434690475463867}
-
-... more messages streaming by
-
->> sub_sammie:sammie: {'time': 6.8596580028533936}
->> sub_sammie:sammie: {'time': 6.8596580028533936}
->> sub_scott:scott: {'time': 6.861537933349609}
->> sub_scott_:scott: {'time': 6.861537933349609}
->> sub_ryan:ryan: {'time': 6.969848155975342}
->> pub_ryan:[15] published msg
->> pub_mike:[15] published msg
->> sub_ryan_2:ryan: {'time': 7.471033096313477}
->> sub_mike:mike: {'time': 7.450994253158569}
->> sub_mike_2:mike: {'time': 7.450994253158569}
->> pub_sammie:[15] published msg
->> pub_scott:[15] published msg
->> sub_sammie:sammie: {'time': 7.360673904418945}
->> sub_sammie:sammie: {'time': 7.360673904418945}
->> sub_scott:scott: {'time': 7.3624796867370605}
->> sub_scott_:scott: {'time': 7.3624796867370605}
-^Cmain process got ctrl-c
-sub bye ...
-pub bye ...
-sub bye ...
-pub bye ...
-sub bye ...
-sub bye ...
-pub bye ...
-pub bye ...
-sub bye ...
-sub bye ...
-sub bye ...
-sub bye ...
-```
-
-# Linux Packaging with CMake
-
-This will install the message formats into `gecko` in `/usr/local`.
-
-```
-cd gecko
-mkdir build
-cd build
-cmake ..
-make
-make package
-sudo dpkg -i gecko-x.x.x-linux.deb
-```
-
-# ToDo
-
-- [ ] Make python bindings and maybe get rid of separate pygecko?
-- [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
-- [ ] Log server
-- [ ] `geckotopic` echo/pub/list/find tools
-- [ ] Learn anything from the bluezero service
-- [ ] Bag files with geckobag ... probably embed in message serialization library
-- [x] Add submodule for gecko-msgpack
-- [x] Add submodule for cppzmq
-- [ ] Look at yaml library: https://github.com/jbeder/yaml-cpp/
-- [x] Add submodule for [nlohmann-json](https://github.com/nlohmann/json)
-- [ ] Add json file setup
-- [ ] Add json file `geckolaunch`
-- [x] Better way to add new message types
-- [x] serialize opencv images
-- [ ] Local nodes only, show performance ... or figure how to handle remote nodes
-- [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
-- [ ] Remote nodes, investigate ping, return performance info (core -> node)
-- [ ] Organize the library better, the header files are a mess
-- [ ] Create a debian package for linux
-- [ ] Ping tool: all geckocores respond with info about themselves
-
-Robot stuff
-- [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/
-- [ ] AI vision using http://cocodataset.org/#home
-- [ ] AI https://skymind.ai/wiki/convolutional-network
-- [ ] https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets
-- [ ] Look into NN with https://keras.io/
-- [ ] Does https://openai.com/ help with anything?
 
 
 # MIT License
