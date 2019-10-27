@@ -22,7 +22,8 @@ matrix:
             - cd build
             - cmake ..
             - make
-            - ./gtest/all-gtest
+            - ls
+            - ./gtests/all-gtest
         # - language: python
         #   python:
         #     - "3.6"
