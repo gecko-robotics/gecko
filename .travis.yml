@@ -1,7 +1,6 @@
 language: cpp
 os: linux
 sudo: false
-
 arch:
     - amd64
     - arm64
@@ -9,25 +8,25 @@ arch:
 matrix:
     include:
         - language: cpp
-        script:
-            - ls
-            - cd cpp
-            - mkdir build
-            - cd build
-            - cmake ..
-            - make
-            - ./gtest/all-gtest
+            script:
+                - ls
+                - cd cpp
+                - mkdir build
+                - cd build
+                - cmake ..
+                - make
+                - ./gtest/all-gtest
         - language: python
-        python:
-            - "3.6"
-            - "3.7"
-            - "3.8"
-        virtualenv:
-          system_site_packages: true
-        script:
-            - ls
-            - cd python/tests
-            - python -m nose -v test.py
+            python:
+                - "3.6"
+                - "3.7"
+                - "3.8"
+            virtualenv:
+                system_site_packages: true
+            script:
+                - ls
+                - cd python/tests
+                - python -m nose -v test.py
 
 # matrix:
 #   include:
