@@ -9,15 +9,15 @@ DIR="/opt/gecko"
 # sudo mkdir ${DIR}
 # sudo chown -R ${USER} ${DIR}
 
-# MsgPack ----------------------------------------------------------
-echo ">> Installing MsgPack in ${DIR}"
-git clone https://github.com/msgpack/msgpack-c.git
-mkdir msgpack-c/build
-cd msgpack-c/build
-cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=${DIR} ..
-make install
-cd ../..
-# rm -fr msgpack-c
+# # MsgPack ----------------------------------------------------------
+# echo ">> Installing MsgPack in ${DIR}"
+# git clone https://github.com/msgpack/msgpack-c.git
+# mkdir msgpack-c/build
+# cd msgpack-c/build
+# cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=${DIR} ..
+# make install
+# cd ../..
+# # rm -fr msgpack-c
 
 # json ---------------------------------------------------------------
 echo ">> Installing JSON in ${DIR}"
