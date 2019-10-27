@@ -1,6 +1,6 @@
 matrix:
     include:
-        - name "c++"
+        - name "linux c++"
         language: cpp
         os: linux
         arch:
@@ -14,7 +14,7 @@ matrix:
             - cmake ..
             - make
             - ./gtest/all-gtest
-        - name "python"
+        - name "linux python"
         language: python
         os: linux
         arch:
