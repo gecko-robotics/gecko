@@ -20,6 +20,8 @@ matrix:
             - ./gtest/all-gtest
         - os: linux
         language: python
+        python:
+            - "3.6"
         script:
             - ls
             - cd python/tests
