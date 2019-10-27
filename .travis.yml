@@ -11,8 +11,8 @@ matrix:
               - arm64
           script:
             - ls
-            - ./build_extlibs.sh
             - cd cpp
+            - ./build_extlibs.sh
             - mkdir build
             - cd build
             - cmake ..
