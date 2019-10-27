@@ -1,5 +1,5 @@
 language: cpp
-
+os: linux
 sudo: false
 
 arch:
@@ -8,8 +8,7 @@ arch:
 
 matrix:
     include:
-        - os: linux
-        language: cpp
+        - language: cpp
         script:
             - ls
             - cd cpp
@@ -18,10 +17,13 @@ matrix:
             - cmake ..
             - make
             - ./gtest/all-gtest
-        - os: linux
-        language: python
+        - language: python
         python:
             - "3.6"
+            - "3.7"
+            - "3.8"
+        virtualenv:
+          system_site_packages: true
         script:
             - ls
             - cd python/tests
