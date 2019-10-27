@@ -39,13 +39,17 @@ matrix:
           #   system_site_packages: true
           script:
             - ls
+            - echo "<< script >>"
             - cd tests
-            - python -m nose -v test.py
+            - python3 -m nose -v test.py
           install:
             - cd python
             - ls
-            - pip install -U pip setuptools wheel build_utils nose
-            - pip install .
+            - echo << install >>
+            - pip3 --version
+            - python3 --version
+            - pip3 install -U pip setuptools wheel build_utils nose
+            - pip3 install .
 
 # matrix:
 #   include:
