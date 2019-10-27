@@ -10,7 +10,7 @@ from pygecko.file_storage import FileStorageError
 from pygecko.file_storage import FileJson
 from pygecko.file_storage import FileYaml
 
-from pygecko import proto
+# from pygecko import proto
 
 # messages are all namedtuples
 # from pygecko.messages import Vector, Quaternion, Pose, Twist, Wrench, Joystick
