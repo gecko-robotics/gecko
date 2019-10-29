@@ -7,11 +7,6 @@ from build_utils import SetGitTag
 from build_utils import get_pkg_version
 
 
-# ver = {}
-# with open("pygecko/version.py") as fp:
-#     exec(fp.read(), ver)
-# VERSION = ver['__version__']
-
 VERSION = get_pkg_version('pygecko/__init__.py')
 
 PACKAGE_NAME = 'pygecko'
