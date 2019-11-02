@@ -3,7 +3,6 @@
 # Copyright (c) 2014 Kevin Walchko
 # see LICENSE for full details
 ##############################################
-# from __future__ import absolute_import, print_function, division
 
 # config file stuff
 from pygecko.file_storage import FileStorageError
@@ -24,4 +23,4 @@ from pygecko.network.ip import get_ip
 
 __author__ = 'Kevin Walchko'
 __license__ = "MIT"
-__version__ = "1.3.0"
+__version__ = "1.3.1"

@@ -1,18 +1,294 @@
 import time
-# import os
-# from collections import namedtuple
-# from multiprocessing import Event
-# from math import pi
-#
-# from pygecko.apps.core import CoreServer
-# from pygecko.network.transport import Ascii
-#
+import os
+from math import pi
+
 from pygecko.multiprocessing import geckopy
-# from pygecko.transport.zmq_sub_pub import Pub, Sub
-# from pygecko.multiprocessing.process import GeckoSimpleProcess
+from pygecko import FileJson, FileYaml
+from pygecko import zmqTCP
+from pygecko import zmqUDS
+
+# from test_core import *
+from test_no_core import *
+
+
+# Files =================================================================
+def file_func(Obj, fname):
+    data = {'a': 1, 'bob': [1, 2, 3, 4], 'c': "hello cowboy", 'd': {'a': pi}}
+    f = Obj()
+    f.write(fname, data)
+    d = f.read(fname)
+    assert d == data, "{} != {}".format(d, data)
+    os.remove(fname)
+
+
+def test_json():
+    file_func(FileJson, 'test.json')
+
+
+def test_yaml():
+    file_func(FileYaml, 'test.yml')
+
+
+def test_rate():
+    rate = geckopy.Rate(10)
+    start = time.time()
+    for _ in range(10):
+        rate.sleep()
+    stop = time.time()
+    # print(stop - start)
+    assert (stop - start) + 0.05 > 1.0
+
+
+def test_endpoints():
+    assert zmqUDS("/tmp/file") == "ipc:///tmp/file"
+    assert zmqTCP("1.2.3.4", 12345) == "tcp://1.2.3.4:12345"
+    assert zmqTCP("1.2.3.4") == "tcp://1.2.3.4"
+
+
+
+
+
+
+
+
+
 #
-# from pygecko.file_storage import FileJson, FileYaml
+# # Pub/Sub on TCP/UDS without Core ============================================
+# def zmq_pub_sub(args):
+#     geckopy.init_node()
 #
+#     # stop pub
+#     exit = Event()
+#     exit.clear()
+#
+#     rmsg = {'a': 1, 'b': [1, 2, 3], 'c': 'hello cowboy'}
+#     msg = json.dumps(rmsg)
+#     msg = msg.encode("utf-8")
+#
+#     def publisher(**kwargs):
+#         geckopy.init_node()
+#         exit = kwargs['exit']
+#
+#         pt = kwargs["pub"]
+#         if pt == "bindtcp":
+#             p = Pub()
+#             p.bind(zmqTCP(ipAddress, 9000))
+#         elif pt == "connecttcp":
+#             p = Pub()
+#             p.connect(zmqTCP(ipAddress, 9001))
+#         elif pt == "binduds":
+#             p = Pub()
+#             p.bind(zmqUDS("/tmp/pygecko_test"))
+#         elif pt == "connectuds":
+#             p = Pub()
+#             p.connect(zmqUDS("/tmp/pygecko_test2"))
+#
+#         if p is None:
+#             assert False, "<<< Couldn't get Pub/Sub from geckocore >>>"
+#
+#         rate = geckopy.Rate(3)
+#
+#         for _ in range(100):
+#             if exit.is_set():
+#                 break
+#             p.publish(msg)
+#             rate.sleep()
+#
+#     p = GeckoSimpleProcess()
+#     args['exit'] = exit
+#     p.start(func=publisher, name='publisher', kwargs=args)
+#
+#     st = args["sub"]
+#
+#     if st == "connecttcp":
+#         s = Sub()
+#         s.connect(zmqTCP(ipAddress, 9000))
+#     elif st == "bindtcp":
+#         s = Sub()
+#         s.bind(zmqTCP(ipAddress, 9001))
+#     elif st == "connectuds":
+#         s = Sub()
+#         s.connect(zmqUDS("/tmp/pygecko_test"))
+#     elif st == "binduds":
+#         s = Sub()
+#         s.bind(zmqUDS("/tmp/pygecko_test2"))
+#
+#     rate = geckopy.Rate(2)
+#
+#     for _ in range(5):
+#         m = s.recv_nb()
+#         mm = None
+#         if m:
+#             mm = json.loads(m)
+#             exit.set()
+#             break
+#         rate.sleep()
+#
+#     assert rmsg == mm, "{} => {}".format(rmsg, mm)
+#     p.join(0.01)
+#
+#
+# def test_pub_bind_tcp():
+#     args = {
+#         'pub': 'bindtcp',
+#         'sub': 'connecttcp'
+#     }
+#     zmq_pub_sub(args)
+#
+#
+# def test_pub_connect_tcp():
+#     args = {
+#         'pub': 'connecttcp',
+#         'sub': 'bindtcp'
+#     }
+#     zmq_pub_sub(args)
+#
+#
+# def test_pub_bind_uds():
+#     args = {
+#         'pub': 'binduds',
+#         'sub': 'connectuds'
+#     }
+#     zmq_pub_sub(args)
+#
+#
+# def test_pub_connect_uds():
+#     args = {
+#         'key': 'test',
+#         'topic': "test-uds-2",
+#         'pub': 'connectuds',
+#         'sub': 'binduds'
+#     }
+#     zmq_pub_sub(args)
+
+
+# # Pub/Sub on TCP/UDS with Core ===============================================
+# def zmq_pub_sub_core(args):
+#     geckopy.init_node()
+#
+#     # stop pub
+#     exit = Event()
+#     exit.clear()
+#
+#     rmsg = {'a': 1, 'b': [1, 2, 3], 'c': 'hello cowboy'}
+#     msg = json.dumps(rmsg)
+#     msg = msg.encode("utf-8")
+#
+#     def publisher(**kwargs):
+#         geckopy.init_node()
+#         exit = kwargs['exit']
+#
+#         pt = kwargs["pub"]
+#         key = kwargs["key"]
+#         topic = kwargs["topic"]
+#         if pt == "bindtcp":
+#             p = geckopy.pubBinderTCP(key, topic)
+#         elif pt == "connecttcp":
+#             p = geckopy.pubConnectTCP(key, topic)
+#         elif pt == "binduds":
+#             p = geckopy.pubBinderUDS(key, topic, "/tmp/pygecko_test")
+#         elif pt == "connectuds":
+#             p = geckopy.pubConnectUDS(key, topic)
+#
+#         if p is None:
+#             assert False, "<<< Couldn't get Pub from geckocore >>>"
+#
+#         rate = geckopy.Rate(3)
+#
+#         for _ in range(100):
+#             if exit.is_set():
+#                 break
+#             p.publish(msg)
+#             rate.sleep()
+#
+#     p = GeckoSimpleProcess()
+#     args['exit'] = exit
+#     p.start(func=publisher, name='publisher', kwargs=args)
+#
+#     time.sleep(1)
+#
+#     st = args["sub"]
+#     key = args["key"]
+#     topic = args["topic"]
+#
+#     if st == "connecttcp":
+#         s = geckopy.subConnectTCP(key, topic)
+#     elif st == "bindtcp":
+#         s = geckopy.subBinderTCP(key, topic)
+#     elif st == "connectuds":
+#         s = geckopy.subConnectUDS(key, topic)
+#     elif st == "binduds":
+#         s = geckopy.subBinderUDS(key, topic, "/tmp/pygecko_test_2")
+#
+#     if s is None:
+#         p.join(0.01)
+#         assert False, "<<< Couldn't get Sub from geckocore: {} >>>".format(st)
+#         return
+#
+#     rate = geckopy.Rate(2)
+#
+#     for _ in range(5):
+#         m = s.recv_nb()
+#         mm = None
+#         if m:
+#             mm = json.loads(m)
+#             exit.set()
+#             break
+#         rate.sleep()
+#
+#     assert rmsg == mm, "{} => {}".format(rmsg, mm)
+#     p.join(0.01)
+#
+#
+# def test_pub_sub_core():
+#
+#     bs = CoreServer(key='test', handler=Ascii)
+#     core = GeckoSimpleProcess()
+#     core.start(func=bs.run, name='geckocore')
+#
+#     # time.sleep(2)
+#
+#     args = {
+#         'key': 'test',
+#         'topic': "test-tcp",
+#         'pub': 'bindtcp',
+#         'sub': 'connecttcp'
+#     }
+#     zmq_pub_sub_core(args)
+#
+#     args = {
+#         'key': 'test',
+#         'topic': "test-tcp-2",
+#         'pub': 'connecttcp',
+#         'sub': 'bindtcp'
+#     }
+#     zmq_pub_sub_core(args)
+#
+#     args = {
+#         'key': 'test',
+#         'topic': "test-uds",
+#         'pub': 'binduds',
+#         'sub': 'connectuds'
+#     }
+#     zmq_pub_sub_core(args)
+#
+#     args = {
+#         'key': 'test',
+#         'topic': "test-uds-2",
+#         'pub': 'connectuds',
+#         'sub': 'binduds'
+#     }
+#     zmq_pub_sub_core(args)
+#
+#     bs.stop()
+#     # core.join(0.1)
+#     core.terminate()
+
+
+
+##########################################################################
+#
+# from collections import namedtuple
 # from pygecko.messages.protocols import MsgPack
 # from pygecko.messages.std_msgs import vec_t, quaternion_t, wrench_t, twist_t
 # from pygecko.messages.nav_msgs import pose_t
@@ -73,36 +349,8 @@ from pygecko.multiprocessing import geckopy
 #     b = buffer.pack(m)
 #     b = buffer.unpack(b)
 #     assert m == b, "{} => {}".format(m, b)
-#
-#
-# def file_func(Obj, fname):
-#     data = {'a': 1, 'bob': [1, 2, 3, 4], 'c': "hello cowboy", 'd': {'a': pi}}
-#     f = Obj()
-#     f.set(data)
-#     f.write(fname)
-#     d = f.read(fname)
-#     assert d == data
-#     os.remove(fname)
-#
-#
-# def test_json():
-#     file_func(FileJson, 'test.json')
-#
-#
-# def test_yaml():
-#     file_func(FileYaml, 'test.yml')
 
-
-def test_rate():
-    rate = geckopy.Rate(10)
-    start = time.time()
-    for _ in range(10):
-        rate.sleep()
-    stop = time.time()
-    # print(stop - start)
-    assert (stop - start) + 0.05 > 1.0
-
-
+#
 # def msg_zmq(args):
 #     # start message hub
 #     # core = GeckoCore()
@@ -160,7 +408,7 @@ def test_rate():
 #
 #     # core.join(0.1)
 #     time.sleep(1)  # if I run these too fast, I get errors on bind()
-#
+
 #
 # # def test_msg_zmq_tcp():
 # #     args = {
@@ -181,200 +429,3 @@ def test_rate():
 # # core = GeckoSimpleProcess()
 # # core.start(func=bs.run, name='geckocore')
 #
-#
-# def zmq_pub_sub(args):
-#     geckopy.init_node()
-#     # stop pub
-#     exit = Event()
-#     exit.clear()
-#
-#     msg = imu_st(
-#         vec_t(1, 2, 3),
-#         vec_t(11, 12, 13),
-#         vec_t(21, 22, 23))
-#
-#     def publisher(**kwargs):
-#         geckopy.init_node()
-#         exit = kwargs['exit']
-#
-#         pt = kwargs["pub"]
-#         key = kwargs["key"]
-#         topic = kwargs["topic"]
-#         if pt == "bindtcp":
-#             p = geckopy.pubBinderTCP(key, topic)
-#         elif pt == "connecttcp":
-#             p = geckopy.pubConnectTCP(key, topic)
-#         elif pt == "binduds":
-#             p = geckopy.pubBinderUDS(key, topic, "/tmp/pygecko_test")
-#         elif pt == "connectuds":
-#             p = geckopy.pubConnectUDS(key, topic)
-#
-#         if p is None:
-#             assert False, "<<< Couldn't get Pub from geckocore >>>"
-#
-#         for _ in range(100):
-#             if exit.is_set():
-#                 # print("exit")
-#                 break
-#             p.publish(msg)
-#             time.sleep(0.1)
-#
-#     p = GeckoSimpleProcess()
-#     args['exit'] = exit
-#     p.start(func=publisher, name='publisher', kwargs=args)
-#
-#     st = args["sub"]
-#     key = args["key"]
-#     topic = args["topic"]
-#
-#     if st == "connecttcp":
-#         s = geckopy.subConnectTCP(key, topic)
-#     elif st == "bindtcp":
-#         s = geckopy.subBinderTCP(key, topic)
-#     elif st == "connectuds":
-#         s = geckopy.subConnectUDS(key, topic)
-#     elif st == "binduds":
-#         s = geckopy.subBinderUDS(key, topic, "/tmp/pygecko_test_2")
-#
-#     for _ in range(5):
-#         m = s.recv()
-#
-#         if m:
-#             exit.set()
-#             break
-#         else:
-#             print(".", end=" ", flush=True)
-#             time.sleep(0.1)
-#     assert msg == m, "{} => {}".format(msg, m)
-#
-#
-# def test_pub_sub():
-#
-#     bs = CoreServer(key='test', handler=Ascii)
-#     core = GeckoSimpleProcess()
-#     core.start(func=bs.run, name='geckocore')
-#
-#     args = {
-#         'key': 'test',
-#         'topic': "test-tcp",
-#         'pub': 'bindtcp',
-#         'sub': 'connecttcp'
-#     }
-#     zmq_pub_sub(args)
-#
-#     args = {
-#         'key': 'test',
-#         'topic': "test-tcp-2",
-#         'pub': 'connecttcp',
-#         'sub': 'bindtcp'
-#     }
-#     zmq_pub_sub(args)
-#
-#     args = {
-#         'key': 'test',
-#         'topic': "test-uds",
-#         'pub': 'binduds',
-#         'sub': 'connectuds'
-#     }
-#     zmq_pub_sub(args)
-#
-#     args = {
-#         'key': 'test',
-#         'topic': "test-uds-2",
-#         'pub': 'connectuds',
-#         'sub': 'binduds'
-#     }
-#     zmq_pub_sub(args)
-#
-#     bs.stop()
-#     core.join(0.1)
-#
-#
-# # def test_ps_uds():
-# #     args = {
-# #         'key': 'test',
-# #         'pub': 'binduds',
-# #         'sub': 'connectuds'
-# #     }
-# #     zmq_pub_sub(args)
-#
-# # def py_zmq():
-# #     # start message hub
-# #     core = GeckoCore()
-# #     core.start()
-# #
-# #     def publisher(**kwargs):
-# #         geckopy.init_node(**kwargs)
-# #         p = geckopy.Publisher(topics=['test'])
-# #         time.sleep(1)
-# #         msg = {'a':1, 'b':[1,2,3], 'c':'hello cowboy'}
-# #         p.pub('test', msg)  # topic msg
-# #
-# #     args = {'host': "localhost"}
-# #     p = GeckoSimpleProcess()
-# #     p.start(func=publisher, name='publisher', kwargs=args)
-# #
-# #     # subscriber
-# #     s = Sub(topics=['test'])
-# #     s.connect(sub_addr)
-# #     t, msg = s.recv()
-# #
-# #     assert t == b'test'
-# #     assert msg == {'a':1, 'b':[1,2,3], 'c':'hello cowboy'}
-# #
-# #     core.join(0.1)
-# #     time.sleep(1)  # if I run these too fast, I get errors on bind()
-# #
-# #
-# # def test_py_zmq_tcp():
-# #     py_zmq()
-#
-#
-# # def test_py_zmq_uds():
-# #     py_zmq(uds_ifile, uds_ofile)
-#
-#
-# # def py_geckpy(pub_addr, sub_addr):
-# #     # start message hub
-# #     core = GeckoCore(pub_addr, sub_addr)
-# #     core.start()
-# #
-# #     geckopy = GeckoPy()
-# #
-# #     def callback(t, msg):
-# #         assert t == b'test'
-# #         assert msg == {'a':1, 'b':[1,2,3], 'c':'hello cowboy'}
-# #
-# #     def callback(**kwargs):
-# #         addr = kwargs.get('addr')
-# #         p = Pub()
-# #         p.connect(addr)
-# #         time.sleep(1)
-# #         msg = {'a':1, 'b':[1,2,3], 'c':'hello cowboy'}
-# #         p.pub('test', msg)  # topic msg
-# #
-# #
-# #
-# #     args = {'addr': pub_addr}
-# #     p = GeckoSimpleProcess()
-# #     p.start(func=publisher, name='publisher', kwargs=args)
-# #
-# #     # subscriber
-# #     s = Sub(topics=['test'])
-# #     s.connect(sub_addr)
-# #     t, msg = s.recv()
-# #
-# #     print(t, msg)
-# #
-# #     assert t == b'test'
-# #     assert msg == {'a':1, 'b':[1,2,3], 'c':'hello cowboy'}
-# #
-# #     p.join(0.1)
-# #     core.join(0.1)
-# #
-# # def test_py_geckopy_tcp():
-# #     py_geckpy(tcp_pub, tcp_sub)
-# #
-# #
-# # def test_py_geckopy_uds():
-# #     py_geckpy(uds_ifile, uds_ofile)

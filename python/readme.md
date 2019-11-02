@@ -90,7 +90,6 @@ is most useful for testing.
     - Pub.connect(self, addr, hwm=None, queue_size=10)
     - Pub.bind(self, addr, hwm=None, queue_size=10, random=False)
 
-
 # Change Log
 
 Date        |Version| Notes

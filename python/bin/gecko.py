@@ -108,7 +108,7 @@ def run_multicast(address, port, msg):
 
             # data = data.decode("utf-8")
             # if data != msg:
-            print(">> " +Fore.CYAN + msg + Style.RESET_ALL + " -> " + Fore.GREEN + data + Style.RESET_ALL + " from:", address)
+            print(">> " + Fore.CYAN + msg + Style.RESET_ALL + " -> " + Fore.GREEN + data + Style.RESET_ALL + " from:", address)
             # else:
             #     print(Fore.YELLOW + "*** see echo ***" + Style.RESET_ALL)
             # if msg != "receive":

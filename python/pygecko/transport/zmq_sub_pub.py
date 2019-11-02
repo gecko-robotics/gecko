@@ -9,14 +9,10 @@
 # see http://zeromq.org for more info
 # http://zguide.zeromq.org/py:all
 
-# from __future__ import print_function
-# from __future__ import division
 import zmq
 import time
 from pygecko.transport.zmq_base import Base
 from pygecko.transport.zmq_base import ZMQError
-# from pygecko.messages.protocols import MsgPack
-# MsgPack = None
 
 
 class Pub(Base):
@@ -26,23 +22,8 @@ class Pub(Base):
     def __init__(self):
         """
         Publishes messages on a topic.
-
-        in: pack - function to serialize messages if needed
         """
-        # Base.__init__(self, zmq.PUB, serialize=serialize)
         Base.__init__(self, zmq.PUB)
-
-        # try:
-        #     # self.socket = self.ctx.socket(zmq.PUB)
-        #     # self.socket.set_hwm(hwm)
-        #     # self.socket.setsockopt(zmq.SNDHWM, 1)
-        #
-        # except Exception as e:
-        #     error = '[-] Pub Error, {0!s}'.format((str(e)))
-        #     raise ZMQError(error)
-
-        # if pack:
-        #     self.pack = pack
 
     def __del__(self):
         self.socket.close()
@@ -52,84 +33,33 @@ class Pub(Base):
         in: topic, message
         out: none
         """
-        # if topic not in self.topics:
-        #     raise Exception("Pub.pub: {} is an invalide topic".format(topic))
-        # jmsg = serialize(msg)
-
-        # if self.pack:
-        #     jmsg = msgpack.packb(msg, default=self.pack, use_bin_type=True, strict_types=True)
-        # else:
-        #     jmsg = msgpack.packb(msg, use_bin_type=True, strict_types=True)
-
-        # jmsg = self.packer.pack(msg)  # original
-
-        # print(">> packed msg pub: [{}] {}".format(len(jmsg), jmsg))
-        # jmsg = zlib.compress(jmsg, -1)  # set to default level
-        # print(">> compressed msg pub: [{}] {}".format(len(jmsg), jmsg))
-
-        # self.socket.send_multipart([topic.encode('ascii'), jmsg.encode('ascii')])
-        # done = True
-        # while done:
-        #     # done = self.socket.send_multipart([topic.encode('ascii'), jmsg])
-        #     done = self.socket.send_multipart([topic.encode('utf-8'), jmsg])
-        #     # done = self.socket.send(jmsg)
-        # print('pub >>', topic.encode('ascii'))
-        # self.socket.send_multipart([jmsg])
         self.socket.send(msg)
-
-    # def raw_pub(self, topic, msg):
-    #     # done = True
-    #     # while done:
-    #     #     done = self.socket.send_multipart([topic.encode('utf-8'), msg])
-    #     # topic = topic.encode('utf-8')  # FIXME
-    #     self.socket.send_multipart([topic, msg])
 
 
 class Sub(Base):
     """
-    Simple subscriber that read messages on a topic(s)
+    Simple subscriber that read messages on a topic (which are defined by port
+    number)
     """
-    # unpack = None
 
-    def __init__(self, topics=None):
+    def __init__(self):
         """
-        topics: an array of topics, ex ['hello', 'cool messages'] or None to subscribe to all messages
-        unpack: a function to deserialize messages if necessary
+        Simple subscriber. Topics that it listens for are based on port number
+        and not a topic string it listens for
         """
-        # Base.__init__(self, zmq.SUB, serialize=serialize)
         Base.__init__(self, zmq.SUB)
-        # self.cb_func = cb_func
 
         try:
             self.socket = self.ctx.socket(zmq.SUB)
-
-            # manage subscriptions
-            # can also use: self.socket.subscribe(topic) or unsubscribe()
-            if topics is None:
-                print("[>] Receiving messages on ALL topics...")
-                self.socket.setsockopt(zmq.SUBSCRIBE, b'')
-                self.topics = b''
-            else:
-                if type(topics) is list:
-                    pass
-                else:
-                    raise Exception('topics must be a list')
-
-                self.topics = topics
-                for t in topics:
-                    print("[>] Subscribed to messages on topics: {} ...".format(t))
-                    self.socket.setsockopt(zmq.SUBSCRIBE, t.encode('utf-8'))
+            self.socket.setsockopt(zmq.SUBSCRIBE, b'')
+            self.topics = b''
 
         except Exception as e:
             error = '[-] Sub Error, {0!s}'.format((str(e)))
             raise ZMQError(error)
 
     def __del__(self):
-        if self.topics is None:
-            self.socket.setsockopt(zmq.UNSUBSCRIBE, b'')
-        else:
-            for t in self.topics:
-                self.socket.setsockopt(zmq.UNSUBSCRIBE, t.encode('utf-8'))
+        self.socket.setsockopt(zmq.UNSUBSCRIBE, b'')
         self.socket.close()
 
     def recv_nb(self):
@@ -143,26 +73,10 @@ class Sub(Base):
         """
         Implements a recv_multipart(flags). By default, this blocks.
         """
-        # topic = None
         msg = None
         try:
             # topic, jmsg = self.socket.recv_multipart(flags=flags)
             msg = self.socket.recv(flags=flags)
-
-            # print(">> sub.recv compressed: [{}] {}".format(len(jmsg), jmsg))
-
-            # jmsg = zlib.decompress(jmsg)
-            # if self.unpack:
-            #     msg = msgpack.unpackb(jmsg, ext_hook=self.unpack, raw=False)
-            # else:
-            #     msg = msgpack.unpackb(jmsg, raw=False)
-            # print(">> sub.recv packed: [{}] {}".format(len(jmsg), jmsg))
-
-            # msg = self.packer.unpack(jmsg) # original
-
-            # print(">> sub.recv unpacked:", msg)
-            # if self.cb_func:
-            #     self.cb_func(topic, msg)
         except zmq.Again:
             # no message has arrived yet or not connected to server
             # print(e)
@@ -171,12 +85,103 @@ class Sub(Base):
             # something else is wrong
             # print(e)
             raise
-        # return topic, msg
         return msg
 
 
 
 ############################################################################
+# class Pub(Base):
+#     """
+#     Simple publisher
+#     """
+#     def __init__(self):
+#         """
+#         Publishes messages on a topic.
+#         """
+#         Base.__init__(self, zmq.PUB)
+#
+#     def __del__(self):
+#         self.socket.close()
+#
+#     def publish(self, msg):
+#         """
+#         in: topic, message
+#         out: none
+#         """
+#         self.socket.send(msg)
+#
+#
+# class Sub(Base):
+#     """
+#     Simple subscriber that read messages on a topic(s)
+#     """
+#
+#     # def __init__(self, topics=None):
+#     def __init__(self):
+#         """
+#         topics: an array of topics, ex ['hello', 'cool messages'] or None to subscribe to all messages
+#         unpack: a function to deserialize messages if necessary
+#         """
+#         Base.__init__(self, zmq.SUB)
+#
+#         try:
+#             self.socket = self.ctx.socket(zmq.SUB)
+#
+#             # manage subscriptions
+#             # can also use: self.socket.subscribe(topic) or unsubscribe()
+#             # if topics is None:
+#             #     # print("[>] Receiving messages on ALL topics...")
+#             self.socket.setsockopt(zmq.SUBSCRIBE, b'')
+#             self.topics = b''
+#             # else:
+#             #     if type(topics) is list:
+#             #         pass
+#             #     else:
+#             #         raise Exception('topics must be a list')
+#             #
+#             #     self.topics = topics
+#             #     for t in topics:
+#             #         print("[>] Subscribed to messages on topics: {} ...".format(t))
+#             #         self.socket.setsockopt(zmq.SUBSCRIBE, t.encode('utf-8'))
+#
+#         except Exception as e:
+#             error = '[-] Sub Error, {0!s}'.format((str(e)))
+#             raise ZMQError(error)
+#
+#     def __del__(self):
+#         # if self.topics is None:
+#         self.socket.setsockopt(zmq.UNSUBSCRIBE, b'')
+#         # else:
+#         #     for t in self.topics:
+#         #         self.socket.setsockopt(zmq.UNSUBSCRIBE, t.encode('utf-8'))
+#         self.socket.close()
+#
+#     def recv_nb(self):
+#         """
+#         Calls recv(flags) with flags=zmq.NOBLOCK to implement non-blocking
+#         (or zmq.DONTWAIT)
+#         """
+#         return self.recv(flags=zmq.NOBLOCK)
+#
+#     def recv(self, flags=0):
+#         """
+#         Implements a recv_multipart(flags). By default, this blocks.
+#         """
+#         msg = None
+#         try:
+#             # topic, jmsg = self.socket.recv_multipart(flags=flags)
+#             msg = self.socket.recv(flags=flags)
+#         except zmq.Again:
+#             # no message has arrived yet or not connected to server
+#             # print(e)
+#             time.sleep(0.01)
+#         except Exception:
+#             # something else is wrong
+#             # print(e)
+#             raise
+#         return msg
+#
+
 # def pub(self, topic, msg):
 #     """
 #     in: topic, message

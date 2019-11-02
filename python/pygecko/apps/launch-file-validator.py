@@ -7,23 +7,23 @@
 ##############################################
 
 # import argparse
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
-
-def valid_json(filename):
-
-    with open(filename) as file:
-        data = file.read()
-
-    try:
-        json.loads(data)
-        return True
-    except Exception as e:
-        print(e)
-        return False
+# try:
+#     import simplejson as json
+# except ImportError:
+#     import json
+#
+#
+# def valid_json(filename):
+#
+#     with open(filename) as file:
+#         data = file.read()
+#
+#     try:
+#         json.loads(data)
+#         return True
+#     except Exception as e:
+#         print(e)
+#         return False
 
 
 # def handleArgs():

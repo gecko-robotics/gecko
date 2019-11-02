@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################
 # The MIT License (MIT)
 # Copyright (c) 2018 Kevin Walchko
@@ -41,18 +42,19 @@ class GeckoSimpleProcess(object):
             self.ps.terminate()
 
     def start(self, func, name='simple_process', **kwargs):
+        # print("kwargs:", kwargs)
         if kwargs:
             kwargs = kwargs['kwargs']  # WTF???
             self.ps = mp.Process(name=name, target=func, kwargs=kwargs)
         else:
             self.ps = mp.Process(name=name, target=func)
 
-        self.ps = mp.Process(name=name, target=func, kwargs=kwargs)
+        # self.ps = mp.Process(name=name, target=func, kwargs=kwargs)
         self.ps.start()
-        # print('>> Simple Process Started: {}[{}]'.format(self.ps.name, self.ps.pid))
+        print('>> Simple Process Started: {}[{}]'.format(self.ps.name, self.ps.pid))
 
     def join(self, timeout=None):
-        # print('>> Stopping Simple Process {}[{}] ...'.format(self.ps.name, self.ps.pid), end=' ')
+        print('>> Stopping Simple Process {}[{}] ...'.format(self.ps.name, self.ps.pid))
         if self.ps:
             self.ps.join(timeout)
             if self.ps.is_alive():

@@ -1,48 +1,16 @@
+# -*- coding: utf-8 -*-
 ##############################################
 # The MIT License (MIT)
 # Copyright (c) 2018 Kevin Walchko
 # see LICENSE for full details
 ##############################################
-from pygecko.transport.zmq_sub_pub import Pub, Sub
-from pygecko.transport.zmq_base import zmqTCP
-from pygecko.transport.zmq_base import zmqUDS
-import time
-import multiprocessing as mp
-
-from .mc_core_socket import BeaconFinder
 from .singleton import GeckoPySingleton
-
-from colorama import Fore, Back, Style
-import logging
-import logging.handlers
+from .rate import Rate
+from .binder import *
+from .connector import *
+from .logger import *
 
 g_geckopy = None
-
-
-class Rate(object):
-    """
-    Uses sleep to keep a desired message/sample rate.
-    """
-    def __init__(self, hertz):
-        self.last_time = time.time()
-        self.dt = 1/hertz
-
-    def sleep(self):
-        """
-        This uses sleep to delay the function. If your loop is faster than your
-        desired Hertz, then this will calculate the time difference so sleep
-        keeps you close to you desired hertz. If your loop takes longer than
-        your desired hertz, then it doesn't sleep.
-        """
-        now = time.time()
-        diff = now - self.last_time
-        if diff < self.dt:
-            new_sleep = self.dt - diff
-            time.sleep(new_sleep)
-
-        # now that we hav slept a while, set the current time
-        # as the last time
-        self.last_time = time.time()
 
 
 def init_node(**kwargs):
@@ -78,186 +46,6 @@ def ok():
     return not g_geckopy.kill
 
 
-def Binder(key, topic, Conn, fname=None, queue_size=5):
-    """
-    Creates a publisher that can either connect or bind to an address.
-
-    bind -> (key, topic, pid, endpt)
-    bind <- (key, topic, pid, ok)
-
-    key: geckocore key
-    topic: pub/sub topic name
-    Conn: either Pub or Sub
-    fname: file path for UDS
-    queue_size: how many messages to queue up, default is 5
-    """
-    global g_geckopy
-    p = Conn()
-    p.topics = topic  # need to keep track
-    # if (addr is None) and (bind):
-    # addr = g_geckopy.proc_ip
-    # addr = Proto(addr)
-    # print('>> pub', addr)
-    # addr = g_geckopy.core_inaddr
-
-    # if bind:
-    # port = p.bind(addr, queue_size=queue_size, random=True)
-    # g_geckopy.register_publisher(topics, port)
-    bf = BeaconFinder(key)
-    pid = mp.current_process().pid
-
-    if fname:
-        endpt = zmqUDS(fname)
-        p.bind(endpt, queue_size=queue_size)
-        msg = (key, topic, str(pid), endpt)
-
-        # print(p)
-        # print(msg)
-    else:
-        # addr = g_geckopy.proc_ip
-        addr = zmqTCP(g_geckopy.proc_ip)
-        port = p.bind(addr, queue_size=queue_size, random=True)
-        endpt = zmqTCP(g_geckopy.proc_ip, port)
-        msg = (key, topic, str(pid), endpt)
-
-    retry = 5
-
-    for i in range(retry):
-        data = bf.send(msg)
-        # print(">> bind raw:", data)
-
-        if data is None:
-            time.sleep(0.5)
-            continue
-
-        if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and (data[3] == "ok"):
-            # print("geckopy.Binder SUCCESS", i)
-            g_geckopy.binders[topic] = endpt
-            return p
-
-    return None
-
-
-def pubBinderTCP(key, topic, queue_size=5):
-    return Binder(key, topic, Pub, queue_size=queue_size)
-
-
-def pubBinderUDS(key, topic, fname, queue_size=5):
-    return Binder(key, topic, Pub, fname=fname, queue_size=queue_size)
-
-
-def subBinderTCP(key, topic, queue_size=5):
-    return Binder(key, topic, Sub, queue_size=queue_size)
-
-
-def subBinderUDS(key, topic, fname, queue_size=5):
-    return Binder(key, topic, Sub, fname=fname, queue_size=queue_size)
-
-
-def Connector(key, topic, Proto, queue_size=5):
-    """
-    Creates a publisher that can either connect or bind to an address.
-
-    conn -> (key, topic, pid)
-    conn <- (key, topic, endpt, ok) py
-    conn <- (key, topic, endpt, ok) cpp
-
-    key: geckocore key
-    topic: pub/sub topic name
-    Proto: either Pub or Sub
-    queue_size: how many messages to queue up, default is 5
-    """
-    global g_geckopy
-
-    bf = BeaconFinder(key)
-    pid = mp.current_process().pid
-    msg = (key, topic, str(pid))
-    retry = 5
-    data = None
-
-    if topic in g_geckopy.binders:
-        endpt = g_geckopy.binders[topic]
-        p = Proto()
-        p.connect(endpt)
-        # print("geckopy.Connector SUCCESS")
-        return p
-
-    for i in range(retry):
-        data = bf.send(msg)
-        # print(">> conn raw: ", data)
-
-        if data is None:
-            time.sleep(0.5)
-            continue
-
-        if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and data[3] == "ok":
-            p = Proto()
-            p.connect(data[2])
-            # print("geckopy.Connector SUCCESS", i)
-            return p
-
-    return None
-
-
-def pubConnectTCP(key, topic, queue_size=5):
-    return Connector(key, topic, Pub, queue_size)
-
-
-def pubConnectUDS(key, topic, queue_size=5):
-    return Connector(key, topic, Pub, queue_size)
-
-
-def subConnectTCP(key, topic, queue_size=5):
-    return Connector(key, topic, Sub, queue_size)
-
-
-def subConnectUDS(key, topic, queue_size=5):
-    return Connector(key, topic, Sub, queue_size)
-
-
-class CustomFormatter(logging.Formatter):
-    """Logging Formatter to add colors and count warning / errors"""
-
-    reset = Style.RESET_ALL
-
-    FORMATS = {
-        logging.DEBUG:    Back.GREEN + Fore.WHITE + "[%(asctime)s DBUG>" + reset + " %(message)s",
-        logging.INFO:     Back.BLUE + Fore.WHITE + "[%(asctime)s INFO>" + reset + " %(message)s",
-        logging.WARNING:  Back.YELLOW + Fore.WHITE + "[%(asctime)s WARN>" + reset + " %(message)s",
-        logging.ERROR:    Back.RED + Fore.WHITE + "[%(asctime)s ERR>" + reset + " %(message)s",
-        logging.CRITICAL: Back.MAGENTA + Fore.WHITE + "[%(asctime)s CRIT>" + reset + " %(message)s"
-    }
-
-    def format(self, record):
-        log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, datefmt="%H:%M:%S")
-        return formatter.format(record)
-
-
-def getLogger(name, filename=None, level=logging.DEBUG):
-    """
-    name: logger name to get
-    filename: name of log file to append to. If None (default), no file.
-    level: minimum level to log to (debug is the lowest)
-    """
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    # stdout -----------------------------------
-    ch = logging.StreamHandler()
-    ch.setFormatter(CustomFormatter())
-    logger.addHandler(ch)
-
-    # file -------------------------------------
-    if filename:
-        fh = logging.FileHandler(filename)
-        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
-
-    return logger
-
-
 
 
 
@@ -265,6 +53,186 @@ def getLogger(name, filename=None, level=logging.DEBUG):
 
 
 #############################################################################
+# def Binder(key, topic, Conn, fname=None, queue_size=5):
+#     """
+#     Creates a publisher that can either connect or bind to an address.
+#
+#     bind -> (key, topic, pid, endpt)
+#     bind <- (key, topic, pid, ok)
+#
+#     key: geckocore key
+#     topic: pub/sub topic name
+#     Conn: either Pub or Sub
+#     fname: file path for UDS
+#     queue_size: how many messages to queue up, default is 5
+#     """
+#     global g_geckopy
+#     p = Conn()
+#     p.topics = topic  # need to keep track
+#     # if (addr is None) and (bind):
+#     # addr = g_geckopy.proc_ip
+#     # addr = Proto(addr)
+#     # print('>> pub', addr)
+#     # addr = g_geckopy.core_inaddr
+#
+#     # if bind:
+#     # port = p.bind(addr, queue_size=queue_size, random=True)
+#     # g_geckopy.register_publisher(topics, port)
+#     bf = BeaconFinder(key)
+#     pid = mp.current_process().pid
+#
+#     if fname:
+#         endpt = zmqUDS(fname)
+#         p.bind(endpt, queue_size=queue_size)
+#         msg = (key, topic, str(pid), endpt)
+#
+#         # print(p)
+#         # print(msg)
+#     else:
+#         # addr = g_geckopy.proc_ip
+#         addr = zmqTCP(g_geckopy.proc_ip)
+#         port = p.bind(addr, queue_size=queue_size, random=True)
+#         endpt = zmqTCP(g_geckopy.proc_ip, port)
+#         msg = (key, topic, str(pid), endpt)
+#
+#     retry = 5
+#
+#     for i in range(retry):
+#         data = bf.send(msg)
+#         # print(">> bind raw:", data)
+#
+#         if data is None:
+#             time.sleep(0.5)
+#             continue
+#
+#         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and (data[3] == "ok"):
+#             # print("geckopy.Binder SUCCESS", i)
+#             g_geckopy.binders[topic] = endpt
+#             return p
+#
+#     return None
+#
+#
+# def pubBinderTCP(key, topic, queue_size=5):
+#     return Binder(key, topic, Pub, queue_size=queue_size)
+#
+#
+# def pubBinderUDS(key, topic, fname, queue_size=5):
+#     return Binder(key, topic, Pub, fname=fname, queue_size=queue_size)
+#
+#
+# def subBinderTCP(key, topic, queue_size=5):
+#     return Binder(key, topic, Sub, queue_size=queue_size)
+#
+#
+# def subBinderUDS(key, topic, fname, queue_size=5):
+#     return Binder(key, topic, Sub, fname=fname, queue_size=queue_size)
+
+#
+# def Connector(key, topic, Proto, queue_size=5):
+#     """
+#     Creates a publisher that can either connect or bind to an address.
+#
+#     conn -> (key, topic, pid)
+#     conn <- (key, topic, endpt, ok) py
+#     conn <- (key, topic, endpt, ok) cpp
+#
+#     key: geckocore key
+#     topic: pub/sub topic name
+#     Proto: either Pub or Sub
+#     queue_size: how many messages to queue up, default is 5
+#     """
+#     global g_geckopy
+#
+#     bf = BeaconFinder(key)
+#     pid = mp.current_process().pid
+#     msg = (key, topic, str(pid))
+#     retry = 5
+#     data = None
+#
+#     if topic in g_geckopy.binders:
+#         endpt = g_geckopy.binders[topic]
+#         p = Proto()
+#         p.connect(endpt)
+#         # print("geckopy.Connector SUCCESS")
+#         return p
+#
+#     for i in range(retry):
+#         data = bf.send(msg)
+#         # print(">> conn raw: ", data)
+#
+#         if data is None:
+#             time.sleep(0.5)
+#             continue
+#
+#         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and data[3] == "ok":
+#             p = Proto()
+#             p.connect(data[2])
+#             # print("geckopy.Connector SUCCESS", i)
+#             return p
+#
+#     return None
+#
+#
+# def pubConnectTCP(key, topic, queue_size=5):
+#     return Connector(key, topic, Pub, queue_size)
+#
+#
+# def pubConnectUDS(key, topic, queue_size=5):
+#     return Connector(key, topic, Pub, queue_size)
+#
+#
+# def subConnectTCP(key, topic, queue_size=5):
+#     return Connector(key, topic, Sub, queue_size)
+#
+#
+# def subConnectUDS(key, topic, queue_size=5):
+#     return Connector(key, topic, Sub, queue_size)
+
+
+# class CustomFormatter(logging.Formatter):
+#     """Logging Formatter to add colors and count warning / errors"""
+#
+#     reset = Style.RESET_ALL
+#
+#     FORMATS = {
+#         logging.DEBUG:    Back.GREEN + Fore.WHITE + "[%(asctime)s DBUG>" + reset + " %(message)s",
+#         logging.INFO:     Back.BLUE + Fore.WHITE + "[%(asctime)s INFO>" + reset + " %(message)s",
+#         logging.WARNING:  Back.YELLOW + Fore.WHITE + "[%(asctime)s WARN>" + reset + " %(message)s",
+#         logging.ERROR:    Back.RED + Fore.WHITE + "[%(asctime)s ERR>" + reset + " %(message)s",
+#         logging.CRITICAL: Back.MAGENTA + Fore.WHITE + "[%(asctime)s CRIT>" + reset + " %(message)s"
+#     }
+#
+#     def format(self, record):
+#         log_fmt = self.FORMATS.get(record.levelno)
+#         formatter = logging.Formatter(log_fmt, datefmt="%H:%M:%S")
+#         return formatter.format(record)
+#
+#
+# def getLogger(name, filename=None, level=logging.DEBUG):
+#     """
+#     name: logger name to get
+#     filename: name of log file to append to. If None (default), no file.
+#     level: minimum level to log to (debug is the lowest)
+#     """
+#     logger = logging.getLogger(name)
+#     logger.setLevel(level)
+#
+#     # stdout -----------------------------------
+#     ch = logging.StreamHandler()
+#     ch.setFormatter(CustomFormatter())
+#     logger.addHandler(ch)
+#
+#     # file -------------------------------------
+#     if filename:
+#         fh = logging.FileHandler(filename)
+#         formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+#         fh.setFormatter(formatter)
+#         logger.addHandler(fh)
+#
+#     return logger
+
+
 #
 # class GeckoPySingleton(SignalCatch):
 #     """
