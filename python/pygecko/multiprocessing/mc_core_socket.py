@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+##############################################
+# The MIT License (MIT)
+# Copyright (c) 2014 Kevin Walchko
+# see LICENSE for full details
+##############################################
 import time
 from pygecko.network.transport import Ascii
 from pygecko.network.mcsocket import MultiCastSocket

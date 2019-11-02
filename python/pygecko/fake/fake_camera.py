@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 ##############################################
 # The MIT License (MIT)
-# Copyright (c) 2018 Kevin Walchko
+# Copyright (c) 2014 Kevin Walchko
 # see LICENSE for full details
 ##############################################
 # if you don't have opencv installed and need to run a test that does

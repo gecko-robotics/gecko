@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 ##############################################
 # The MIT License (MIT)
-# Copyright (c) 2018 Kevin Walchko
+# Copyright (c) 2014 Kevin Walchko
 # see LICENSE for full details
 ##############################################
 # These are IntFlags, so you can compare them to ints. They

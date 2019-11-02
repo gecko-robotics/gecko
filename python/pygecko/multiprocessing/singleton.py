@@ -1,4 +1,9 @@
-
+# -*- coding: utf-8 -*-
+##############################################
+# The MIT License (MIT)
+# Copyright (c) 2014 Kevin Walchko
+# see LICENSE for full details
+##############################################
 import multiprocessing as mp
 from pygecko.multiprocessing.sig import SignalCatch
 from pygecko.transport.zmq_base import get_ip

@@ -7,19 +7,9 @@
 # Kevin J. Walchko 13 Oct 2014
 #
 # see http://zeromq.org for more info
-# http://zguide.zeromq.org/py:all
-# from __future__ import print_function
-# from __future__ import division
+# http://zguide.zeromq.org/py:all\
 import zmq
-# import time
-# import socket as Socket
-# from pygecko.transport.protocols import Pickle
-# from pygecko.messages.protocols import MsgPack
 from pygecko.network.ip import get_ip
-
-# class ProtoBuff:
-#     def pack(self, data):
-#         return data.SerializeToString()
 
 
 class ZMQError(Exception):
