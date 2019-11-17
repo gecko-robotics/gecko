@@ -34,6 +34,7 @@ cd ../..
 # libzmq --------------------------------------------------------------
 ZMQ_VER="4.3.2"
 wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VER}/zeromq-${ZMQ_VER}.tar.gz
+tar -zxvf zeromq-${ZMQ_VER}.tar.gz
 mkdir -p zeromq-${ZMQ_VER}/build
 cd zeromq-${ZMQ_VER}/build
 # cmake -DCMAKE_INSTALL_PREFIX=${DIR} ..
