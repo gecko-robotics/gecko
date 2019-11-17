@@ -173,39 +173,41 @@ class CoreServer:
         self.listen()
 
     def listen(self):
-
         while not self.exit:
-            try:
-                data, address = self.sock.recv()
-                # print("run:", address, data)
-                if data:
-                    data = self.handler.loads(data)
+            self.loopOnce()
 
+    def loopOnce(self):
+        try:
+            data, address = self.sock.recv()
+            # print("run:", address, data)
+            if data:
+                data = self.handler.loads(data)
+
+                if self.key == data[0]:
+                    msg = None
                     if self.key == data[0]:
-                        msg = None
-                        if self.key == data[0]:
-                            if len(data) == 3:
-                                msg = self.handle_conn(data)
-                            elif len(data) == 4:
-                                if data[3] != "ok":
-                                    msg = self.handle_bind(data)
-                            # else:
-                            #     print("*** wtf ***")
+                        if len(data) == 3:
+                            msg = self.handle_conn(data)
+                        elif len(data) == 4:
+                            if data[3] != "ok":
+                                msg = self.handle_bind(data)
+                        # else:
+                        #     print("*** wtf ***")
 
-                        if msg:
-                            msg  = self.handler.dumps(msg)
-                            # self.sock.sendto(msg, address)
-                            self.sock.cast(msg)
-                        time.sleep(0.01)
-                        # if msg:
-                        #     msg  = self.handler.dumps(msg)
-                        #     self.sock.sendto(msg, address)
-                        # print(">> beacon sent: {}".format(msg))
+                    if msg:
+                        msg  = self.handler.dumps(msg)
+                        # self.sock.sendto(msg, address)
+                        self.sock.cast(msg)
+                    # time.sleep(0.01)
+                    # if msg:
+                    #     msg  = self.handler.dumps(msg)
+                    #     self.sock.sendto(msg, address)
+                    # print(">> beacon sent: {}".format(msg))
 
-            except KeyboardInterrupt:
-                print("ctrl-z")
-                self.exit = True
-                return
+        except KeyboardInterrupt:
+            print("ctrl-z")
+            self.exit = True
+            return
             # except Exception as e:
             #     print("*** run: {} ***".format(e))
             #     continue

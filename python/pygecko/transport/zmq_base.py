@@ -57,12 +57,20 @@ class Base(object):
     def __init__(self, kind):
         self.topics = None
         self.pack = None  # ???
-        self.ctx = zmq.Context()
-        # self.packer = serialize()  # use pack or serialize??
-        # if kind:
+        self.ctx = zmq.Context(1)
+
+        self.timeout = 1000
+
         self.socket = self.ctx.socket(kind)
-        # else:
-        #     self.socket = None
+
+        # subscribers don't seem to work for some reason
+        # if kind in [zmq.SUB, zmq.REQ, zmq.REP]:
+        if kind in [zmq.REQ, zmq.REP]:
+            # print(">> Created poller for:", kind)
+            self.poller = zmq.Poller()
+            self.poller.register(self.socket, zmq.POLLIN)
+        else:
+            self.poller = None
 
     def __del__(self):
         """Calls close()"""
@@ -73,8 +81,15 @@ class Base(object):
 
     def close(self):
         """Closes socket and terminates context"""
-        self.socket.close()
-        self.ctx.term()
+        if self.socket:
+            # see if we created a poller
+            if self.poller:
+                self.poller.unregister(self.socket)
+
+            self.socket.setsockopt(zmq.LINGER, 0)
+            self.socket.close()
+        if self.ctx:
+            self.ctx.term()
         # print('[<] shutting down {}'.format(type(self).__name__))
 
     def bind(self, addr, hwm=None, queue_size=10, random=False):
@@ -133,3 +148,27 @@ class Base(object):
             self.socket.set_hwm(hwm)
         elif queue_size:
             self.socket.set_hwm(queue_size)
+
+    def recv_poll(self):
+        """
+        Performs a polling receive on the socket.
+        """
+        try:
+            # Determine if there is something to read (zmq.POLLIN):
+            # socks = {<zmq.sugar.socket.Socket object at 0x7f973d36d660>: 1}
+            socks = dict(self.poller.poll(timeout=self.timeout))
+            # print(socks)
+            if socks.get(self.socket) == zmq.POLLIN:
+                return self.socket.recv(flags=0)
+            else:
+                # print("*** recv_poll got none ***")
+                return None
+
+        except zmq.Again as e:
+            # no response yet or server not up and running yet
+            time.sleep(0.001)
+        except Exception as e:
+            # something else is wrong
+            print("*** Oops: {} ***".format(e))
+            raise
+        return None

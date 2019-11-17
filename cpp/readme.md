@@ -96,6 +96,16 @@ With `zmq`, a publisher and subscriber can both bind or connect to a TCP or
 a UDS endpoint. Publishers do not *always* bind and subscribers do not *always*
 connect.
 
+# Request and Reply
+
+Unlike pub/sub where either can bind or connect, the *reply only binds* and the
+*request only connects*:
+
+- `gecko::repBindTCP(key, topic)`: returns a reply node that binds to local system
+- `gecko::repBindUDS(key, topic)`: variation
+- `gecko::reqConnectTCP(key, topic)`: returns a  request node that connects to a reply
+- `gecko::reqConnectUDS(key, topic)`: variation
+
 # Examples
 
 The examples below create a simple pub/sub service. The message
@@ -167,6 +177,11 @@ int main(){
 }
 ```
 
+# ToDo
+
+- [x] Add json support [nlohmann-json](https://github.com/nlohmann/json) for c++
+- [ ] Look at yaml library: https://github.com/jbeder/yaml-cpp/
+- [ ] Setup request/reply node
 
 # MIT License
 

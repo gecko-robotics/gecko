@@ -12,7 +12,7 @@
 - From pypi: `pip install pygecko`
 - Local for development: `pip install -e .`
 
-## `geckolaunch.py`
+## `geckolaunch.py` **Broken Currently**
 
 `geckolaunch.py` allows you to launch a bunch of processes quickly using a launch
 file. A launch file is just a simple json file where each line takes the form:
@@ -43,7 +43,8 @@ file. A launch file is just a simple json file where each line takes the form:
 ## `geckopy`
 
 See the examples, but this acts like a `rospy` and helps make writing
-pub/sub processes easy. See the `/examples` folder to see it in action.
+pub/sub or request/reply processes easy. See the `/examples` folder to
+see it in action.
 
 - **init_node():** this sets up the the process for communications with `geckocore`
 - **is_shutdown():** returns `True` if node is signalled to exit
@@ -76,6 +77,12 @@ returned object will dynamically set the sleep interval to achieve the rate. Ex:
     - subBinderUDS(key, topic, queue_size=5)
     - subConnectTCP(key, topic, queue_size=5)
     - subConnectUDS(key, topic, queue_size=5)
+- **Request Helpers:** returns a request object, or `None` on failure
+    - reqConnectTCP(key, topic, queue_size=5)
+    - reqConnectUDS(key, topic, queue_size=5)
+- **Reply Helpers:** return a reply object, or `None` on failure
+    - repBinderTCP(key, topic, queue_size=5)
+    - repBinderUDS(key, topic, queue_size=5)
 
 ## `zmq`
 
@@ -90,10 +97,22 @@ is most useful for testing.
     - Pub.connect(self, addr, hwm=None, queue_size=10)
     - Pub.bind(self, addr, hwm=None, queue_size=10, random=False)
 
+# Todo
+
+- [ ] fix `g_gecko` in `binder.py` and `connector.py`
+- [ ] fix `core` for both local and remote performance
+- [ ] fix `gecko` launch
+- [ ] fix `gecko` bag
+- [ ] fix `gecko` topic
+- [ ] fix `gecko` service
+- [ ] Add json file setup
+- [ ] Add json file `geckolaunch`
+
 # Change Log
 
 Date        |Version| Notes
 ------------|-------|---------------------------------
+2019-Nov-16 | 1.4.0 | request/reply working
 2019-May-18 | 1.3.0 | working with c++
 2019-Mar-02 | 1.2.0 | set multicast as the default method to find nodes
 2018-Oct-28 | 1.1.0 | simplified and removed geckocore as the main hub

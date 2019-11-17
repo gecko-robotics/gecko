@@ -8,7 +8,8 @@ from pygecko import zmqTCP
 from pygecko import zmqUDS
 
 # from test_core import *
-from test_no_core import *
+# from test_no_core import *
+from test_req_rply import *
 
 
 # Files =================================================================

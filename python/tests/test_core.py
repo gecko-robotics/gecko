@@ -91,11 +91,31 @@ def zmq_pub_sub_core(args):
     assert rmsg == mm, "{} => {}".format(rmsg, mm)
 
 
-def test_pub_sub_core():
-
+def CoreProc(**kwargs):
     bs = CoreServer(key='test', handler=Ascii)
+    # bs.start()
+    # bs.run()
+
+    exit = kwargs['exit']
+    while not exit.is_set():
+        bs.loopOnce()
+
+
+def test_pub_sub_core():
+    print("==============================")
+    print("| Starting Core Tests        |")
+    print("==============================")
+
+    # bs = CoreServer(key='test', handler=Ascii)
+
+    # stop pub
+    exit = Event()
+    exit.clear()
+    args = {}
+    args['exit'] = exit
+
     core = GeckoSimpleProcess()
-    core.start(func=bs.run, name='geckocore')
+    core.start(func=CoreProc, name='geckocore', kwargs=args)
 
     # time.sleep(2)
 
@@ -131,6 +151,5 @@ def test_pub_sub_core():
     }
     zmq_pub_sub_core(args)
 
-    bs.stop()
-    # core.join(0.1)
+    exit.set()
     core.terminate()

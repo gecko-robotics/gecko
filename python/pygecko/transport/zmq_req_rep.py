@@ -9,17 +9,16 @@
 # see http://zeromq.org for more info
 # http://zguide.zeromq.org/py:all
 import zmq
-import time
+# import time
 from pygecko.transport.zmq_base import Base
 
 
-class Rep(Base):
+class Reply(Base):
     """
     Reply?
     """
     def __init__(self):
-        Base.__init__(self)
-        self.socket = self.ctx.socket(zmq.REP)
+        Base.__init__(self, zmq.REP)
 
     def __del__(self):
         """
@@ -30,6 +29,7 @@ class Rep(Base):
     def listen(self, callback, flags=0):
         """
         checks to see if a request needs to be serviced
+        flags: blocking or non-blocking using zmq.NOBLOCK
         callback: a function to handle a request message and return the answer.
             The function must be able to handle a message it didn't expect.
             Since there are no topics associated with this, a user might send
@@ -39,129 +39,42 @@ class Rep(Base):
 
         returns True if serviced, False if not
         """
-        # print 'listen'
         ret = False
-        try:
-            jmsg = self.socket.recv_multipart(flags=flags)[0]
-            msg = self.packer.unpack(jmsg)
-            # print("*** {} ***".format(msg))
-
+        msg = self.recv_poll()
+        if msg:
             msg = callback(msg)
-
-            jmsg = self.packer.pack(msg)
-            self.socket.send(jmsg)
+            self.socket.send(msg)
             ret = True
-
-        except zmq.Again as e:
-            # no response yet or server not up and running yet
-            # time.sleep(0.001)
-            # print("*** no reply ***")
-            pass
-        except Exception:
-            # something else is wrong
-            raise
 
         return ret
 
-    def listen_nb(self, callback, flags=0):
-        """
-
-        """
-        return self.listen(callback=callback, flags=zmq.NOBLOCK)
-        # while True:
-        #     jmsg = self.socket.recv_multipart()[0]
-        #     msg = self.packer.unpack(jmsg)
-        #
-        #     msg = callback(msg)
-        #
-        #     jmsg = self.packer.pack(msg)
-        #     self.socket.send(jmsg)
-
-    # def listen_nb(self, callback):
+    # def listen_nb(self, callback, flags=0):
     #     """
-    #     checks to see if a request needs to be serviced
-    #     callback: a function to handle a request message and return the answer.
-    #         The function must be able to handle a message it didn't expect.
-    #         Since there are no topics associated with this, a user might send
-    #         some crazy message
-    #
-    #         callback(message) -> answer
-    #
-    #     returns True if serviced, False if not
+    #     see listen()
     #     """
-    #     # print 'listen'
-    #     ret = False
-    #     try:
-    #         jmsg = self.socket.recv_multipart(flags=zmq.NOBLOCK)[0]
-    #         msg = self.packer.unpack(jmsg)
-    #         # print("*** {} ***".format(msg))
-    #
-    #         msg = callback(msg)
-    #
-    #         jmsg = self.packer.pack(msg)
-    #         self.socket.send(jmsg)
-    #         ret = True
-    #
-    #     except zmq.Again as e:
-    #         # no response yet or server not up and running yet
-    #         # time.sleep(0.001)
-    #         # print("*** no reply ***")
-    #         pass
-    #     except Exception:
-    #         # something else is wrong
-    #         raise
-    #
-    #     return ret
-    #
-    # def listen(self, callback, flags=0):
-    #     """
-    #     The same as listen_nb() but this one blocks until a request is made.
-    #
-    #     this blocks ... utility?
-    #     """
-    #     while True:
-    #         jmsg = self.socket.recv_multipart()[0]
-    #         msg = self.packer.unpack(jmsg)
-    #
-    #         msg = callback(msg)
-    #
-    #         jmsg = self.packer.pack(msg)
-    #         self.socket.send(jmsg)
+    #     return self.listen(callback=callback, flags=zmq.NOBLOCK)
 
 
-class Req(Base):
+class Request(Base):
     """
-    Request?
+    Request
     """
     def __init__(self):
-        Base.__init__(self)
-        self.socket = self.ctx.socket(zmq.REQ)
+        Base.__init__(self, zmq.REQ)
 
     def __del__(self):
         """Calls Base.close()"""
         self.close()
 
-    def get_nb(self, msg):
-        """
-        Calls get(flags) with flags=zmq.NOBLOCK to implement non-blocking
-        (or zmq.DONTWAIT). If no answer is received, then None is returned.
-        """
-        return self.get(msg, flags=zmq.NOBLOCK)
-
     def get(self, msg, flags=0):
         """
         Implements recv_multipart(flags) with flags=0 for blocking.
+        msg: request message sent to a reply class
+        rmsg: the returned message from a reply class, None if no message in
+              non-blocking mode
+        flags: blocking or non-blocking, using zmq.NOBLOCK or zmq.DONTWAIT
         """
-        jmsg = self.packer.pack(msg)
-        msg = None
-        self.socket.send(jmsg)
-        try:
-            jmsg = self.socket.recv_multipart(flags=flags)[0]
-            msg = self.packer.unpack(jmsg)
-        except zmq.Again as e:
-            # no response yet or server not up and running yet
-            time.sleep(0.001)
-        except Exception as e:
-            # something else is wrong
-            raise
-        return msg
+        rmsg = None  # returned message
+        self.socket.send(msg)
+        rmsg = self.recv_poll()
+        return rmsg

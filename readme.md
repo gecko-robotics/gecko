@@ -51,7 +51,7 @@ node cpu/memory usage
     - gecko topic: display pub/sub
     - gecko service: display req/rep
     - gecko launch: run multiple nodes at once
-    
+
 # Serialization
 
 - [gecko-msgpack]()
@@ -102,6 +102,9 @@ Endpoint protocols:
 
 In work
 
+- python working
+- c++ needs to be finished
+
 ## Multicast Messages
 
 Multicast is used to talk with `geckocore` and pass information between. The
@@ -140,9 +143,9 @@ Gecko libraries (publishers and/or subscribers) are made for the following:
 |---------|--------|-----|
 | ydlidar |        | X   |
 | nxp imu | X      |     |
-| rplidar |        |     |
-| tfmini  |        |     |
-| PiCamera|        |     |
+| rplidar |        | X   |
+| tfmini  |        | X   |
+| PiCamera| X      |     |
 
 | Hardware     | Python | C++ |
 |--------------|--------|-----|
@@ -166,17 +169,8 @@ Like `ros2`, `gecko` is a bunch of tools written in python:
 # ToDo
 
 - [ ] Windozes support ... ha, ha, ha, ha ... probably not :P
-- [ ] `geckotopic` echo/pub/list/find tools
-- [ ] Look at yaml library: https://github.com/jbeder/yaml-cpp/
-- [x] Add submodule for [nlohmann-json](https://github.com/nlohmann/json)
-- [ ] Add json file setup
-- [ ] Add json file `geckolaunch`
-- [ ] Local nodes only, show performance ... or figure how to handle remote nodes
-- [ ] Remote nodes, investigate use heartbeat w/watchdog timer to determine if alive (node -> core)
-- [ ] Remote nodes, investigate ping, return performance info (core -> node)
-- [ ] Ping tool: all geckocores respond with info about themselves
 - [ ] Create a debian package for linux
-- [ ] Look at cross-compiling with docker for arm and building debian packages for simpiler install
+- [ ] Look at cross-compiling with docker for arm and building debian packages for simpler install
 
 Robot stuff
 - [ ] visual odom https://github.com/MichaelGrupp/evo  https://michaelgrupp.github.io/evo/

@@ -5,9 +5,11 @@
 # see LICENSE for full details
 ##############################################
 from pygecko.transport.zmq_sub_pub import Pub, Sub
+from pygecko.transport.zmq_req_rep import Request
 import time
 import multiprocessing as mp
 from .mc_core_socket import BeaconFinder
+# from pygecko.multiprocessing.geckopy import g_geckopy
 
 
 def Connector(key, topic, Proto, queue_size=5):
@@ -23,7 +25,7 @@ def Connector(key, topic, Proto, queue_size=5):
     Proto: either Pub or Sub
     queue_size: how many messages to queue up, default is 5
     """
-    global g_geckopy
+    # global g_geckopy
 
     bf = BeaconFinder(key)
     pid = mp.current_process().pid
@@ -31,12 +33,12 @@ def Connector(key, topic, Proto, queue_size=5):
     retry = 5
     data = None
 
-    if topic in g_geckopy.binders:
-        endpt = g_geckopy.binders[topic]
-        p = Proto()
-        p.connect(endpt)
-        # print("geckopy.Connector SUCCESS")
-        return p
+    # if topic in g_geckopy.binders:
+    #     endpt = g_geckopy.binders[topic]
+    #     p = Proto()
+    #     p.connect(endpt)
+    #     # print("geckopy.Connector SUCCESS")
+    #     return p
 
     for i in range(retry):
         data = bf.send(msg)
@@ -54,6 +56,7 @@ def Connector(key, topic, Proto, queue_size=5):
 
     return None
 
+# Pub/Sub ====================================================================
 
 def pubConnectTCP(key, topic, queue_size=5):
     return Connector(key, topic, Pub, queue_size)
@@ -69,3 +72,12 @@ def subConnectTCP(key, topic, queue_size=5):
 
 def subConnectUDS(key, topic, queue_size=5):
     return Connector(key, topic, Sub, queue_size)
+
+# Req/Rep ====================================================================
+
+def reqConnectTCP(key, topic, queue_size=5):
+    return Connector(key, topic, Pub, queue_size)
+
+
+def reqConnectUDS(key, topic, queue_size=5):
+    return Connector(key, topic, Pub, queue_size)

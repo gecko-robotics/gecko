@@ -1,85 +1,61 @@
 from multiprocessing import Event
 import json
+import time
+import os
 
 from pygecko.multiprocessing import geckopy
 from pygecko.transport.zmq_sub_pub import Pub, Sub
+from pygecko.transport.zmq_req_rep import Reply, Request
 from pygecko.multiprocessing.process import GeckoSimpleProcess
 from pygecko import zmqTCP, zmqUDS
 from pygecko import get_ip
 
-
 ipAddress = get_ip()
 
 
-def zmq_rq_rp(args):
-    geckopy.init_node()
+endpt = zmqUDS("/tmp/req_rpy_0")
 
-    # stop pub
-    exit = Event()
-    exit.clear()
+def clean():
+    if os.path.exists(endpt):
+        os.remove(endpt)
 
-    rmsg = {'a': 1, 'b': [1, 2, 3], 'c': 'hello cowboy'}
-    msg = json.dumps(rmsg)
-    msg = msg.encode("utf-8")
+def test_s():
+    clean()
 
-    def publisher(**kwargs):
-        geckopy.init_node()
-        exit = kwargs['exit']
+    orig_ans = {"recv send": "ans"}
 
-        pt = kwargs["pub"]
-        if pt == "bindtcp":
-            p = Pub()
-            p.bind(zmqTCP(ipAddress, 9100))
-        elif pt == "connecttcp":
-            p = Pub()
-            p.connect(zmqTCP(ipAddress, 9101))
-        elif pt == "binduds":
-            p = Pub()
-            p.bind(zmqUDS("/tmp/pygecko_test21"))
-        elif pt == "connectuds":
-            p = Pub()
-            p.connect(zmqUDS("/tmp/pygecko_test22"))
+    def proc():
+        def cb(msg):
+            print("cb send:", msg)
+            msg = json.dumps(orig_ans).encode("utf-8")
+            print("cb recv:", msg)
+            return msg
 
-        if p is None:
-            assert False, "<<< Couldn't get Pub/Sub from geckocore >>>"
+        rep = Reply()
+        rep.bind(endpt)
+        good = False
 
-        rate = geckopy.Rate(3)
-
-        for _ in range(100):
-            if exit.is_set():
-                break
-            p.publish(msg)
-            rate.sleep()
+        while not good:
+            good = rep.listen(cb)
+            print(">> reply good?", good)
 
     p = GeckoSimpleProcess()
-    args['exit'] = exit
-    p.start(func=publisher, name='publisher', kwargs=args)
+    p.start(func=proc, name='reply')
 
-    st = args["sub"]
 
-    if st == "connecttcp":
-        s = Sub()
-        s.connect(zmqTCP(ipAddress, 9100))
-    elif st == "bindtcp":
-        s = Sub()
-        s.bind(zmqTCP(ipAddress, 9101))
-    elif st == "connectuds":
-        s = Sub()
-        s.connect(zmqUDS("/tmp/pygecko_test21"))
-    elif st == "binduds":
-        s = Sub()
-        s.bind(zmqUDS("/tmp/pygecko_test22"))
+    req = Request()
+    req.connect(endpt)
 
-    rate = geckopy.Rate(2)
+    ans = None
+    while ans is None:
+        time.sleep(3)
+        msg = json.dumps({"request send": "question"}).encode("utf-8")
+        ans = req.get(msg)
 
-    for _ in range(5):
-        m = s.recv_nb()
-        mm = None
-        if m:
-            mm = json.loads(m)
-            exit.set()
-            break
-        rate.sleep()
+        if ans:
+            ans = json.loads(ans)
+            print(">> request good?", ans)
 
-    p.join(0.01)
-    assert rmsg == mm, "{} => {}".format(rmsg, mm)
+        time.sleep(0.01)
+
+    assert orig_ans == ans, "{} != {}".format(orig_ans, ans)

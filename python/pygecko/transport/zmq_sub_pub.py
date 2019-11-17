@@ -71,7 +71,7 @@ class Sub(Base):
 
     def recv(self, flags=0):
         """
-        Implements a recv_multipart(flags). By default, this blocks.
+        Implements a recv_poll(). By default, this does not block.
         """
         msg = None
         try:
@@ -86,6 +86,7 @@ class Sub(Base):
             # print(e)
             raise
         return msg
+        # return self.recv_poll()
 
 
 

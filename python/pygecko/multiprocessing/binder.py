@@ -5,15 +5,24 @@
 # see LICENSE for full details
 ##############################################
 from pygecko.transport.zmq_sub_pub import Pub, Sub
+from pygecko.transport.zmq_req_rep import Reply
 from pygecko.transport.zmq_base import zmqTCP
 from pygecko.transport.zmq_base import zmqUDS
 import time
 import multiprocessing as mp
 from .mc_core_socket import BeaconFinder
+# from pygecko.multiprocessing.geckopy import g_geckopy
+from pygecko.transport.zmq_base import get_ip
+
+# FIXME:
+g_ip = get_ip()
 
 
 def Binder(key, topic, Conn, fname=None, queue_size=5):
     """
+    Do not call this function as a user, it is an interternal function to setup
+    a binding zmq connection. It will call gecko core in the process.
+
     Creates a publisher that can either connect or bind to an address.
 
     bind -> (key, topic, pid, endpt)
@@ -25,7 +34,7 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
     fname: file path for UDS
     queue_size: how many messages to queue up, default is 5
     """
-    global g_geckopy
+    # global g_geckopy
     p = Conn()
     p.topics = topic  # need to keep track
     # if (addr is None) and (bind):
@@ -49,9 +58,11 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
         # print(msg)
     else:
         # addr = g_geckopy.proc_ip
-        addr = zmqTCP(g_geckopy.proc_ip)
+        # addr = zmqTCP(g_geckopy.proc_ip)
+        addr = zmqTCP(g_ip)
         port = p.bind(addr, queue_size=queue_size, random=True)
-        endpt = zmqTCP(g_geckopy.proc_ip, port)
+        # endpt = zmqTCP(g_geckopy.proc_ip, port)
+        endpt = zmqTCP(g_ip, port)
         msg = (key, topic, str(pid), endpt)
 
     retry = 5
@@ -66,11 +77,12 @@ def Binder(key, topic, Conn, fname=None, queue_size=5):
 
         if (len(data) == 4) and (data[0] == key) and (data[1] == topic) and (data[3] == "ok"):
             # print("geckopy.Binder SUCCESS", i)
-            g_geckopy.binders[topic] = endpt
+            # g_geckopy.binders[topic] = endpt
             return p
 
     return None
 
+# Pub/Sub ====================================================================
 
 def pubBinderTCP(key, topic, queue_size=5):
     return Binder(key, topic, Pub, queue_size=queue_size)
@@ -86,3 +98,12 @@ def subBinderTCP(key, topic, queue_size=5):
 
 def subBinderUDS(key, topic, fname, queue_size=5):
     return Binder(key, topic, Sub, fname=fname, queue_size=queue_size)
+
+# Req/Rep ====================================================================
+
+def repBinderTCP(key, topic, queue_size=5):
+    return Binder(key, topic, Reply, queue_size=queue_size)
+
+
+def repBinderUDS(key, topic, fname, queue_size=5):
+    return Binder(key, topic, Reply, fname=fname, queue_size=queue_size)
