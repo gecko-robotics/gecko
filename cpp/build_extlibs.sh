@@ -19,6 +19,8 @@ DIR="/opt/gecko"
 # cd ../..
 # # rm -fr msgpack-c
 
+
+
 # json ---------------------------------------------------------------
 echo ">> Installing JSON in ${DIR}"
 git clone https://github.com/nlohmann/json.git
@@ -28,6 +30,17 @@ cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DJSON_BuildTests=OFF ..
 make install
 cd ../..
 # rm -fr json
+
+# libzmq --------------------------------------------------------------
+ZMQ_VER="4.3.2"
+wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VER}/zeromq-${ZMQ_VER}.tar.gz
+mkdir -p zeromq-${ZMQ_VER}/build
+cd zeromq-${ZMQ_VER}/build
+# cmake -DCMAKE_INSTALL_PREFIX=${DIR} ..
+cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DWITH_DOCS=OFF -DBUILD_TESTS=OFF ..
+make install
+cd ../..
+# rm -fr zeromq-${ZMQ_VER}
 
 # cppzmq --------------------------------------------------------------
 echo ">> Installing cppzmq in ${DIR}"
