@@ -27,7 +27,9 @@ jobs:
             - name: Test with nosetests
               run: |
                 pip install nose
-                cd python/tests
+                cd python
+                python3 -m pip install -e .
+                cd tests
                 nosetests -vs test.py
             # - name: Python Style Checker
             #   uses: andymckay/pycodestyle-action@0.1.3
