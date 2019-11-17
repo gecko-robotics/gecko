@@ -5,9 +5,7 @@
 [![image](https://img.shields.io/pypi/pyversions/pygecko.svg)](https://pypi.python.org/pypi/pygecko)
 [![image](https://img.shields.io/pypi/format/pygecko.svg)](https://pypi.python.org/pypi/pygecko)
 [![Build Status](https://travis-ci.org/gecko-robotics/pygecko.svg?branch=master)](https://travis-ci.org/gecko-robotics/pygecko)
-
-
-![No Badge](https://github.com/gecko-robotics/gecko/workflows/nosetests/badge.svg)
+![No Badge](https://github.com/gecko-robotics/gecko/workflows/Nose/badge.svg)
 
 
 ## Install
