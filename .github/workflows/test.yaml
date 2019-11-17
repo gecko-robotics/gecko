@@ -4,11 +4,16 @@ on: [push]
 jobs:
     build:
         runs-on: ubuntu-latest
+        strategy:
+          max-parallel: 5
+          matrix:
+            python-version: [3.6, 3.7, 3.8]
         steps:
             - uses: actions/checkout@master
-            - uses: actions/setup-python@v1
+            - name: Setup Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v1
               with:
-                python-version: '3.6' # Version range or exact version of a Python version to use, using semvers version range syntax.
+                python-version: ${{ matrix.python-version }} # Version range or exact version of a Python version to use, using semvers version range syntax.
                 # architecture: 'x64' # (x64 or x86)
             # - name: Set up Python ${{ matrix.python-version }}
             #   uses: actions/setup-python@v1
@@ -16,7 +21,7 @@ jobs:
             #     python-version: ${{ matrix.python-version }}
             - name: Install dependencies
               run: |
-                python3 -m pip install --upgrade pip setuptools wheel build_utils
+                python -m pip install --upgrade pip setuptools wheel build_utils
             # - name: Lint with flake8
             #   run: |
             #     pip install flake8
@@ -24,11 +29,11 @@ jobs:
             #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
             #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
             #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-            - name: Test with nosetests
+            - name: nosetests
               run: |
                 pip install nose
                 cd python
-                python3 -m pip install -e .
+                python -m pip install -e .
                 cd tests
                 nosetests -vs test.py
             # - name: Python Style Checker

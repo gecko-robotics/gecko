@@ -6,6 +6,8 @@
 [![image](https://img.shields.io/pypi/format/pygecko.svg)](https://pypi.python.org/pypi/pygecko)
 [![Build Status](https://travis-ci.org/gecko-robotics/pygecko.svg?branch=master)](https://travis-ci.org/gecko-robotics/pygecko)
 
+![](https://github.com/gecko-robotics/gecko/workflows/nosetests/badge.svg)
+
 
 ## Install
 
