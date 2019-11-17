@@ -1,4 +1,4 @@
-#include "bsocket.hpp"
+#include <marko/bsocket.hpp>
 
 BCSocket::BCSocket(int port): port(port){
     sockopt(SOL_SOCKET, SO_BROADCAST, 1);

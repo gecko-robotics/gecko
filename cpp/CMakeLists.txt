@@ -67,7 +67,13 @@ endif()
 include(cmake/threads.cmake)
 
 # Marko -----------------------------------------------------------
-add_subdirectory(extlibs/marko)
+# add_subdirectory(extlibs/marko)
+find_package(marko REQUIRED
+    PATHS /opt/gecko/lib/cmake
+)
+if(marko_FOUND)
+    message(STATUS ">> marko found: ${marko_VERSION}")
+endif()
 
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
@@ -89,14 +95,14 @@ target_link_libraries(${PROJECT_NAME}
         # ${ALL_LIBS}
         ${ZeroMQ_LIBRARY}
         ${CMAKE_THREAD_LIBS_INIT}
-        marko
+        ${marko_LIBRARIES}
 )
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         nlohmann_json::nlohmann_json
         cppzmq
         ${ZeroMQ_INCLUDE_DIR}
-        ./extlibs/marko/lib/include
+        ${marko_INCLUDE_DIRS}
 )
 
 # list(APPEND ALL_LIBS ${PROJECT_NAME})

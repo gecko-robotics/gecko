@@ -44,11 +44,11 @@
 #include <unistd.h>           // sleep, usleep
 
 // broadcast/multicast stuff - Marko lib
-#include <ascii.hpp>
-#include <bsocket.hpp>
-#include <mcsocket.hpp>
+#include <marko/ascii.hpp>
+#include <marko/bsocket.hpp>
+#include <marko/mcsocket.hpp>
 
 // copy header from here
 // https://github.com/zeromq/cppzmq
-#include "zmq.hpp"
+#include <zmq.hpp>
 // #include "zmq_addon.hpp"

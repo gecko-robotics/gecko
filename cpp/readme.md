@@ -43,9 +43,8 @@ for needed libraries:
 
 ```
 git clone https://github.com/gecko-robotics/gecko.git
-cd gecko
-./build_extlibs
-cd cpp
+cd gecko/cpp
+./build_extlibs.sh
 mkdir build
 cd build
 cmake ..
@@ -63,7 +62,7 @@ sudo dpkg -i gecko-x.x.x-linux.deb
 
 # Examples
 
-See the `examples` folder and `extlibs/gecko-msgpack/examples` folder.
+See the `examples` folder.
 
 # Gecko C++ API
 
@@ -78,8 +77,8 @@ Many of these ideas are pulled from ROS
 
 ## Publisher and Subscriber
 
-Ros has `advertise` and `subscribe` functions, `zmq` provides a little more flexibility
-so `gecko` has deviated from that:
+Ros has `advertise` and `subscribe` functions, `zmq` provides a little more
+flexibility than ROS, so `gecko` has deviated from that:
 
 - `gecko::pubBindTCP(key, topic)`: returns a publisher that binds to local system
 and informs `geckocore` (using key) of the the topic it publishes from ip/port
@@ -182,6 +181,7 @@ int main(){
 - [x] Add json support [nlohmann-json](https://github.com/nlohmann/json) for c++
 - [ ] Look at yaml library: https://github.com/jbeder/yaml-cpp/
 - [ ] Setup request/reply node
+- [ ] break `marko` out of `extlibs` folder into its own library
 
 # MIT License
 
