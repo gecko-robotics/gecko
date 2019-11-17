@@ -46,18 +46,19 @@ set(GECKO_INCLUDE "${GECKO_BASE_PATH}/include/gecko")
 # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND ALL_LIBS "")
 
-include_directories(/opt/gecko/include)
-link_directories(/opt/gecko/lib)
-link_directories(/usr/local/lib)
+# include_directories(/opt/gecko/include)
+# link_directories(/opt/gecko/lib)
+# link_directories(/usr/local/lib)
 
-set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake;/opt/gecko/share/cmake")
+# set(CMAKE_PREFIX_PATH "/opt/gecko/lib/cmake;/opt/gecko/share/cmake")
 
 # Load in pkg-config support --------------------------------------
 find_package(PkgConfig)
 
 # Json ------------------------------------------------------------
-# include_directories(extlibs/nlohmann-json/include)
-find_package(nlohmann_json REQUIRED)
+find_package(nlohmann_json REQUIRED
+    PATHS /opt/gecko/lib/cmake
+)
 if(nlohmann_json_FOUND)
     message(STATUS ">> json found: ${nlohmann_json_VERSION}")
 endif()
@@ -68,12 +69,11 @@ include(cmake/threads.cmake)
 # Marko -----------------------------------------------------------
 add_subdirectory(extlibs/marko)
 
-# Protobuf ------------------------------------------------------
-# add_subdirectory(extlibs/protobuf)
-
 # ZeroMQ ----------------------------------------------------------
 include(cmake/zmq.cmake)
-find_package(cppzmq REQUIRED)
+find_package(cppzmq REQUIRED
+    PATHS /opt/gecko/share/cmake
+)
 if(cppzmq_FOUND)
     message(STATUS ">> cppZMQ found: ${cppzmq_VERSION}")
 endif()
@@ -86,19 +86,20 @@ include_directories(src)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        ${ALL_LIBS}
+        # ${ALL_LIBS}
+        ${ZeroMQ_LIBRARY}
+        ${CMAKE_THREAD_LIBS_INIT}
         marko
 )
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-        # extlibs/marko/lib/include
-        # extlibs/nlohmann-json/include
-        # /opt/gecko/include/cppzmq
         nlohmann_json::nlohmann_json
         cppzmq
+        ${ZeroMQ_INCLUDE_DIR}
+        ./extlibs/marko/lib/include
 )
 
-list(APPEND ALL_LIBS ${PROJECT_NAME})
+# list(APPEND ALL_LIBS ${PROJECT_NAME})
 # add_subdirectory(extlibs/gecko-msgpack)
 
 # Build Gecko-MsgPack ----------------------------------------------

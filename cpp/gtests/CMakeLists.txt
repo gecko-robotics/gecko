@@ -53,13 +53,13 @@ foreach(src ${gtests})
     message(STATUS " -> ${name}")
     # message(STATUS ">> ${ALL_LIBS}")
     add_executable(${name} ${src})
-    target_link_libraries(${name} gtest_main ${ALL_LIBS})
+    target_link_libraries(${name} gtest_main gecko)
     add_test(NAME ${name} COMMAND ${name})
 endforeach()
 
 # run all tests
 add_executable(all-gtest ${gtests})
-target_link_libraries(all-gtest gtest_main ${ALL_LIBS})
+target_link_libraries(all-gtest gtest_main gecko)
 add_test(NAME all-gtest COMMAND all-gtest)
 
-message(STATUS ">> gTest linked libraries: ${ALL_LIBS}")
+# message(STATUS ">> gTest linked libraries: ${ALL_LIBS}")
