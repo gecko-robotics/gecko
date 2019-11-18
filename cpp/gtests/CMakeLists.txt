@@ -40,7 +40,7 @@ list(APPEND gtests
     zmq-gtest.cpp
     ascii-gtest.cpp
     json-gtest.cpp
-    db-gtest.cpp
+    # db-gtest.cpp
     # all-gtest.cpp
     gecko-gtest.cpp
     # msgpack-msgs-gtest.cpp

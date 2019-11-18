@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -fr tmp
+
 mkdir tmp
 cd tmp
 
@@ -17,19 +19,15 @@ DIR="/opt/gecko"
 # cmake -DMSGPACK_CXX[17]=ON -DCMAKE_INSTALL_PREFIX=${DIR} ..
 # make install
 # cd ../..
-# # rm -fr msgpack-c
-
-
 
 # json ---------------------------------------------------------------
 echo ">> Installing JSON in ${DIR}"
 git clone https://github.com/nlohmann/json.git
-mkdir json/build
+mkdir -p json/build
 cd json/build
 cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DJSON_BuildTests=OFF ..
 make install
 cd ../..
-# rm -fr json
 
 # libzmq --------------------------------------------------------------
 ZMQ_VER="4.3.2"
@@ -37,11 +35,9 @@ wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VER}/zeromq-${ZMQ
 tar -zxvf zeromq-${ZMQ_VER}.tar.gz
 mkdir -p zeromq-${ZMQ_VER}/build
 cd zeromq-${ZMQ_VER}/build
-# cmake -DCMAKE_INSTALL_PREFIX=${DIR} ..
 cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DWITH_DOCS=OFF -DBUILD_TESTS=OFF ..
 make install
 cd ../..
-# rm -fr zeromq-${ZMQ_VER}
 
 # cppzmq --------------------------------------------------------------
 echo ">> Installing cppzmq in ${DIR}"
@@ -51,7 +47,14 @@ cd cppzmq/build
 cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DCPPZMQ_BUILD_TESTS=OFF ..
 make install
 cd ../..
-# rm -fr cppzmq
+
+# Marko ---------------------------------------------------------------
+git clone https://github.com/gecko-robotics/marko.git
+mkdir -p marko/build
+cd marko/build
+cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DEXAMPLES=OFF ..
+make install
+cd ../..
 
 # OpenCV --------------------------------------------------------------
 echo ">> TODO: setup opencv"

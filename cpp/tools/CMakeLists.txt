@@ -3,7 +3,7 @@ list(APPEND tools
     # logserver/gecko-logserver.cpp
     # topic/geckotopic.cpp
     # bag/gecko-bag.cpp
-    core/geckocore.cpp
+    # core/geckocore.cpp
     # version/version.cpp
     # version/host.cpp
     # version/gecko-uname.cpp

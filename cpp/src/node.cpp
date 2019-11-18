@@ -1,4 +1,4 @@
-#include "gecko/node.hpp"
+#include <gecko/node.hpp>
 #include <thread>
 #include <string.h>  // strdup
 #include <iostream>
