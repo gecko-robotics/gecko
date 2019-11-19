@@ -41,9 +41,14 @@ cd ../..
 
 # cppzmq --------------------------------------------------------------
 echo ">> Installing cppzmq in ${DIR}"
-git clone https://github.com/zeromq/cppzmq.git
-mkdir cppzmq/build
-cd cppzmq/build
+# https://github.com/zeromq/cppzmq/archive/v4.5.0.tar.gz
+CPPZMQ_VER="4.5.0"
+# git clone https://github.com/zeromq/cppzmq.git
+wget -O cppzmq.tar.gz https://github.com/zeromq/cppzmq/archive/v${CPPZMQ_VER}.tar.gz
+tar zxvf cppzmq*.tar.gz
+cd cppzmq*
+mkdir -p build
+cd build
 cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DCPPZMQ_BUILD_TESTS=OFF ..
 make install
 cd ../..
