@@ -22,19 +22,25 @@ system libraries:
      +- bin/
      +- include/  # gecko dependencies
      +- lib/      # gecko dependencies
-     +- <gecko_version>  # core gecko includes/libraries
+     +- <gecko_version>  # core gecko includes/libraries/drivers
      |   +- bin/
      |   +- include/
      |   +- lib/
-     |       +- cmake/   # gecko cmake
-     +- modules/  # additions to core or hw drivers or other sw
-     |   +- <driver_a>   # these are modular and simple rm to remove
-     |       +- include/
-     |       +- lib/
-     |       +- config/  # any sort of configuration files or cmake
+     |   |   +- cmake/   # gecko cmake
+     |   +- modules/  # drivers or other sw bound to a gecko version
+     |       +- protobuf/  # example serialization protocal would be here
+     |       +- <driver_a>   # these are modular and simple rm to remove
+     |           +- bin/
+     |           +- include/
+     |           +- lib/
+     |           +- config/  # any sort of configuration files or cmake
      +- share/
          +- cmake/  # gecko dependency cmake
 ```
+
+The goal of this organization is to keep things modular. Different versions
+of gecko can exist and different modules can exist. At any time, you can delete
+a gecko version or module and not break everything.
 
 # Building
 
@@ -49,15 +55,6 @@ mkdir build
 cd build
 cmake ..
 make install
-```
-
-## Packaging
-
-Need to test this more, but could do:
-
-```
-make package
-sudo dpkg -i gecko-x.x.x-linux.deb
 ```
 
 # Examples
@@ -181,7 +178,12 @@ int main(){
 - [x] Add json support [nlohmann-json](https://github.com/nlohmann/json) for c++
 - [ ] Look at yaml library: https://github.com/jbeder/yaml-cpp/
 - [ ] Setup request/reply node
-- [ ] break `marko` out of `extlibs` folder into its own library
+- [x] break `marko` out of `extlibs` folder into its own library
+- [x] Investigate Conan.io as a way to organize gecko and dependancies
+    - Conan.io difficult to setup and make work. I eventually could build
+    packages and get them put on a local server I could run, but gecko had
+    issues using the packages to build itself. After several days of trying to
+    get it to work, I gave up.
 
 # MIT License
 
