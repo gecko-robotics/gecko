@@ -45,7 +45,8 @@ target_include_directories(${PROJECT_NAME}
         cppzmq
         ${ZeroMQ_INCLUDE_DIR}
         ${marko_INCLUDE_DIRS}
-        include
+        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_BINARY_DIR}/include
 )
 
 # Build tools -------------------------------------------------------

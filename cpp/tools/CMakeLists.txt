@@ -4,7 +4,7 @@ list(APPEND tools
     # topic/geckotopic.cpp
     # bag/gecko-bag.cpp
     # core/geckocore.cpp
-    # version/version.cpp
+    version/version.cpp
     # version/host.cpp
     # version/gecko-uname.cpp
     ping-test/gecko-ping.cpp
