@@ -1,5 +1,7 @@
 # :lizard: Gecko C++
 
+![Cpp](https://github.com/gecko-robotics/gecko/workflows/Cpp/badge.svg)
+
 My robotic framework
 
 - [ZeroMQ](https://zeromq.org)

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/pypi/l/pygecko.svg)](https://pypi.python.org/pypi/pygecko/)
 [![image](https://img.shields.io/pypi/pyversions/pygecko.svg)](https://pypi.python.org/pypi/pygecko)
 [![image](https://img.shields.io/pypi/format/pygecko.svg)](https://pypi.python.org/pypi/pygecko)
-![No Badge](https://github.com/gecko-robotics/gecko/workflows/Nose/badge.svg)
+![CheckPackage](https://github.com/gecko-robotics/gecko/workflows/CheckPackage/badge.svg)
 
 
 ## Install
