@@ -1,8 +1,8 @@
 # :lizard: Gecko
 
 [![License](https://img.shields.io/pypi/l/pygecko.svg)](https://pypi.python.org/pypi/pygecko/)
-![CheckPackage](https://github.com/gecko-robotics/gecko/workflows/CheckPackage/badge.svg)
-![Cpp](https://github.com/gecko-robotics/gecko/workflows/Cpp/badge.svg)
+[![CheckPackage](https://github.com/gecko-robotics/gecko/workflows/Python/badge.svg)](https://github.com/gecko-robotics/gecko/actions?query=workflow%3APython)
+[![Cpp](https://github.com/gecko-robotics/gecko/workflows/Cpp/badge.svg)](https://github.com/gecko-robotics/gecko/actions?query=workflow%3ACpp)
 
 ## My robot software.
 
