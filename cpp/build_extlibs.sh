@@ -8,10 +8,10 @@ cd tmp
 DIR="/opt/gecko"
 
 MSGPACK="false"
-JSON="false"
-ZMQ="false"
-CPPZMQ="false"
-MARKO="false"
+JSON="true"
+ZMQ="true"
+CPPZMQ="true"
+MARKO="true"
 
 # MsgPack ----------------------------------------------------------
 if [[ ${MSGPACK} == "true" ]]; then
