@@ -14,16 +14,16 @@ jobs:
             #     key: ${{ runner.OS }}-build-extlibs
             #     restore-keys: |
             #       ${{ runner.OS }}-build-extlibs
-            
-            - name: Install dependencies
-              run: |
-                cd cpp
-                chmod a+x *.sh
-                ./build_extlibs.sh
-            - name: Test gecko
-              run: |
-                mkdir -p cpp/build
-                cd cpp/build
-                cmake ..
-                make
-                ./gtests/all-gtest
+
+            # - name: Install dependencies
+            #   run: |
+            #     cd cpp
+            #     chmod a+x *.sh
+            #     ./build_extlibs.sh
+            # - name: Test gecko
+            #   run: |
+            #     mkdir -p cpp/build
+            #     cd cpp/build
+            #     cmake ..
+            #     make
+            #     ./gtests/all-gtest
