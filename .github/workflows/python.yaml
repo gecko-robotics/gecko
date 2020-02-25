@@ -36,9 +36,9 @@ jobs:
             - name: Turn off Virtualenvs
               run: poetry config virtualenvs.create false
             - name: Install packages
-              run: poetry install
+              run: cd python && poetry install
             - name: Run PyTest
-              run: poetry run pytest
+              run: cd python && poetry run pytest
             # - name: Run mypy
             #   run: poetry run mypy pyservos
             # - name: nosetests
