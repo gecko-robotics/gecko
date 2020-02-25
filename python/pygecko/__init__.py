@@ -5,6 +5,11 @@
 # see LICENSE for full details
 ##############################################
 
+try:
+    from importlib_metadata import version # type: ignore
+except ImportError:
+    from importlib.metadata import version # type: ignore
+
 # config file stuff
 from pygecko.file_storage import FileStorageError
 from pygecko.file_storage import FileJson
@@ -25,4 +30,4 @@ from pygecko.network.ip import get_ip
 
 __author__ = 'Kevin Walchko'
 __license__ = "MIT"
-__version__ = "1.4.0"
+__version__ = version("pygecko")

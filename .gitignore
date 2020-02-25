@@ -24,3 +24,5 @@ old
 
 ._*
 .DS_Store
+.pytest_cache
+.mypy_cache

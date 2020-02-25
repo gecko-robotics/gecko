@@ -1,4 +1,4 @@
-name: Nose
+name: CheckPackage
 on: [push]
 
 jobs:
@@ -7,7 +7,7 @@ jobs:
         strategy:
           max-parallel: 5
           matrix:
-            python-version: [3.6, 3.7]
+            python-version: [3.6, 3.7, 3.8]
         steps:
             - uses: actions/checkout@master
             - name: Setup Python ${{ matrix.python-version }}
@@ -19,9 +19,9 @@ jobs:
             #   uses: actions/setup-python@v1
             #   with:
             #     python-version: ${{ matrix.python-version }}
-            - name: Install dependencies
-              run: |
-                python -m pip install --upgrade pip setuptools wheel build_utils
+            # - name: Install dependencies
+            #   run: |
+            #     python -m pip install --upgrade pip setuptools wheel build_utils
             # - name: Lint with flake8
             #   run: |
             #     pip install flake8
@@ -29,12 +29,24 @@ jobs:
             #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
             #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
             #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-            - name: nosetests
-              run: |
-                pip install nose
-                cd python
-                python -m pip install -e .
-                cd tests
-                nosetests -vs test.py
+            - name: Install Poetry
+              uses: dschep/install-poetry-action@v1.3
+              # with:
+              #   version: 1.0.0b3
+            - name: Turn off Virtualenvs
+              run: poetry config virtualenvs.create false
+            - name: Install packages
+              run: poetry install
+            - name: Run PyTest
+              run: poetry run pytest
+            # - name: Run mypy
+            #   run: poetry run mypy pyservos
+            # - name: nosetests
+            #   run: |
+            #     pip install nose
+            #     cd python
+            #     python -m pip install -e .
+            #     cd tests
+            #     nosetests -vs test.py
             # - name: Python Style Checker
             #   uses: andymckay/pycodestyle-action@0.1.3

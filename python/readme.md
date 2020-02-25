@@ -10,7 +10,7 @@
 ## Install
 
 - From pypi: `pip install pygecko`
-- Local for development: `pip install -e .`
+- Local for development once cloned git repo: `poetry install`
 
 ## `geckolaunch.py` **Broken Currently**
 
@@ -97,21 +97,11 @@ is most useful for testing.
     - Pub.connect(self, addr, hwm=None, queue_size=10)
     - Pub.bind(self, addr, hwm=None, queue_size=10, random=False)
 
-# Todo
-
-- [ ] fix `g_gecko` in `binder.py` and `connector.py`
-- [ ] fix `core` for both local and remote performance
-- [ ] fix `gecko` launch
-- [ ] fix `gecko` bag
-- [ ] fix `gecko` topic
-- [ ] fix `gecko` service
-- [ ] Add json file setup
-- [ ] Add json file `geckolaunch`
-
 # Change Log
 
 Date        |Version| Notes
 ------------|-------|---------------------------------
+2020-Feb-24 | 1.4.1 | use toml and poetry now
 2019-Nov-16 | 1.4.0 | request/reply working
 2019-May-18 | 1.3.0 | working with c++
 2019-Mar-02 | 1.2.0 | set multicast as the default method to find nodes
