@@ -51,6 +51,8 @@ class SignalCatch(object):
         """
         if signum == 2:
             self.kill = True
-            print(Back.RED + ">> Got signal[{}]".format(signum) + Style.RESET_ALL)
+            # print(Back.RED + ">> Got signal[{}]".format(signum) + Style.RESET_ALL)
+            print(f"{Back.RED}>> Got signal[{signum}]{Style.RESET_ALL}")
         else:
-            print(Back.YELLOW + ">> Got signal[{}]".format(signum) + Style.RESET_ALL)
+            # print(Back.YELLOW + ">> Got signal[{}]".format(signum) + Style.RESET_ALL)
+            print(f"{Back.YELLOW}>> Got signal[{signum}]{Style.RESET_ALL}")
