@@ -9,9 +9,9 @@ DIR="/opt/gecko"
 
 MSGPACK="false"
 JSON="true"
-ZMQ="true"
-CPPZMQ="true"
-MARKO="true"
+ZMQ="false"
+CPPZMQ="false"
+MARKO="false"
 
 # MsgPack ----------------------------------------------------------
 if [[ ${MSGPACK} == "true" ]]; then
@@ -35,10 +35,17 @@ if [[ ${JSON} == "true" ]]; then
     # cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DJSON_BuildTests=OFF ..
     # make install
     # cd ../..
-    JSON_VER="3.7.3"
-    wget https://github.com/nlohmann/json/releases/download/v${JSON_VER}/json.hpp
-    mkdir -p ${DIR}/include/nlohmann
-    mv json.hpp ${DIR}/include/nlohmann/
+    JSON_VER="3.8.0"
+    # wget https://github.com/nlohmann/json/releases/download/v${JSON_VER}/json.hpp
+    # mkdir -p ${DIR}/include/nlohmann
+    # mv json.hpp ${DIR}/include/nlohmann/
+    wget https://github.com/nlohmann/json/archive/v${JSON_VER}.zip
+    unzip v${JSON_VER}.zip
+    cd v${JSON_VER}
+    mkdir -p build && cd build
+    cmake -DCMAKE_INSTALL_PREFIX=${DIR} -DJSON_BuildTests=OFF ..
+    make install
+    cd ../..
 fi
 
 # libzmq --------------------------------------------------------------
