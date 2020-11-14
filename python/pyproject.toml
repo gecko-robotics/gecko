@@ -27,16 +27,16 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.6"
-the_collector = "*"
+#the_collector = "*"
 colorama = "*"
-importlib-metadata = "*"
+importlib-metadata = {version="*", python="<3.8"}
 pyyaml = "*"
 simplejson = "*"
 pyzmq = "*"
 psutil = "*"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "*"
 mypy = "*"
 
 # [mypy-pi_servo_serial]
