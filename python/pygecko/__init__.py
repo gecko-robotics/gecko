@@ -5,10 +5,7 @@
 # see LICENSE for full details
 ##############################################
 
-try:
-    from importlib_metadata import version # type: ignore
-except ImportError:
-    from importlib.metadata import version # type: ignore
+from importlib.metadata import version # type: ignore
 
 # config file stuff
 from pygecko.file_storage import FileStorageError
